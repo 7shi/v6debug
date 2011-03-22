@@ -27,8 +27,13 @@ namespace v6
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
-                OpenFile(openFileDialog1.FileName);
+            if (openFileDialog1.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            var cur = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
+            OpenFile(openFileDialog1.FileName);
+            Cursor.Current = cur;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
