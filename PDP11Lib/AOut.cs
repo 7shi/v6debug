@@ -25,22 +25,22 @@ namespace PDP11Lib
 
         public void Write(TextWriter iw)
         {
-            iw.WriteLine("fmagic = {0:x4}", fmagic);
-            iw.WriteLine("tsize  = {0:x4}", tsize);
-            iw.WriteLine("dsize  = {0:x4}", dsize);
-            iw.WriteLine("bsize  = {0:x4}", bsize);
-            iw.WriteLine("ssize  = {0:x4}", ssize);
-            iw.WriteLine("entry  = {0:x4}", entry);
-            iw.WriteLine("pad    = {0:x4}", pad);
-            iw.WriteLine("relflg = {0:x4}", relflg);
+            iw.WriteLine("[{0:x4}] fmagic = {1:x4}", 0, fmagic);
+            iw.WriteLine("[{0:x4}] tsize  = {1:x4}", 2, tsize);
+            iw.WriteLine("[{0:x4}] dsize  = {1:x4}", 4, dsize);
+            iw.WriteLine("[{0:x4}] bsize  = {1:x4}", 6, bsize);
+            iw.WriteLine("[{0:x4}] ssize  = {1:x4}", 8, ssize);
+            iw.WriteLine("[{0:x4}] entry  = {1:x4}", 10, entry);
+            iw.WriteLine("[{0:x4}] pad    = {1:x4}", 12, pad);
+            iw.WriteLine("[{0:x4}] relflg = {1:x4}", 14, relflg);
             iw.WriteLine();
-            iw.WriteLine("[.text]");
+            iw.WriteLine(".text");
             for (int i = 0; i < tsize; )
             {
                 var op = Pdp11.Read(this, i);
                 int len = op != null ? op.Length : 2;
                 var s = ReadUInt16(i);
-                iw.Write("{0:x4}: {1:x4}(o{2})", i, s, Oct(s, 6));
+                iw.Write("[{0:x4}] {1:x4}: {2:x4}(o{3})", 16 + i, i, s, Oct(s, 6));
                 for (int j = 2; j < 6; j += 2)
                 {
                     if (j < len)
@@ -74,6 +74,35 @@ namespace PDP11Lib
         public ushort ReadUInt16(int pos)
         {
             return BitConverter.ToUInt16(data, 16 + pos);
+        }
+
+        public string Dump()
+        {
+            using (var sw = new StringWriter())
+            {
+                for (int i = 0; i < data.Length; i += 16)
+                {
+                    sw.Write("[{0:X4}]", i);
+                    var sb = new StringBuilder();
+                    for (int j = 0; j < 16; j++)
+                    {
+                        if (i + j < data.Length)
+                        {
+                            if (j == 8) sw.Write(" -");
+                            var b = data[i + j];
+                            sw.Write(" {0:X2}", b);
+                            sb.Append(32 <= b && b < 128 ? (char)b : '.');
+                        }
+                        else
+                        {
+                            if (j == 8) sw.Write("  ");
+                            sw.Write("   ");
+                        }
+                    }
+                    sw.WriteLine(" {0}", sb.ToString());
+                }
+                return sw.ToString();
+            }
         }
     }
 }

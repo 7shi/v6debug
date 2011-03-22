@@ -41,38 +41,14 @@ namespace V6
 
         private void ReadBytes(byte[] data)
         {
+            var aout = new AOut();
             using (var sw = new StringWriter())
             {
-                var fh = new AOut();
-                fh.Read(data);
-                fh.Write(sw);
+                aout.Read(data);
+                aout.Write(sw);
                 textBox1.Text = sw.ToString();
             }
-            using (var sw = new StringWriter())
-            {
-                for (int i = 0; i < data.Length; i += 16)
-                {
-                    sw.Write("{0:X4}:", i);
-                    var sb = new StringBuilder();
-                    for (int j = 0; j < 16; j++)
-                    {
-                        if (i + j < data.Length)
-                        {
-                            if (j == 8) sw.Write(" -");
-                            var b = data[i + j];
-                            sw.Write(" {0:X2}", b);
-                            sb.Append(32 <= b && b < 128 ? (char)b : '.');
-                        }
-                        else
-                        {
-                            if (j == 8) sw.Write("  ");
-                            sw.Write("   ");
-                        }
-                    }
-                    sw.WriteLine(" {0}", sb.ToString());
-                }
-                textBox2.Text = sw.ToString();
-            }
+            textBox2.Text = aout.Dump();
             btnSave.IsEnabled = true;
         }
 
