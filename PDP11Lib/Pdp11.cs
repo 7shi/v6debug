@@ -157,7 +157,7 @@ namespace PDP11Lib
                 case 0x86: return ReadOffset("bcc", aout, pos);
                 case 0x87: return ReadOffset("bcs", aout, pos);
                 case 0x88: return new OpCode(string.Format("emt 0x{0:x2}", aout[pos]), 2);
-                case 0x89: return new OpCode(string.Format("sys 0x{0:x2}", aout[pos]), 2);
+                case 0x89: return new OpCode(string.Format("trap 0x{0:x2}", aout[pos]), 2);
             }
             var v = aout.ReadUInt16(pos);
             switch ((v >> 6) & 63)
