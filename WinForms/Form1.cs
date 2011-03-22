@@ -22,7 +22,7 @@ namespace V6
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            OpenFile(GetFileName("a.out"));
+            OpenFile(GetFileName("hello"));
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -46,21 +46,44 @@ namespace V6
             return Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), fn);
         }
 
+        private AOut aout;
+
         private void OpenFile(string fn)
         {
             textBox1.Clear();
-            using (var sw = new StringWriter())
-            {
-                using (var fs = new FileStream(fn, FileMode.Open))
-                using (var br = new BinaryReader(fs))
-                {
-                    var fh = new AOut();
-                    fh.Read(br);
-                    fh.Write(sw);
-                }
-                textBox1.Text = sw.ToString();
-                textBox1.SelectionStart = 0;
-            }
+
+            var cur = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
+            aout = new AOut(File.ReadAllBytes(fn)) { UseOct = octToolStripMenuItem.Checked };
+            textBox1.Text = aout.GetDisassemble();
+            textBox1.SelectionStart = 0;
+            Cursor.Current = cur;
+        }
+
+        private void setView()
+        {
+            if (aout == null) return;
+
+            var cur = Cursor.Current;
+            Cursor.Current = Cursors.WaitCursor;
+            aout.UseOct = octToolStripMenuItem.Checked;
+            textBox1.Text = aout.GetDisassemble();
+            textBox1.SelectionStart = 0;
+            Cursor.Current = cur;
+        }
+
+        private void hexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            hexToolStripMenuItem.Checked = true;
+            octToolStripMenuItem.Checked = false;
+            setView();
+        }
+
+        private void octToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            hexToolStripMenuItem.Checked = false;
+            octToolStripMenuItem.Checked = true;
+            setView();
         }
     }
 }

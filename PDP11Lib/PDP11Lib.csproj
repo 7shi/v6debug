@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AOut.cs" />
+    <Compile Include="BinData.cs" />
     <Compile Include="Pdp11.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
