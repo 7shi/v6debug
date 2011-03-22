@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 using PDP11Lib;
 
-namespace v6
+namespace V6
 {
     public partial class Form1 : Form
     {

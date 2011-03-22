@@ -12,7 +12,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using PDP11Lib;
 
-namespace Silverlight
+namespace V6
 {
     public partial class MainPage : UserControl
     {

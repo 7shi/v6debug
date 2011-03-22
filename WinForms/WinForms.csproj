@@ -8,8 +8,8 @@
     <ProjectGuid>{EB1582BC-8E73-46F4-AFD4-BCC411C7218F}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>v6</RootNamespace>
-    <AssemblyName>v6</AssemblyName>
+    <RootNamespace>V6</RootNamespace>
+    <AssemblyName>V6</AssemblyName>
     <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>

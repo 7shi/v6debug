@@ -1,4 +1,4 @@
-﻿namespace v6
+﻿namespace V6
 {
     partial class Form1
     {
@@ -102,7 +102,7 @@
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
-            this.Text = "v6";
+            this.Text = "V6";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

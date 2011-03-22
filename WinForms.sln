@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "v6", "v6\v6.csproj", "{EB1582BC-8E73-46F4-AFD4-BCC411C7218F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinForms", "WinForms\WinForms.csproj", "{EB1582BC-8E73-46F4-AFD4-BCC411C7218F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDP11Lib", "PDP11Lib\PDP11Lib.csproj", "{E99CFE4E-C09F-4E83-B139-DB2FDC5E2954}"
 EndProject
