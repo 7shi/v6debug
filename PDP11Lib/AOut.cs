@@ -8,19 +8,19 @@ namespace PDP11Lib
     public class AOut
     {
         public ushort fmagic, tsize, dsize, bsize, ssize, entry, pad, relflg;
-        public byte[] image;
+        public byte[] data;
 
-        public void Read(BinaryReader br)
+        public void Read(byte[] data)
         {
-            fmagic = br.ReadUInt16();
-            tsize = br.ReadUInt16();
-            dsize = br.ReadUInt16();
-            bsize = br.ReadUInt16();
-            ssize = br.ReadUInt16();
-            entry = br.ReadUInt16();
-            pad = br.ReadUInt16();
-            relflg = br.ReadUInt16();
-            image = br.ReadBytes(tsize + dsize);
+            this.data = data;
+            fmagic = BitConverter.ToUInt16(data, 0);
+            tsize = BitConverter.ToUInt16(data, 2);
+            dsize = BitConverter.ToUInt16(data, 4);
+            bsize = BitConverter.ToUInt16(data, 6);
+            ssize = BitConverter.ToUInt16(data, 8);
+            entry = BitConverter.ToUInt16(data, 10);
+            pad = BitConverter.ToUInt16(data, 12);
+            relflg = BitConverter.ToUInt16(data, 14);
         }
 
         public void Write(TextWriter iw)
@@ -37,18 +37,18 @@ namespace PDP11Lib
             iw.WriteLine("[.text]");
             for (int i = 0; i < tsize; )
             {
-                var op = Pdp11.Read(image, i);
+                var op = Pdp11.Read(this, i);
                 int len = op != null ? op.Length : 2;
-                var s = BitConverter.ToUInt16(image, i);
-                iw.Write("{0:x4}:  {1:x4}(o{2})", i, s, Oct(s, 6));
+                var s = ReadUInt16(i);
+                iw.Write("{0:x4}: {1:x4}(o{2})", i, s, Oct(s, 6));
                 for (int j = 2; j < 6; j += 2)
                 {
                     if (j < len)
-                        iw.Write(" {0:x4}", BitConverter.ToUInt16(image, i + j));
+                        iw.Write(" {0:x4}", ReadUInt16(i + j));
                     else
                         iw.Write("     ");
                 }
-                iw.Write("  ");
+                iw.Write(" ");
                 if (op != null)
                     iw.Write(op.Mnemonic);
                 else
@@ -64,6 +64,16 @@ namespace PDP11Lib
             if (oct.Length < c)
                 oct = new string('0', c - oct.Length) + oct;
             return oct;
+        }
+
+        public byte this[int pos]
+        {
+            get { return data[16 + pos]; }
+        }
+
+        public ushort ReadUInt16(int pos)
+        {
+            return BitConverter.ToUInt16(data, 16 + pos);
         }
     }
 }

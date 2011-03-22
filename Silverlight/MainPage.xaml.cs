@@ -43,13 +43,9 @@ namespace V6
         {
             using (var sw = new StringWriter())
             {
-                using (var ms = new MemoryStream(data))
-                using (var br = new BinaryReader(ms))
-                {
-                    var fh = new AOut();
-                    fh.Read(br);
-                    fh.Write(sw);
-                }
+                var fh = new AOut();
+                fh.Read(data);
+                fh.Write(sw);
                 textBox1.Text = sw.ToString();
             }
             using (var sw = new StringWriter())
