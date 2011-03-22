@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace v6
+namespace PDP11Lib
 {
     public class OpCode
     {

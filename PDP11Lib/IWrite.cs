@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace v6
+namespace PDP11Lib
 {
-    interface IWrite
+    public interface IWrite
     {
         void Write(string format, params object[] args);
         void WriteLine();

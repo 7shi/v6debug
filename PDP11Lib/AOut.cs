@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace v6
+namespace PDP11Lib
 {
-    class AOut
+    public class AOut
     {
         public ushort fmagic, tsize, dsize, bsize, ssize, entry, pad, relflg;
         public byte[] image;
