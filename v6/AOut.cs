@@ -34,11 +34,27 @@ namespace v6
             iw.WriteLine("pad    = {0:x4}", pad);
             iw.WriteLine("relflg = {0:x4}", relflg);
             iw.WriteLine();
-            iw.WriteLine(".text");
-            for (int i = 0; i < tsize; i += 2)
+            iw.WriteLine("[.text]");
+            for (int i = 0; i < tsize; )
             {
+                var op = Pdp11.Read(image, i);
+                int len = op != null ? op.Length : 2;
                 var s = BitConverter.ToUInt16(image, i);
-                iw.WriteLine("{0:x4}: {1:x4}(o{2})", i, s, Oct(s, 6));
+                iw.Write("{0:x4}:  {1:x4}(o{2})", i, s, Oct(s, 6));
+                for (int j = 2; j < 6; j += 2)
+                {
+                    if (j < len)
+                        iw.Write(" {0:x4}", BitConverter.ToUInt16(image, i + j));
+                    else
+                        iw.Write("     ");
+                }
+                iw.Write("  ");
+                if (op != null)
+                    iw.Write(op.Mnemonic);
+                else
+                    iw.Write(string.Format("0x{0:x4}", s));
+                iw.WriteLine();
+                i += len;
             }
         }
 
