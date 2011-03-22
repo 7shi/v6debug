@@ -41,14 +41,9 @@ namespace V6
 
         private void ReadBytes(byte[] data)
         {
-            var aout = new AOut();
-            using (var sw = new StringWriter())
-            {
-                aout.Read(data);
-                aout.Write(sw);
-                textBox1.Text = sw.ToString();
-            }
-            textBox2.Text = aout.Dump();
+            var aout = new AOut(data);
+            textBox1.Text = aout.GetDisassemble();
+            textBox2.Text = aout.GetDump();
             btnSave.IsEnabled = true;
         }
 

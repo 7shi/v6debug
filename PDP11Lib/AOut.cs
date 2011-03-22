@@ -5,14 +5,14 @@ using System.Text;
 
 namespace PDP11Lib
 {
-    public class AOut
+    public class AOut : BinData
     {
         public ushort fmagic, tsize, dsize, bsize, ssize, entry, pad, relflg;
-        public byte[] data;
 
-        public void Read(byte[] data)
+        public AOut(byte[] data)
+            : base(data)
         {
-            this.data = data;
+            Offset = 16;
             fmagic = BitConverter.ToUInt16(data, 0);
             tsize = BitConverter.ToUInt16(data, 2);
             dsize = BitConverter.ToUInt16(data, 4);
@@ -23,7 +23,7 @@ namespace PDP11Lib
             relflg = BitConverter.ToUInt16(data, 14);
         }
 
-        public void Write(TextWriter iw)
+        public void Disassemble(TextWriter iw)
         {
             iw.WriteLine("[{0:x4}] fmagic = {1:x4}", 0, fmagic);
             iw.WriteLine("[{0:x4}] tsize  = {1:x4}", 2, tsize);
@@ -58,49 +58,11 @@ namespace PDP11Lib
             }
         }
 
-        public static string Oct(uint o, int c)
-        {
-            var oct = Convert.ToString(o, 8);
-            if (oct.Length < c)
-                oct = new string('0', c - oct.Length) + oct;
-            return oct;
-        }
-
-        public byte this[int pos]
-        {
-            get { return data[16 + pos]; }
-        }
-
-        public ushort ReadUInt16(int pos)
-        {
-            return BitConverter.ToUInt16(data, 16 + pos);
-        }
-
-        public string Dump()
+        public string GetDisassemble()
         {
             using (var sw = new StringWriter())
             {
-                for (int i = 0; i < data.Length; i += 16)
-                {
-                    sw.Write("[{0:X4}]", i);
-                    var sb = new StringBuilder();
-                    for (int j = 0; j < 16; j++)
-                    {
-                        if (i + j < data.Length)
-                        {
-                            if (j == 8) sw.Write(" -");
-                            var b = data[i + j];
-                            sw.Write(" {0:X2}", b);
-                            sb.Append(32 <= b && b < 128 ? (char)b : '.');
-                        }
-                        else
-                        {
-                            if (j == 8) sw.Write("  ");
-                            sw.Write("   ");
-                        }
-                    }
-                    sw.WriteLine(" {0}", sb.ToString());
-                }
+                Disassemble(sw);
                 return sw.ToString();
             }
         }
