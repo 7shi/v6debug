@@ -23,7 +23,7 @@ namespace PDP11Lib
             image = br.ReadBytes(tsize + dsize);
         }
 
-        public void Write(IWrite iw)
+        public void Write(TextWriter iw)
         {
             iw.WriteLine("fmagic = {0:x4}", fmagic);
             iw.WriteLine("tsize  = {0:x4}", tsize);
