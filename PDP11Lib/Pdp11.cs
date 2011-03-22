@@ -23,6 +23,13 @@ namespace PDP11Lib
             "r0", "r1", "r2", "r3", "r4", "r5", "sp", "pc"
         };
 
+        public static OpCode Read(byte[] data)
+        {
+            if (data.Length < 6) Array.Resize(ref data, 6);
+            var bd = new BinData(data);
+            return Read(bd, 0);
+        }
+
         public static OpCode Read(BinData bd, int pos)
         {
             switch (bd[pos + 1] >> 4)
