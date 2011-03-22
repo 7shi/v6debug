@@ -48,7 +48,7 @@ namespace PDP11Lib
                     else
                         iw.Write("     ");
                 }
-                iw.Write(" ");
+                iw.Write("  ");
                 if (op != null)
                     iw.Write(op.Mnemonic);
                 else

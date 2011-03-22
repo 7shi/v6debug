@@ -22,7 +22,7 @@ namespace V6
         public MainPage()
         {
             InitializeComponent();
-            ReadResource("a.out");
+            ReadResource("Tests/hello");
         }
 
         private void ReadResource(string fn)
@@ -87,20 +87,10 @@ namespace V6
             var button = sender as Button;
             if (button == null) return;
 
-            var name = button.Name;
-            if (!name.StartsWith("btnTest")) return;
-
-            ReadTest(int.Parse(name.Substring(7)));
-        }
-
-        private void ReadTest(int p)
-        {
-            switch (p)
-            {
-                case 1:
-                    ReadResource("a.out");
-                    break;
-            }
+            var cur = Cursor;
+            Cursor = Cursors.Wait;
+            ReadResource("Tests/" + button.Content.ToString());
+            Cursor = cur;
         }
     }
 }

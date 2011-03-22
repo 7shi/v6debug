@@ -20,22 +20,22 @@
                 <Button Content="開く" Name="btnOpen" Click="btnOpen_Click" />
                 <Button Content="保存" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
                 <Grid Width="4" />
-                <Button Content="Test1" Name="btnTest1" Click="btnTest_Click" />
+                <Button Click="btnTest_Click" Content="hello" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
                 PDP-11 Interpreter
             </TextBlock>
         </Grid>
-        <sdk:TabControl Name="tabControl1" Grid.Row="1" Margin="0,0,6,0">
-            <sdk:TabItem Header="Disassemble" Name="tabItem1">
+        <sdk:TabControl Grid.Row="1" Margin="0,0,6,0">
+            <sdk:TabItem Header="Disassemble">
                 <Grid>
                     <TextBox Name="textBox1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" FontFamily="Courier New" FontSize="12" />
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
-        <sdk:TabControl Name="tabControl2" Grid.Row="1" Grid.Column="2">
-            <sdk:TabItem Header="Binary" Name="tabItem2">
+        <sdk:TabControl Grid.Row="1" Grid.Column="2">
+            <sdk:TabItem Header="Binary">
                 <Grid>
                     <TextBox Name="textBox2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" FontFamily="Courier New" FontSize="12" />
                 </Grid>
