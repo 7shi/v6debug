@@ -21,6 +21,11 @@
                 <Button Content="保存" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
                 <Grid Width="4" />
                 <Button Click="btnTest_Click" Content="hello" />
+                <Grid Width="4" />
+                <ComboBox Name="comboBox1" SelectedIndex="0" SelectionChanged="comboBox1_SelectionChanged">
+                    <ComboBoxItem Content="hex" />
+                    <ComboBoxItem Content="oct" />
+                </ComboBox>
             </StackPanel>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
                 PDP-11 Interpreter

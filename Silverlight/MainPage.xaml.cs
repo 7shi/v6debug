@@ -17,7 +17,7 @@ namespace V6
 {
     public partial class MainPage : UserControl
     {
-        private byte[] data;
+        private AOut aout;
 
         public MainPage()
         {
@@ -34,14 +34,14 @@ namespace V6
 
         private void ReadStream(Stream s)
         {
-            data = new byte[s.Length];
+            var data = new byte[s.Length];
             s.Read(data, 0, data.Length);
             ReadBytes(data);
         }
 
         private void ReadBytes(byte[] data)
         {
-            var aout = new AOut(data);
+            aout = new AOut(data) { UseOct = comboBox1.SelectedIndex == 1 };
             textBox1.Text = aout.GetDisassemble();
             textBox2.Text = aout.GetDump();
             btnSave.IsEnabled = true;
@@ -74,7 +74,7 @@ namespace V6
             if (sfd.ShowDialog() != true) return;
 
             using (var fs = sfd.OpenFile())
-                fs.Write(data, 0, data.Length);
+                fs.Write(aout.Data, 0, aout.Data.Length);
         }
 
         private void btnTest_Click(object sender, RoutedEventArgs e)
@@ -85,6 +85,21 @@ namespace V6
             var cur = Cursor;
             Cursor = Cursors.Wait;
             ReadResource("Tests/" + button.Content.ToString());
+            Cursor = cur;
+        }
+
+        private void comboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (aout == null) return;
+
+            var f = comboBox1.SelectedIndex == 1;
+            if (aout.UseOct == f) return;
+
+            var cur = Cursor;
+            Cursor = Cursors.Wait;
+            aout.UseOct = f;
+            textBox1.Text = aout.GetDisassemble();
+            textBox2.Text = aout.GetDump();
             Cursor = cur;
         }
     }

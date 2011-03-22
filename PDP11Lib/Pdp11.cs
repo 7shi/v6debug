@@ -23,10 +23,10 @@ namespace PDP11Lib
             "r0", "r1", "r2", "r3", "r4", "r5", "sp", "pc"
         };
 
-        public static OpCode Read(byte[] data)
+        public static OpCode Read(byte[] data, bool oct)
         {
             if (data.Length < 6) Array.Resize(ref data, 6);
-            var bd = new BinData(data);
+            var bd = new BinData(data) { UseOct = oct };
             return Read(bd, 0);
         }
 
@@ -163,8 +163,8 @@ namespace PDP11Lib
                 case 0x85: return ReadOffset("bvs", bd, pos);
                 case 0x86: return ReadOffset("bcc", bd, pos);
                 case 0x87: return ReadOffset("bcs", bd, pos);
-                case 0x88: return new OpCode(string.Format("emt 0x{0:x2}", bd[pos]), 2);
-                case 0x89: return new OpCode(string.Format("trap 0x{0:x2}", bd[pos]), 2);
+                case 0x88: return new OpCode("emt " + bd.Enc(bd[pos]), 2);
+                case 0x89: return new OpCode("trap " + bd.Enc(bd[pos]), 2);
             }
             var v = bd.ReadUInt16(pos);
             switch ((v >> 6) & 63)
@@ -211,8 +211,8 @@ namespace PDP11Lib
             short v5 = 0, v6 = 0;
             if (hasOperand(v1, v2)) { v5 = (short)bd.ReadUInt16(pos + len); len += 2; }
             if (hasOperand(v3, v4)) { v6 = (short)bd.ReadUInt16(pos + len); len += 2; }
-            var opr1 = GetOperand(pos + len, v1, v2, v5);
-            var opr2 = GetOperand(pos + len, v3, v4, v6);
+            var opr1 = GetOperand(bd, pos + len, v1, v2, v5);
+            var opr2 = GetOperand(bd, pos + len, v3, v4, v6);
             return new OpCode(op + " " + opr1 + ", " + opr2, len);
         }
 
@@ -224,7 +224,7 @@ namespace PDP11Lib
             var v2 = v & 7;
             short v3 = 0;
             if (hasOperand(v1, v2)) { v3 = (short)bd.ReadUInt16(pos + len); len += 2; }
-            var opr = GetOperand(pos + len, v1, v2, v3);
+            var opr = GetOperand(bd, pos + len, v1, v2, v3);
             return new OpCode(op + " " + opr, len);
         }
 
@@ -237,7 +237,7 @@ namespace PDP11Lib
 
         private static OpCode ReadNum(string op, BinData bd, int pos)
         {
-            return new OpCode(string.Format("{0} 0x{1:x2}", op, bd[pos] & 63), 2);
+            return new OpCode(op + " " + bd.Enc((byte)(bd[pos] & 63)), 2);
         }
 
         private static OpCode ReadRegNum(string op, BinData bd, int pos)
@@ -250,7 +250,7 @@ namespace PDP11Lib
         private static OpCode ReadOffset(string op, BinData bd, int pos)
         {
             var ad = pos + 2 + ((sbyte)bd[pos]) * 2;
-            return new OpCode(string.Format("{0} 0x{1:x4}", op, ad), 2);
+            return new OpCode(op + " " + bd.Enc((ushort)ad), 2);
         }
 
         private static OpCode ReadReg(string op, BinData bd, int pos)
@@ -264,22 +264,22 @@ namespace PDP11Lib
             return v1 >= 6 || (v2 == 7 && (v1 == 2 || v1 == 3));
         }
 
-        public static string GetOperand(int pc, int v1, int v2, short v3)
+        public static string GetOperand(BinData bd, int pc, int v1, int v2, short v3)
         {
             if (v2 == 7)
             {
                 switch (v1)
                 {
-                    case 2: return string.Format("$0x{0:x4}", (ushort)v3);
-                    case 3: return string.Format("*$0x{0:x4}", (ushort)v3);
-                    case 6: return string.Format("0x{0:x4}", pc + v3);
-                    case 7: return string.Format("*0x{0:x4}", pc + v3);
+                    case 2: return "$" + bd.Enc((ushort)v3);
+                    case 3: return "*$" + bd.Enc((ushort)v3);
+                    case 6: return bd.Enc((ushort)(pc + v3));
+                    case 7: return "*" + bd.Enc((ushort)(pc + v3));
                 }
             }
             var r = Regs[v2];
             var sign = v3 < 0 ? "-" : "";
             var v3a = Math.Abs(v3);
-            var dd = v3a < 10 ? v3.ToString() : sign + "0x" + v3a.ToString("x");
+            var dd = v3a < 10 ? v3.ToString() : sign + bd.Enc((ushort)v3a);
             switch (v1)
             {
                 case 0: return r;

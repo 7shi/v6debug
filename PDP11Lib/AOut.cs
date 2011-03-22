@@ -25,7 +25,7 @@ namespace PDP11Lib
 
         public void Disassemble(TextWriter iw)
         {
-            var opmagic = Pdp11.Read(new[] { Data[0], Data[1] });
+            var opmagic = Pdp11.Read(new[] { Data[0], Data[1] }, UseOct);
             iw.WriteLine("[{0:x4}] fmagic = {1:x4}  {2}", 0, fmagic, opmagic.Mnemonic);
             iw.WriteLine("[{0:x4}] tsize  = {1:x4}", 2, tsize);
             iw.WriteLine("[{0:x4}] dsize  = {1:x4}", 4, dsize);
@@ -41,11 +41,13 @@ namespace PDP11Lib
                 var op = Pdp11.Read(this, i);
                 int len = op != null ? op.Length : 2;
                 var s = ReadUInt16(i);
-                iw.Write("[{0:x4}] {1:x4}: {2:x4}(o{3})", 16 + i, i, s, Oct(s, 6));
+                iw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc((ushort)i), Enc0(s));
                 for (int j = 2; j < 6; j += 2)
                 {
                     if (j < len)
-                        iw.Write(" {0:x4}", ReadUInt16(i + j));
+                        iw.Write(" " + Enc0(ReadUInt16(i + j)));
+                    else if (UseOct)
+                        iw.Write("       ");
                     else
                         iw.Write("     ");
                 }
@@ -53,7 +55,7 @@ namespace PDP11Lib
                 if (op != null)
                     iw.Write(op.Mnemonic);
                 else
-                    iw.Write(string.Format("0x{0:x4}", s));
+                    iw.Write(Enc(s));
                 iw.WriteLine();
                 i += len;
             }

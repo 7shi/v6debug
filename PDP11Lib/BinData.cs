@@ -67,5 +67,20 @@ namespace PDP11Lib
                 oct = new string('0', c - oct.Length) + oct;
             return oct;
         }
+
+        public string Enc0(ushort v)
+        {
+            return UseOct ? Oct(v, 6) : v.ToString("x4");
+        }
+
+        public string Enc(ushort v)
+        {
+            return UseOct ? Oct(v, 7) : "0x" + v.ToString("x4");
+        }
+
+        public string Enc(byte v)
+        {
+            return UseOct ? Oct(v, 4) : "0x" + v.ToString("x2");
+        }
     }
 }
