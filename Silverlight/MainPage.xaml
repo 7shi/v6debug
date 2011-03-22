@@ -7,11 +7,15 @@
     d:DesignHeight="300" d:DesignWidth="400" xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk">
 
     <Grid x:Name="LayoutRoot" Background="White">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="24" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
-        <Grid>
+        <Grid Grid.ColumnSpan="2">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                 <Button Content="開く" Name="btnOpen" Click="btnOpen_Click" />
                 <Button Content="保存" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
@@ -22,10 +26,18 @@
                 PDP-11 Interpreter
             </TextBlock>
         </Grid>
-        <sdk:TabControl Name="tabControl1" Grid.Row="1">
+        <sdk:TabControl Name="tabControl1" Grid.Row="1" Margin="0,0,6,0">
             <sdk:TabItem Header="Disassemble" Name="tabItem1">
                 <Grid>
                     <TextBox Name="textBox1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" FontFamily="Courier New" FontSize="12" />
+                </Grid>
+            </sdk:TabItem>
+        </sdk:TabControl>
+        <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
+        <sdk:TabControl Name="tabControl2" Grid.Row="1" Grid.Column="2">
+            <sdk:TabItem Header="Binary" Name="tabItem2">
+                <Grid>
+                    <TextBox Name="textBox2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" FontFamily="Courier New" FontSize="12" />
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>

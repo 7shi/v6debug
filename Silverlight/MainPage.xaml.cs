@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -51,6 +52,31 @@ namespace V6
                 }
                 textBox1.Text = sw.ToString();
             }
+            using (var sw = new StringWriter())
+            {
+                for (int i = 0; i < data.Length; i += 16)
+                {
+                    sw.Write("{0:X4}:", i);
+                    var sb = new StringBuilder();
+                    for (int j = 0; j < 16; j++)
+                    {
+                        if (i + j < data.Length)
+                        {
+                            if (j == 8) sw.Write(" -");
+                            var b = data[i + j];
+                            sw.Write(" {0:X2}", b);
+                            sb.Append(32 <= b && b < 128 ? (char)b : '.');
+                        }
+                        else
+                        {
+                            if (j == 8) sw.Write("  ");
+                            sw.Write("   ");
+                        }
+                    }
+                    sw.WriteLine(" {0}", sb.ToString());
+                }
+                textBox2.Text = sw.ToString();
+            }
             btnSave.IsEnabled = true;
         }
 
@@ -63,8 +89,8 @@ namespace V6
             try
             {
                 var fi = ofd.File;
-                if (fi.Length > 200 * 1024)
-                    throw new Exception("ファイルが大き過ぎます。上限は200KBです。");
+                if (fi.Length >= 64 * 1024)
+                    throw new Exception("ファイルが大き過ぎます。上限は64KBです。");
                 using (var fs = ofd.File.OpenRead())
                     ReadStream(fs);
             }
