@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Web Developer Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Silverlight", "Silverlight\Silverlight.csproj", "{0C0B0A59-ED8B-4575-A781-24DF71A55886}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDP11LibSL", "PDP11Lib\PDP11LibSL.csproj", "{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C0B0A59-ED8B-4575-A781-24DF71A55886}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C0B0A59-ED8B-4575-A781-24DF71A55886}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C0B0A59-ED8B-4575-A781-24DF71A55886}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C0B0A59-ED8B-4575-A781-24DF71A55886}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
