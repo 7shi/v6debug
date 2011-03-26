@@ -63,12 +63,18 @@ Public Class VM
     End Sub
 
     Private Sub ExecMov()
+        Dim oprs = GetSrcDst()
+        oprs(1).SetValue(Me, oprs(0).GetValue(Me))
+    End Sub
+
+    Private Function GetSrcDst() As Operand()
         Dim len = 2
         Dim v = ReadUInt16(PC)
         Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + len) : len += opr1.Length
         Dim opr2 = New Operand((v >> 3) And 7, v And 7, Me, PC + len) : len += opr2.Length
         PC += CUShort(len)
-    End Sub
+        Return New Operand() {opr1, opr2}
+    End Function
 
     Private Sub Exec17()
         Dim v = ReadUInt16(PC)
@@ -84,6 +90,27 @@ Public Class VM
     Public Function Disassemble(pos%) As OpCode
         Return Disassembler.Disassemble(Me, pos)
     End Function
+
+    Public Function ReadUInt16Inc(r%) As UShort
+        Dim ret = ReadUInt16(Regs(r))
+        Regs(r) = CUShort((CInt(Regs(r)) + 2US) And &HFFFF)
+        Return ret
+    End Function
+
+    Public Function ReadUInt16Dec(r%) As UShort
+        Regs(r) = CUShort((CInt(Regs(r)) - 2US) And &HFFFF)
+        Return ReadUInt16(Regs(r))
+    End Function
+
+    Public Sub WriteInc(r%, v As UShort)
+        Write(Regs(r), v)
+        Regs(r) = CUShort((CInt(Regs(r)) + 2US) And &HFFFF)
+    End Sub
+
+    Public Sub WriteDec(r%, v As UShort)
+        Regs(r) = CUShort((CInt(Regs(r)) - 2US) And &HFFFF)
+        Write(Regs(r), v)
+    End Sub
 
     Public Function GetRegs$()
         Return String.Format(

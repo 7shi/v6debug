@@ -28,6 +28,11 @@ Public Class BinData
         Return BitConverter.ToInt16(Data, Offset + pos)
     End Function
 
+    Public Sub Write(pos%, v As UShort)
+        Dim buf = BitConverter.GetBytes(v)
+        Array.Copy(buf, 0, Data, pos, buf.Length)
+    End Sub
+
     Public Sub Dump(sw As TextWriter)
         For i = 0 To Data.Length - 1 Step 16
             sw.Write("[{0:X4}]", i)
