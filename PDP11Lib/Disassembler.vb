@@ -121,7 +121,7 @@
             Case &H86 : Return ReadOffset("bcc", bd, pos)
             Case &H87 : Return ReadOffset("bcs", bd, pos)
             Case &H88 : Return New OpCode("emt " + bd.Enc(bd(pos)), 2)
-            Case &H89 : Return New OpCode("trap " + bd.Enc(bd(pos)), 2)
+            Case &H89 : Return New OpCode("sys " + bd.Enc(bd(pos)), 2)
         End Select
         Dim v = bd.ReadUInt16(pos)
         Select Case (v >> 6) And &O77
