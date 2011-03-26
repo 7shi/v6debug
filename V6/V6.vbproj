@@ -48,8 +48,10 @@
     <MyType>Empty</MyType>
     <OutputPath>Bin\Debug</OutputPath>
     <DocumentationFile>V6.xml</DocumentationFile>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <DefineConstants>SILVERLIGHT=1</DefineConstants>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -60,8 +62,10 @@
     <Optimize>true</Optimize>
     <OutputPath>Bin\Release</OutputPath>
     <DocumentationFile>V6.xml</DocumentationFile>
-    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <NoWarn>
+    </NoWarn>
     <DefineConstants>SILVERLIGHT=1</DefineConstants>
+    <WarningsAsErrors>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036</WarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
@@ -70,7 +74,7 @@
     <OptionCompare>Binary</OptionCompare>
   </PropertyGroup>
   <PropertyGroup>
-    <OptionStrict>Off</OptionStrict>
+    <OptionStrict>On</OptionStrict>
   </PropertyGroup>
   <PropertyGroup>
     <OptionInfer>On</OptionInfer>
@@ -125,9 +129,9 @@
     <Content Include="Tests\hello" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PDP11Lib\PDP11LibSL.csproj">
-      <Project>{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}</Project>
-      <Name>PDP11LibSL</Name>
+    <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">
+      <Project>{A65C0B61-4F1C-4EA6-9BF8-E29E8223FF41}</Project>
+      <Name>PDP11Lib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.VisualBasic.targets" />

@@ -11,7 +11,7 @@ Partial Public Class MainPage
         ReadResource("Tests/hello")
     End Sub
 
-    Private Sub ReadResource(fn As String)
+    Private Sub ReadResource(fn$)
         Dim uri = New Uri(fn, UriKind.Relative)
         Dim rs = Application.GetResourceStream(uri)
         If Not rs Is Nothing Then
@@ -22,12 +22,12 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub ReadStream(s As Stream)
-        Dim data(s.Length - 1) As Byte
+        Dim data(CInt(s.Length - 1)) As Byte
         s.Read(data, 0, data.Length)
         ReadBytes(data)
     End Sub
 
-    Private Sub ReadBytes(data() As Byte)
+    Private Sub ReadBytes(data As Byte())
         aout = New AOut(data) With {.UseOct = comboBox1.SelectedIndex = 1}
         textBox1.Text = aout.GetDisassemble()
         textBox2.Text = aout.GetDump()
