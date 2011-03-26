@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Web Developer Express 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDP11LibSL", "PDP11Lib\PDP11LibSL.csproj", "{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PDP11Lib", "PDP11Lib\PDP11Lib.csproj", "{ACCD2B2B-E50C-4F84-B96C-E81440B6EAD8}"
 EndProject
-Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Silverlight", "Silverlight\Silverlight.vbproj", "{4A139246-0438-4402-90B2-06A93F294B06}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "V6", "V6\V6.vbproj", "{4A139246-0438-4402-90B2-06A93F294B06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
