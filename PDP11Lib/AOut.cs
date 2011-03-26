@@ -25,7 +25,7 @@ namespace PDP11Lib
 
         public void Disassemble(TextWriter iw)
         {
-            var opmagic = Pdp11.Read(new[] { Data[0], Data[1] }, UseOct);
+            var opmagic = Disassembler.Read(new[] { Data[0], Data[1] }, UseOct);
             iw.WriteLine("[{0:x4}] fmagic = {1}  {2}", 0, Enc0(fmagic), opmagic.Mnemonic);
             iw.WriteLine("[{0:x4}] tsize  = {1}", 2, Enc0(tsize));
             iw.WriteLine("[{0:x4}] dsize  = {1}", 4, Enc0(dsize));
@@ -38,7 +38,7 @@ namespace PDP11Lib
             iw.WriteLine(".text");
             for (int i = 0; i < tsize; )
             {
-                var op = Pdp11.Read(this, i);
+                var op = Disassembler.Read(this, i);
                 int len = op != null ? op.Length : 2;
                 var s = ReadUInt16(i);
                 iw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc0((ushort)i), Enc0(s));

@@ -51,13 +51,8 @@ namespace V6
         private void OpenFile(string fn)
         {
             textBox1.Clear();
-
-            var cur = Cursor.Current;
-            Cursor.Current = Cursors.WaitCursor;
-            aout = new AOut(File.ReadAllBytes(fn)) { UseOct = octToolStripMenuItem.Checked };
-            textBox1.Text = aout.GetDisassemble();
-            textBox1.SelectionStart = 0;
-            Cursor.Current = cur;
+            aout = new AOut(File.ReadAllBytes(fn));
+            setView();
         }
 
         private void setView()
@@ -68,7 +63,9 @@ namespace V6
             Cursor.Current = Cursors.WaitCursor;
             aout.UseOct = octToolStripMenuItem.Checked;
             textBox1.Text = aout.GetDisassemble();
+            textBox2.Text = aout.GetDump();
             textBox1.SelectionStart = 0;
+            textBox2.SelectionStart = 0;
             Cursor.Current = cur;
         }
 
