@@ -28,9 +28,8 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub ReadBytes(data As Byte())
-        aout = New AOut(data) With {.UseOct = comboBox1.SelectedIndex = 1}
-        textBox1.Text = aout.GetDisassemble()
-        textBox2.Text = aout.GetDump()
+        aout = New AOut(data)
+        Run()
         btnSave.IsEnabled = True
     End Sub
 
@@ -73,16 +72,20 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub comboBox1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs)
-        If aout Is Nothing Then Return
+        Run()
+    End Sub
 
-        Dim f = comboBox1.SelectedIndex = 1
-        If aout.UseOct = f Then Return
+    Private Sub Run()
+        If aout Is Nothing Then Return
 
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        aout.UseOct = f
+        aout.UseOct = comboBox1.SelectedIndex = 1
+        Dim vm = New VM(aout)
+        vm.Run()
         textBox1.Text = aout.GetDisassemble()
         textBox2.Text = aout.GetDump()
+        textBox3.Text = vm.Output
         Cursor = cur
     End Sub
 End Class

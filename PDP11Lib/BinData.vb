@@ -10,6 +10,10 @@ Public Class BinData
         Me.Data = data
     End Sub
 
+    Public Sub New(size%)
+        ReDim Data(size - 1)
+    End Sub
+
     Default Public ReadOnly Property Indexer(pos%) As Byte
         Get
             Return Data(Offset + pos)

@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
     mc:Ignorable="d"
-    d:DesignHeight="300" d:DesignWidth="400">
+    d:DesignHeight="400" d:DesignWidth="400">
 
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
@@ -14,12 +14,13 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="24" />
+            <RowDefinition Height="3*" />
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="2">
             <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
-                <Button Content="開く" Name="btnOpen" Click="btnOpen_Click" />
-                <Button Content="保存" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
+                <Button Content="Open" Name="btnOpen" Click="btnOpen_Click" />
+                <Button Content="Save" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
                 <Grid Width="4" />
                 <Button Click="btnTest_Click" Content="hello" />
                 <Grid Width="4" />
@@ -32,19 +33,25 @@
                 PDP-11 Interpreter
             </TextBlock>
         </Grid>
-        <sdk:TabControl Grid.Row="1" Margin="0,0,6,0">
+        <sdk:TabControl Grid.Row="1" Margin="0,0,6,6">
             <sdk:TabItem Header="Disassemble">
                 <Grid>
-                    <TextBox Name="textBox1" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" FontFamily="Courier New" FontSize="12" />
+                    <TextBox Name="textBox1" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
-        <sdk:TabControl Grid.Row="1" Grid.Column="2">
+        <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
             <sdk:TabItem Header="Binary">
                 <Grid>
-                    <TextBox Name="textBox2" VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Visible" FontFamily="Courier New" FontSize="12" />
+                    <TextBox Name="textBox2" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
                 </Grid>
+            </sdk:TabItem>
+        </sdk:TabControl>
+        <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="2">
+            <sdk:TabItem Header="Output">
+                <TextBox Name="textBox3" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>
         </sdk:TabControl>
     </Grid>

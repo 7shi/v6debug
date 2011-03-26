@@ -1,5 +1,5 @@
 ﻿Public Module Disassembler
-    Public ReadOnly Regs As String() =
+    Public ReadOnly RegNames As String() =
         {"r0", "r1", "r2", "r3", "r4", "r5", "sp", "pc"}
 
     Public Function Disassemble(data As Byte(), oct As Boolean) As OpCode
@@ -148,8 +148,8 @@
         Select Case v And &HFFF
             Case 1 : Return New OpCode("setf", 2)
             Case 2 : Return New OpCode("seti", 2)
-            Case 9 : Return New OpCode("setd", 2)
-            Case 10 : Return New OpCode("setl", 2)
+            Case &O11 : Return New OpCode("setd", 2)
+            Case &O12 : Return New OpCode("setl", 2)
         End Select
         Return Nothing
     End Function
@@ -162,8 +162,8 @@
         Dim v3 = (v >> 3) And 7
         Dim v4 = v And 7
         Dim v5 = 0S, v6 = 0S
-        If hasOperand(v1, v2) Then v5 = bd.ReadInt16(pos + len) : len += 2
-        If hasOperand(v3, v4) Then v6 = bd.ReadInt16(pos + len) : len += 2
+        If HasOperand(v1, v2) Then v5 = bd.ReadInt16(pos + len) : len += 2
+        If HasOperand(v3, v4) Then v6 = bd.ReadInt16(pos + len) : len += 2
         Dim opr1 = GetOperand(bd, pos + len, v1, v2, v5)
         Dim opr2 = GetOperand(bd, pos + len, v3, v4, v6)
         Return New OpCode(op + " " + opr1 + ", " + opr2, len)
@@ -175,14 +175,14 @@
         Dim v1 = (v >> 3) And 7
         Dim v2 = v And 7
         Dim v3 = 0
-        If hasOperand(v1, v2) Then v3 = bd.ReadUInt16(pos + len) : len += 2
+        If HasOperand(v1, v2) Then v3 = bd.ReadUInt16(pos + len) : len += 2
         Dim opr = GetOperand(bd, pos + len, v1, v2, CShort(v3))
         Return New OpCode(op + " " + opr, len)
     End Function
 
     Private Function ReadRegSrcOrDst(op$, bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim r = Regs((v >> 6) And 7)
+        Dim r = RegNames((v >> 6) And 7)
         Return ReadSrcOrDst(op + " " + r + ",", bd, pos)
     End Function
 
@@ -192,7 +192,7 @@
 
     Private Function ReadRegNum(op$, bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim r = Regs((v >> 6) And 7)
+        Dim r = RegNames((v >> 6) And 7)
         Return ReadNum(op + " " + r + ",", bd, pos)
     End Function
 
@@ -204,11 +204,11 @@
     End Function
 
     Private Function ReadReg(op$, bd As BinData, pos%) As OpCode
-        Dim r = Regs(bd(pos) And 7)
+        Dim r = RegNames(bd(pos) And 7)
         Return New OpCode(op + " " + r, 2)
     End Function
 
-    Private Function hasOperand(v1%, v2%) As Boolean
+    Public Function HasOperand(v1%, v2%) As Boolean
         Return v1 >= 6 OrElse (v2 = 7 AndAlso (v1 = 2 OrElse v1 = 3))
     End Function
 
@@ -221,7 +221,7 @@
                 Case 7 : Return "*" + bd.Enc(CUShort(pc + v3))
             End Select
         End If
-        Dim r = Regs(v2)
+        Dim r = RegNames(v2)
         Dim sign = If(v3 < 0, "-", "")
         Dim v3a = Math.Abs(v3)
         Dim dd = v3.ToString
