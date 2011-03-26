@@ -17,14 +17,14 @@
             Case 4 : Return ReadSrcDst("bic", bd, pos)
             Case 5 : Return ReadSrcDst("bis", bd, pos)
             Case 6 : Return ReadSrcDst("add", bd, pos)
-            Case 8 : Return Read10(bd, pos)
-            Case 9 : Return ReadSrcDst("movb", bd, pos)
-            Case 10 : Return ReadSrcDst("cmpb", bd, pos)
-            Case 11 : Return ReadSrcDst("bitb", bd, pos)
-            Case 12 : Return ReadSrcDst("bicb", bd, pos)
-            Case 13 : Return ReadSrcDst("bisb", bd, pos)
-            Case 14 : Return ReadSrcDst("sub", bd, pos)
-            Case 15 : Return Read17(bd, pos)
+            Case &O10 : Return Read10(bd, pos)
+            Case &O11 : Return ReadSrcDst("movb", bd, pos)
+            Case &O12 : Return ReadSrcDst("cmpb", bd, pos)
+            Case &O13 : Return ReadSrcDst("bitb", bd, pos)
+            Case &O14 : Return ReadSrcDst("bicb", bd, pos)
+            Case &O15 : Return ReadSrcDst("bisb", bd, pos)
+            Case &O16 : Return ReadSrcDst("sub", bd, pos)
+            Case &O17 : Return Read17(bd, pos)
         End Select
         Return Nothing
     End Function
@@ -46,7 +46,7 @@
             Case 0
                 Select Case v2
                     Case 0
-                        Select Case v And 63
+                        Select Case v And &O77
                             Case 0 : Return New OpCode("halt", 2)
                             Case 1 : Return New OpCode("wait", 2)
                             Case 2 : Return New OpCode("rti", 2)
@@ -99,7 +99,7 @@
             Case 3 : Return ReadRegSrcOrDst("ashc", bd, pos)
             Case 4 : Return ReadRegSrcOrDst("xor", bd, pos)
             Case 5
-                Select Case (v >> 3) And 63
+                Select Case (v >> 3) And &O77
                     Case 0 : Return ReadReg("fadd", bd, pos)
                     Case 1 : Return ReadReg("fsub", bd, pos)
                     Case 2 : Return ReadReg("fmul", bd, pos)
@@ -124,21 +124,21 @@
             Case &H89 : Return New OpCode("trap " + bd.Enc(bd(pos)), 2)
         End Select
         Dim v = bd.ReadUInt16(pos)
-        Select Case (v >> 6) And 63
-            Case &H28 : Return ReadSrcOrDst("clrb", bd, pos)
-            Case &H29 : Return ReadSrcOrDst("comb", bd, pos)
-            Case &H2A : Return ReadSrcOrDst("incb", bd, pos)
-            Case &H2B : Return ReadSrcOrDst("decb", bd, pos)
-            Case &H2C : Return ReadSrcOrDst("negb", bd, pos)
-            Case &H2D : Return ReadSrcOrDst("adcb", bd, pos)
-            Case &H2E : Return ReadSrcOrDst("sbcb", bd, pos)
-            Case &H2F : Return ReadSrcOrDst("tstb", bd, pos)
-            Case &H30 : Return ReadSrcOrDst("rorb", bd, pos)
-            Case &H31 : Return ReadSrcOrDst("rolb", bd, pos)
-            Case &H32 : Return ReadSrcOrDst("asrb", bd, pos)
-            Case &H33 : Return ReadSrcOrDst("aslb", bd, pos)
-            Case &H35 : Return ReadSrcOrDst("mfpd", bd, pos)
-            Case &H36 : Return ReadSrcOrDst("mtpd", bd, pos)
+        Select Case (v >> 6) And &O77
+            Case &O50 : Return ReadSrcOrDst("clrb", bd, pos)
+            Case &O51 : Return ReadSrcOrDst("comb", bd, pos)
+            Case &O52 : Return ReadSrcOrDst("incb", bd, pos)
+            Case &O53 : Return ReadSrcOrDst("decb", bd, pos)
+            Case &O54 : Return ReadSrcOrDst("negb", bd, pos)
+            Case &O55 : Return ReadSrcOrDst("adcb", bd, pos)
+            Case &O56 : Return ReadSrcOrDst("sbcb", bd, pos)
+            Case &O57 : Return ReadSrcOrDst("tstb", bd, pos)
+            Case &O60 : Return ReadSrcOrDst("rorb", bd, pos)
+            Case &O61 : Return ReadSrcOrDst("rolb", bd, pos)
+            Case &O62 : Return ReadSrcOrDst("asrb", bd, pos)
+            Case &O63 : Return ReadSrcOrDst("aslb", bd, pos)
+            Case &O64 : Return ReadSrcOrDst("mfpd", bd, pos)
+            Case &O65 : Return ReadSrcOrDst("mtpd", bd, pos)
         End Select
         Return Nothing
     End Function
@@ -187,7 +187,7 @@
     End Function
 
     Private Function ReadNum(op$, bd As BinData, pos%) As OpCode
-        Return New OpCode(op + " " + bd.Enc(CByte(bd(pos) And 63)), 2)
+        Return New OpCode(op + " " + bd.Enc(CByte(bd(pos) And &O77)), 2)
     End Function
 
     Private Function ReadRegNum(op$, bd As BinData, pos%) As OpCode
