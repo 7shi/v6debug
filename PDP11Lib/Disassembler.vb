@@ -157,27 +157,19 @@
     Private Function ReadSrcDst(op$, bd As BinData, pos%) As OpCode
         Dim len = 2
         Dim v = bd.ReadUInt16(pos)
-        Dim v1 = (v >> 9) And 7
-        Dim v2 = (v >> 6) And 7
-        Dim v3 = (v >> 3) And 7
-        Dim v4 = v And 7
-        Dim v5 = 0S, v6 = 0S
-        If HasOperand(v1, v2) Then v5 = bd.ReadInt16(pos + len) : len += 2
-        If HasOperand(v3, v4) Then v6 = bd.ReadInt16(pos + len) : len += 2
-        Dim opr1 = GetOperand(bd, pos + len, v1, v2, v5)
-        Dim opr2 = GetOperand(bd, pos + len, v3, v4, v6)
-        Return New OpCode(op + " " + opr1 + ", " + opr2, len)
+        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len) : len += opr1.Length
+        Dim opr2 = New Operand((v >> 3) And 7, v And 7, bd, pos + len) : len += opr2.Length
+        Dim opr1s = opr1.ToString(bd, pos + len)
+        Dim opr2s = opr2.ToString(bd, pos + len)
+        Return New OpCode(op + " " + opr1s + ", " + opr2s, len)
     End Function
 
     Private Function ReadSrcOrDst(op$, bd As BinData, pos%) As OpCode
         Dim len = 2
         Dim v = bd.ReadUInt16(pos)
-        Dim v1 = (v >> 3) And 7
-        Dim v2 = v And 7
-        Dim v3 = 0
-        If HasOperand(v1, v2) Then v3 = bd.ReadUInt16(pos + len) : len += 2
-        Dim opr = GetOperand(bd, pos + len, v1, v2, CShort(v3))
-        Return New OpCode(op + " " + opr, len)
+        Dim opr = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
+        len += opr.Length
+        Return New OpCode(op + " " + opr.ToString(bd, pos + len), len)
     End Function
 
     Private Function ReadRegSrcOrDst(op$, bd As BinData, pos%) As OpCode
@@ -206,36 +198,5 @@
     Private Function ReadReg(op$, bd As BinData, pos%) As OpCode
         Dim r = RegNames(bd(pos) And 7)
         Return New OpCode(op + " " + r, 2)
-    End Function
-
-    Public Function HasOperand(v1%, v2%) As Boolean
-        Return v1 >= 6 OrElse (v2 = 7 AndAlso (v1 = 2 OrElse v1 = 3))
-    End Function
-
-    Public Function GetOperand$(bd As BinData, pc%, v1%, v2%, v3 As Short)
-        If v2 = 7 Then
-            Select Case v1
-                Case 2 : Return "$" + bd.Enc(CUShort(v3 And &HFFFF))
-                Case 3 : Return "*$" + bd.Enc(CUShort(v3 And &HFFFF))
-                Case 6 : Return bd.Enc(CUShort(pc + v3))
-                Case 7 : Return "*" + bd.Enc(CUShort(pc + v3))
-            End Select
-        End If
-        Dim r = RegNames(v2)
-        Dim sign = If(v3 < 0, "-", "")
-        Dim v3a = Math.Abs(v3)
-        Dim dd = v3.ToString
-        If v3a >= 10 Then dd = sign + bd.Enc(CUShort(v3a))
-        Select Case v1
-            Case 0 : Return r
-            Case 1 : Return "(" + r + ")"
-            Case 2 : Return "(" + r + ")+"
-            Case 3 : Return "*(" + r + ")+"
-            Case 4 : Return "-(" + r + ")"
-            Case 5 : Return "*-(" + r + ")"
-            Case 6 : Return dd + "(" + r + ")"
-            Case 7 : Return "*" + dd + "(" + r + ")"
-        End Select
-        Throw New Exception("invalid argument")
     End Function
 End Module

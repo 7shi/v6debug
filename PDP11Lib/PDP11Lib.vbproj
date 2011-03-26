@@ -97,6 +97,7 @@
     <Compile Include="Disassembler.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="OpCode.vb" />
+    <Compile Include="Operand.vb" />
     <Compile Include="VM.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.VisualBasic.targets" />

@@ -63,16 +63,11 @@ Public Class VM
     End Sub
 
     Private Sub ExecMov()
-        Dim len = 2US
+        Dim len = 2
         Dim v = ReadUInt16(PC)
-        Dim v1 = (v >> 9) And 7
-        Dim v2 = (v >> 6) And 7
-        Dim v3 = (v >> 3) And 7
-        Dim v4 = v And 7
-        Dim v5 = 0S, v6 = 0S
-        If HasOperand(v1, v2) Then v5 = ReadInt16(PC + len) : len += 2US
-        If HasOperand(v3, v4) Then v6 = ReadInt16(PC + len) : len += 2US
-        PC += len
+        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + len) : len += opr1.Length
+        Dim opr2 = New Operand((v >> 3) And 7, v And 7, Me, PC + len) : len += opr2.Length
+        PC += CUShort(len)
     End Sub
 
     Private Sub Exec17()
