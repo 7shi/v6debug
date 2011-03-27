@@ -48,7 +48,7 @@ Partial Public Class VM
     Public Sub RunStep()
         Dim mne = Disassemble(PC).Mnemonic
         sw.WriteLine("{0}: {1}", GetRegs, mne)
-        Select Case Data(PC + 1) >> 4
+        Select Case Me(PC + 1) >> 4
             'Case 3 : Return ReadSrcDst("bit")
             'Case 4 : Return ReadSrcDst("bic")
             'Case 5 : Return ReadSrcDst("bis")
@@ -84,7 +84,7 @@ Partial Public Class VM
     End Sub
 
     Private Sub Exec0()
-        Select Case Data(PC + 1)
+        Select Case Me(PC + 1)
             Case 1 ' br: BRanch
                 PC = GetOffset(PC)
                 Return
@@ -175,7 +175,7 @@ Partial Public Class VM
     End Sub
 
     Private Sub Exec10()
-        Select Case Data(PC + 1)
+        Select Case Me(PC + 1)
             'Case &H88 : Return New OpCode("emt " + bd.Enc(bd(pos)), 2)
             Case &H80 ' bpl: Branch if PLus
                 PC = If(Not N, GetOffset(PC), PC + 2US)

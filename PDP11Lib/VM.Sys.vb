@@ -2,7 +2,7 @@
 
 Partial Public Class VM
     Private Sub ExecSys()
-        Dim t = Data(PC)
+        Dim t = Me(PC)
         PC += 2US
         Select Case t
             Case 0 ' indirect

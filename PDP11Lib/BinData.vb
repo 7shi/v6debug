@@ -80,7 +80,7 @@ Public Class BinData
     End Function
 
     Public Function GetOffset(pos%) As UShort
-        Dim d = CInt(Data(pos))
+        Dim d = CInt(Me(pos))
         If d >= 128 Then d -= 256
         Return CUShort(pos + 2 + d * 2)
     End Function
