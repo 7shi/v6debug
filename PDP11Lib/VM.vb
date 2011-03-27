@@ -118,15 +118,19 @@ Partial Public Class VM
                     '        Case 5 : Return New OpCode("reset", 2)
                     '        Case 6 : Return New OpCode("rtt", 2)
                     '    End Select
-                    'Case 2
-                    '    Select Case (v >> 3) And 7
-                    '        Case 0 : Return ReadReg("rts", bd, pos)
-                    '        Case 3 : Return New OpCode("spl " + (v & 7), 2)
-                    '    End Select
                     'Case 3 : Return ReadDst("swab", bd, pos)
                     Case 1 ' jmp: JuMP
                         PC = GetDst().GetAddress(Me)
                         Return
+                    Case 2
+                        Select Case (v >> 3) And 7
+                            'Case 3 : Return New OpCode("spl " + (v & 7), 2)
+                            Case 0 ' rts: ReTurn from Subroutine
+                                Dim r = (v >> 6) And 7
+                                PC = Regs(r)
+                                Regs(r) = ReadUInt16(GetInc(6))
+                                Return
+                        End Select
                 End Select
             Case 4 ' jsr: Jump to SubRoutine
                 Dim r = (v >> 6) And 7
