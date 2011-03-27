@@ -7,7 +7,7 @@ Public Module Utils
         Dim prev = 0
         Do
             Dim b = s.ReadByte
-            If b < 0 Then
+            If b <= 0 Then
                 Exit Do
             ElseIf b = 13 OrElse (b = 10 AndAlso prev <> 13) Then
                 list.Add(13)
@@ -37,7 +37,9 @@ Public Module Utils
         Dim prev = 0
         For i = 0 To length - 1
             Dim b = src(start + i)
-            If b = 13 OrElse (b = 10 AndAlso prev <> 13) Then
+            If b <= 0 Then
+                Exit For
+            ElseIf b = 13 OrElse (b = 10 AndAlso prev <> 13) Then
                 list.Add(13)
                 list.Add(10)
             ElseIf b <> 10 Then

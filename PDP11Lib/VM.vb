@@ -25,30 +25,49 @@ Partial Public Class VM
     Public Property V As Boolean
 
     Private sw As StringWriter
+
     Public ReadOnly Property Output$
         Get
             Return sw.ToString
         End Get
     End Property
 
+    Private aout As AOut
+
     Public Sub New(aout As AOut)
         MyBase.New(&H10000)
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.Data.Length - aout.Offset)
         Me.UseOct = aout.UseOct
+        Me.aout = aout
         Regs(6) = &HFFF0
     End Sub
 
     Public Sub Run()
         HasExited = False
         sw = New StringWriter
+        Dim syms = New Stack(Of String)
         While Not HasExited
+            Dim sym = aout.GetSym(PC)
+            If sym <> "" Then
+                sw.WriteLine("     " + sym)
+                syms.Push(sym)
+            End If
+            Dim op = Disassemble(PC)
+            sw.WriteLine("{0}: {1}", GetRegs, op.Mnemonic)
+
             RunStep()
+
+            Dim mne = op.Mnemonic.Split(CChar(" "))(0)
+            If mne = "rts" OrElse mne = "jmp" Then
+                syms.Pop()
+                If syms.Count > 0 AndAlso aout.GetSym(PC) = "" Then
+                    sw.WriteLine("     >" + syms.Peek)
+                End If
+            End If
         End While
     End Sub
 
     Public Sub RunStep()
-        Dim mne = Disassemble(PC).Mnemonic
-        sw.WriteLine("{0}: {1}", GetRegs, mne)
         Select Case Me(PC + 1) >> 4
             'Case 3 : Return ReadSrcDst("bit")
             'Case 4 : Return ReadSrcDst("bic")
