@@ -278,9 +278,9 @@ Partial Public Class VM
 
     Public Function GetRegs$()
         Return String.Format(
-            "r0={0}, r1={1}, r2={2}, r3={3}, r4={4}, r5={5}, sp={6}, pc={7}",
-            Enc(Regs(0)), Enc(Regs(1)), Enc(Regs(2)), Enc(Regs(3)),
-            Enc(Regs(4)), Enc(Regs(5)), Enc(Regs(6)), Enc(Regs(7)))
+            "r0={0}, r1={1}, r2={2}, r3={3}, r4={4}, r5={5}, sp={6}{{{7}, {8}}}, pc={9}",
+            Enc(Regs(0)), Enc(Regs(1)), Enc(Regs(2)), Enc(Regs(3)), Enc(Regs(4)), Enc(Regs(5)),
+            Enc(Regs(6)), Enc(ReadUInt16(Regs(6))), Enc(ReadUInt16(Regs(6) + 2)), Enc(Regs(7)))
     End Function
 
     Public Sub SetFlags(z As Boolean, n As Boolean, c As Boolean, v As Boolean)
