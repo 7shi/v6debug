@@ -193,4 +193,8 @@
         Dim r = RegNames(bd(pos) And 7)
         Return New OpCode(op + " " + r, 2)
     End Function
+
+    Public Function ConvShort(v As UShort) As Short
+        Return CShort(If(v < &H8000, v, v - &H10000))
+    End Function
 End Module

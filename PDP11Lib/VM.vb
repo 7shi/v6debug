@@ -149,8 +149,8 @@ Partial Public Class VM
                     'Case 5 : Return ReadDst("adc", bd, pos)
                     'Case 6 : Return ReadDst("sbc", bd, pos)
                     Case 7 ' tst: TeST
-                        Dim dst = GetDst().GetValue(Me)
-                        SetFlags(dst = 0, dst >= &H8000, False, False)
+                        Dim dst = ConvShort(GetDst().GetValue(Me))
+                        SetFlags(dst = 0, dst < 0, False, False)
                         Return
                 End Select
             Case 6
