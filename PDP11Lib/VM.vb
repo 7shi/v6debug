@@ -49,7 +49,6 @@ Partial Public Class VM
         Dim mne = Disassemble(PC).Mnemonic
         sw.WriteLine("{0}: {1}", GetRegs, mne)
         Select Case Data(PC + 1) >> 4
-            'Case 2 : Return ReadSrcDst("cmp")
             'Case 3 : Return ReadSrcDst("bit")
             'Case 4 : Return ReadSrcDst("bic")
             'Case 5 : Return ReadSrcDst("bis")
@@ -66,6 +65,13 @@ Partial Public Class VM
             Case 1 ' mov: MOVe
                 Dim oprs = GetSrcDst()
                 oprs(1).SetValue(Me, oprs(0).GetValue(Me))
+                Return
+            Case 2 ' cmp: CoMPare
+                Dim oprs = GetSrcDst()
+                Dim src = oprs(0).GetValue(Me)
+                Dim dst = oprs(1).GetValue(Me)
+                Dim val = CInt(ConvShort(src)) - CInt(ConvShort(dst))
+                SetFlags(val = 0, val < 0, src < dst, val < -&H8000)
                 Return
             Case &O10
                 Exec10()
