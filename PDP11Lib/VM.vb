@@ -126,7 +126,7 @@ Partial Public Class VM
                         Select Case (v >> 3) And 7
                             'Case 3 : Return New OpCode("spl " + (v & 7), 2)
                             Case 0 ' rts: ReTurn from Subroutine
-                                Dim r = (v >> 6) And 7
+                                Dim r = v And 7
                                 PC = Regs(r)
                                 Regs(r) = ReadUInt16(GetInc(6))
                                 Return
