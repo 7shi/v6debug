@@ -62,7 +62,9 @@ Partial Public Class VM
                 Return
             Case 1 ' mov: MOVe
                 Dim oprs = GetSrcDst()
-                oprs(1).SetValue(Me, oprs(0).GetValue(Me))
+                Dim src = oprs(0).GetValue(Me)
+                oprs(1).SetValue(Me, src)
+                SetFlags(src = 0, ConvShort(src) < 0, C, False)
                 Return
             Case 2 ' cmp: CoMPare
                 Dim oprs = GetSrcDst()
