@@ -110,7 +110,6 @@ Public Class VM
             '            End Select
             '        Case 3 : Return ReadSrcOrDst("swab", bd, pos)
             '    End Select
-            'Case 4 : Return ReadRegDst("jsr", bd, pos)
             'Case 6
             '    Select Case v2
             '        Case 0 : Return ReadSrcOrDst("ror", bd, pos)
@@ -122,6 +121,16 @@ Public Class VM
             '        Case 6 : Return ReadSrcOrDst("mtpi", bd, pos)
             '        Case 7 : Return ReadSrcOrDst("sxt", bd, pos)
             '    End Select
+            Case 4 ' jsr: Jump to SubRoutine
+                Dim r = (v >> 6) And 7
+                Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
+                len += dst.Length
+                PC += len
+                Dim temp = dst.GetAddress(Me)
+                Write(GetDec(6), Regs(r))
+                Regs(r) = PC
+                PC = temp
+                Return
             Case 5
                 Select Case v2
                     'Case 0 : Return ReadSrcOrDst("clr", bd, pos)
