@@ -186,10 +186,7 @@
     End Function
 
     Private Function ReadOffset(op$, bd As BinData, pos%) As OpCode
-        Dim d = CInt(bd(pos))
-        If d >= 128 Then d -= 256
-        Dim ad = pos + 2 + d * 2
-        Return New OpCode(op + " " + bd.Enc(CUShort(ad)), 2)
+        Return New OpCode(op + " " + bd.Enc(bd.GetOffset(pos)), 2)
     End Function
 
     Private Function ReadReg(op$, bd As BinData, pos%) As OpCode

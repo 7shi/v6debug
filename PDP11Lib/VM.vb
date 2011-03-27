@@ -1,6 +1,6 @@
 ﻿Imports System.IO
 
-Public Class VM
+Partial Public Class VM
     Inherits BinData
 
     Public Regs(7) As UShort
@@ -54,7 +54,6 @@ Public Class VM
             'Case 4 : Return ReadSrcDst("bic")
             'Case 5 : Return ReadSrcDst("bis")
             'Case 6 : Return ReadSrcDst("add")
-            'Case &O10 : Return Read10()
             'Case &O11 : Return ReadSrcDst("movb")
             'Case &O12 : Return ReadSrcDst("cmpb")
             'Case &O13 : Return ReadSrcDst("bitb")
@@ -67,6 +66,9 @@ Public Class VM
             Case 1 ' mov: MOVe
                 Dim oprs = GetSrcDst()
                 oprs(1).SetValue(Me, oprs(0).GetValue(Me))
+                Return
+            Case &O10
+                Exec10()
                 Return
             Case &O17
                 Exec17()
@@ -145,6 +147,39 @@ Public Class VM
                 '    Case 7 : Return ReadDst("sxt", bd, pos)
                 'End Select
         End Select
+        Abort("not implemented")
+    End Sub
+
+    Private Sub Exec10()
+        Select Case Data(PC + 1)
+            'Case &H80 : Return ReadOffset("bpl", bd, pos)
+            'Case &H81 : Return ReadOffset("bmi", bd, pos)
+            'Case &H82 : Return ReadOffset("bhi", bd, pos)
+            'Case &H83 : Return ReadOffset("blos", bd, pos)
+            'Case &H84 : Return ReadOffset("bvc", bd, pos)
+            'Case &H85 : Return ReadOffset("bvs", bd, pos)
+            'Case &H86 : Return ReadOffset("bcc", bd, pos)
+            'Case &H87 : Return ReadOffset("bcs", bd, pos)
+            'Case &H88 : Return New OpCode("emt " + bd.Enc(bd(pos)), 2)
+            Case &H89 : ExecSys() : Return
+        End Select
+        'Dim v = ReadUInt16(PC)
+        'Select Case (v >> 6) And &O77
+        '    Case &O50 : Return ReadDst("clrb", bd, pos)
+        '    Case &O51 : Return ReadDst("comb", bd, pos)
+        '    Case &O52 : Return ReadDst("incb", bd, pos)
+        '    Case &O53 : Return ReadDst("decb", bd, pos)
+        '    Case &O54 : Return ReadDst("negb", bd, pos)
+        '    Case &O55 : Return ReadDst("adcb", bd, pos)
+        '    Case &O56 : Return ReadDst("sbcb", bd, pos)
+        '    Case &O57 : Return ReadDst("tstb", bd, pos)
+        '    Case &O60 : Return ReadDst("rorb", bd, pos)
+        '    Case &O61 : Return ReadDst("rolb", bd, pos)
+        '    Case &O62 : Return ReadDst("asrb", bd, pos)
+        '    Case &O63 : Return ReadDst("aslb", bd, pos)
+        '    Case &O64 : Return ReadDst("mfpd", bd, pos)
+        '    Case &O65 : Return ReadDst("mtpd", bd, pos)
+        'End Select
         Abort("not implemented")
     End Sub
 
