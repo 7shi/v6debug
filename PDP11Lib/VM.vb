@@ -170,7 +170,6 @@ Partial Public Class VM
                 Select Case v2
                     'Case 0 : Return ReadDst("clr", bd, pos)
                     'Case 1 : Return ReadDst("com", bd, pos)
-                    'Case 3 : Return ReadDst("dec", bd, pos)
                     'Case 4 : Return ReadDst("neg", bd, pos)
                     'Case 5 : Return ReadDst("adc", bd, pos)
                     'Case 6 : Return ReadDst("sbc", bd, pos)
@@ -179,6 +178,12 @@ Partial Public Class VM
                         Dim val = CInt(ConvShort(dst.GetValue(Me))) + 1
                         dst.SetValue(Me, CUShort(val And &HFFFF))
                         SetFlags(val = 0, val < 0, C, val >= &H8000)
+                        Return
+                    Case 3 ' dec: DECrement
+                        Dim dst = GetDst()
+                        Dim val = CInt(ConvShort(dst.GetValue(Me))) - 1
+                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        SetFlags(val = 0, val < 0, C, val < -&H8000)
                         Return
                     Case 7 ' tst: TeST
                         Dim dst = ConvShort(GetDst().GetValue(Me))
