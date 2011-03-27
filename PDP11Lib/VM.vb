@@ -58,7 +58,6 @@ Partial Public Class VM
             'Case &O13 : Return ReadSrcDst("bitb")
             'Case &O14 : Return ReadSrcDst("bicb")
             'Case &O15 : Return ReadSrcDst("bisb")
-            'Case &O16 : Return ReadSrcDst("sub")
             Case 0
                 Exec0()
                 Return
@@ -75,6 +74,14 @@ Partial Public Class VM
                 Return
             Case &O10
                 Exec10()
+                Return
+            Case &O16 ' sub: SUBtract
+                Dim oprs = GetSrcDst()
+                Dim src = oprs(0).GetValue(Me)
+                Dim dst = oprs(1).GetValue(Me)
+                Dim val = CInt(ConvShort(dst)) - CInt(ConvShort(src))
+                oprs(1).SetValue(Me, CUShort(val And &HFFFF))
+                SetFlags(val = 0, val < 0, dst < src, val < -&H8000)
                 Return
             Case &O17
                 Exec17()
