@@ -86,6 +86,7 @@ Partial Public Class MainPage
         textBox1.Text = aout.GetDisassemble()
         textBox2.Text = aout.GetDump()
         textBox3.Text = vm.Output
+        textBox3.SelectionStart = textBox3.Text.Length
         Cursor = cur
     End Sub
 End Class

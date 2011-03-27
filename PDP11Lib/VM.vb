@@ -90,64 +90,60 @@ Public Class VM
         If v = &HA0 Then PC += 2US : Return ' nop
         Dim v1 = (v >> 9) And 7, v2 = (v >> 6) And 7
         Select Case v1
-            'Case 0
-            '    Select Case v2
-            '        Case 0
-            '            Select Case v And &O77
-            '                Case 0 : Return New OpCode("halt", 2)
-            '                Case 1 : Return New OpCode("wait", 2)
-            '                Case 2 : Return New OpCode("rti", 2)
-            '                Case 3 : Return New OpCode("bpt", 2)
-            '                Case 4 : Return New OpCode("iot", 2)
-            '                Case 5 : Return New OpCode("reset", 2)
-            '                Case 6 : Return New OpCode("rtt", 2)
-            '            End Select
-            '        Case 1 : Return ReadSrcOrDst("jmp", bd, pos)
-            '        Case 2
-            '            Select Case (v >> 3) And 7
-            '                Case 0 : Return ReadReg("rts", bd, pos)
-            '                Case 3 : Return New OpCode("spl " + (v & 7), 2)
-            '            End Select
-            '        Case 3 : Return ReadSrcOrDst("swab", bd, pos)
-            '    End Select
-            'Case 6
-            '    Select Case v2
-            '        Case 0 : Return ReadSrcOrDst("ror", bd, pos)
-            '        Case 1 : Return ReadSrcOrDst("rol", bd, pos)
-            '        Case 2 : Return ReadSrcOrDst("asr", bd, pos)
-            '        Case 3 : Return ReadSrcOrDst("asl", bd, pos)
-            '        Case 4 : Return ReadNum("mark", bd, pos)
-            '        Case 5 : Return ReadSrcOrDst("mfpi", bd, pos)
-            '        Case 6 : Return ReadSrcOrDst("mtpi", bd, pos)
-            '        Case 7 : Return ReadSrcOrDst("sxt", bd, pos)
-            '    End Select
+            Case 0
+                Select Case v2
+                    'Case 0
+                    '    Select Case v And &O77
+                    '        Case 0 : Return New OpCode("halt", 2)
+                    '        Case 1 : Return New OpCode("wait", 2)
+                    '        Case 2 : Return New OpCode("rti", 2)
+                    '        Case 3 : Return New OpCode("bpt", 2)
+                    '        Case 4 : Return New OpCode("iot", 2)
+                    '        Case 5 : Return New OpCode("reset", 2)
+                    '        Case 6 : Return New OpCode("rtt", 2)
+                    '    End Select
+                    'Case 2
+                    '    Select Case (v >> 3) And 7
+                    '        Case 0 : Return ReadReg("rts", bd, pos)
+                    '        Case 3 : Return New OpCode("spl " + (v & 7), 2)
+                    '    End Select
+                    'Case 3 : Return ReadDst("swab", bd, pos)
+                    Case 1 ' jmp: JuMP
+                        PC = GetDst().GetAddress(Me)
+                        Return
+                End Select
             Case 4 ' jsr: Jump to SubRoutine
                 Dim r = (v >> 6) And 7
-                Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
-                len += dst.Length
-                PC += len
-                Dim temp = dst.GetAddress(Me)
+                Dim dst = GetDst().GetAddress(Me)
                 Write(GetDec(6), Regs(r))
                 Regs(r) = PC
-                PC = temp
+                PC = dst
                 Return
             Case 5
                 Select Case v2
-                    'Case 0 : Return ReadSrcOrDst("clr", bd, pos)
-                    'Case 1 : Return ReadSrcOrDst("com", bd, pos)
-                    'Case 2 : Return ReadSrcOrDst("inc", bd, pos)
-                    'Case 3 : Return ReadSrcOrDst("dec", bd, pos)
-                    'Case 4 : Return ReadSrcOrDst("neg", bd, pos)
-                    'Case 5 : Return ReadSrcOrDst("adc", bd, pos)
-                    'Case 6 : Return ReadSrcOrDst("sbc", bd, pos)
+                    'Case 0 : Return ReadDst("clr", bd, pos)
+                    'Case 1 : Return ReadDst("com", bd, pos)
+                    'Case 2 : Return ReadDst("inc", bd, pos)
+                    'Case 3 : Return ReadDst("dec", bd, pos)
+                    'Case 4 : Return ReadDst("neg", bd, pos)
+                    'Case 5 : Return ReadDst("adc", bd, pos)
+                    'Case 6 : Return ReadDst("sbc", bd, pos)
                     Case 7 ' tst: TeST
-                        Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
-                        len += dst.Length
-                        PC += len
-                        Dim vv = dst.GetValue(Me)
-                        SetFlags(vv = 0, vv >= &H8000, False, False)
+                        Dim dst = GetDst().GetValue(Me)
+                        SetFlags(dst = 0, dst >= &H8000, False, False)
                         Return
                 End Select
+            Case 6
+                'Select Case v2
+                '    Case 0 : Return ReadDst("ror", bd, pos)
+                '    Case 1 : Return ReadDst("rol", bd, pos)
+                '    Case 2 : Return ReadDst("asr", bd, pos)
+                '    Case 3 : Return ReadDst("asl", bd, pos)
+                '    Case 4 : Return ReadNum("mark", bd, pos)
+                '    Case 5 : Return ReadDst("mfpi", bd, pos)
+                '    Case 6 : Return ReadDst("mtpi", bd, pos)
+                '    Case 7 : Return ReadDst("sxt", bd, pos)
+                'End Select
         End Select
         Abort("not implemented")
     End Sub
@@ -176,14 +172,16 @@ Public Class VM
     End Sub
 
     Private Function GetSrcDst() As Operand()
-        Dim len = 2US
         Dim v = ReadUInt16(PC)
-        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + len)
-        len += opr1.Length
-        Dim opr2 = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
-        len += opr2.Length
-        PC += len
-        Return New Operand() {opr1, opr2}
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + 2)
+        Return New Operand() {src, GetDst(src.Length + 2US)}
+    End Function
+
+    Private Function GetDst(Optional len As UShort = 2) As Operand
+        Dim v = ReadUInt16(PC)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
+        PC += len + dst.Length
+        Return dst
     End Function
 
     Public Sub Abort(msg$)

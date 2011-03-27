@@ -157,21 +157,16 @@
     Private Function ReadSrcDst(op$, bd As BinData, pos%) As OpCode
         Dim len = 2
         Dim v = bd.ReadUInt16(pos)
-        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len)
-        len += opr1.Length
-        Dim opr2 = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
-        len += opr2.Length
-        Dim opr1s = opr1.ToString(bd, pos + len)
-        Dim opr2s = opr2.ToString(bd, pos + len)
-        Return New OpCode(op + " " + opr1s + ", " + opr2s, len)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len)
+        len += src.Length
+        Return ReadDst(op + " " + src.ToString(bd, pos + len) + ",", bd, pos, len)
     End Function
 
-    Private Function ReadDst(op$, bd As BinData, pos%) As OpCode
-        Dim len = 2
+    Private Function ReadDst(op$, bd As BinData, pos%, Optional len% = 2) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim opr = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
-        len += opr.Length
-        Return New OpCode(op + " " + opr.ToString(bd, pos + len), len)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
+        len += dst.Length
+        Return New OpCode(op + " " + dst.ToString(bd, pos + len), len)
     End Function
 
     Private Function ReadRegDst(op$, bd As BinData, pos%) As OpCode
