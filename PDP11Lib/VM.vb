@@ -188,11 +188,14 @@ Partial Public Class VM
                 Return
             Case 5
                 Select Case v2
-                    'Case 0 : Return ReadDst("clr", bd, pos)
                     'Case 1 : Return ReadDst("com", bd, pos)
                     'Case 4 : Return ReadDst("neg", bd, pos)
                     'Case 5 : Return ReadDst("adc", bd, pos)
                     'Case 6 : Return ReadDst("sbc", bd, pos)
+                    Case 0 ' clr: CLeaR
+                        GetDst().SetValue(Me, 0)
+                        SetFlags(True, False, False, False)
+                        Return
                     Case 2 ' inc: INCrement
                         Dim dst = GetDst()
                         Dim val = CInt(ConvShort(dst.GetValue(Me))) + 1
