@@ -52,7 +52,6 @@ Partial Public Class VM
             'Case 3 : Return ReadSrcDst("bit")
             'Case 4 : Return ReadSrcDst("bic")
             'Case 5 : Return ReadSrcDst("bis")
-            'Case 6 : Return ReadSrcDst("add")
             'Case &O11 : Return ReadSrcDst("movb")
             'Case &O12 : Return ReadSrcDst("cmpb")
             'Case &O13 : Return ReadSrcDst("bitb")
@@ -71,6 +70,14 @@ Partial Public Class VM
                 Dim dst = oprs(1).GetValue(Me)
                 Dim val = CInt(ConvShort(src)) - CInt(ConvShort(dst))
                 SetFlags(val = 0, val < 0, src < dst, val < -&H8000)
+                Return
+            Case 6 ' add: ADD
+                Dim oprs = GetSrcDst()
+                Dim src = oprs(0).GetValue(Me)
+                Dim dst = oprs(1).GetValue(Me)
+                Dim val = CInt(ConvShort(src)) + CInt(ConvShort(dst))
+                oprs(1).SetValue(Me, CUShort(val And &HFFFF))
+                SetFlags(val = 0, val < 0, CInt(src) + CInt(dst) >= &H10000, val >= &H8000)
                 Return
             Case &O10
                 Exec10()
