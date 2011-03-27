@@ -1,4 +1,6 @@
-﻿Partial Public Class VM
+﻿Imports System.Text
+
+Partial Public Class VM
     Private Sub ExecSys()
         Dim t = Data(PC)
         PC += 2US
@@ -25,14 +27,7 @@
         Dim len = ReadUInt16(PC + 2)
         PC += 4US
         If f = 1 Then
-            For i = 0 To len - 1
-                Dim b = Data(p + i)
-                If b = 10 Then
-                    sw.WriteLine()
-                Else
-                    sw.Write(ChrW(b))
-                End If
-            Next
+            sw.Write(ReadText(Data, p, len))
             C = False
         Else
             C = True

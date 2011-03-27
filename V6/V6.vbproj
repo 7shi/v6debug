@@ -126,7 +126,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="My Project\AppManifest.xml" />
-    <Content Include="Tests\hello" />
+    <Content Include="Tests\hello1.c" />
+    <Content Include="Tests\hello1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">

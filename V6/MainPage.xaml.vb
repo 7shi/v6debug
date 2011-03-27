@@ -8,17 +8,25 @@ Partial Public Class MainPage
 
     Public Sub New()
         InitializeComponent()
-        ReadResource("Tests/hello")
+        ReadResource("Tests/hello1")
+    End Sub
+
+    Public Sub Clear()
+        txtDis.Text = ""
+        txtSrc.Text = ""
+        txtBin.Text = ""
+        txtOut.Text = ""
     End Sub
 
     Private Sub ReadResource(fn$)
-        Dim uri = New Uri(fn, UriKind.Relative)
-        Dim rs = Application.GetResourceStream(uri)
-        If Not rs Is Nothing Then
-            Using s = rs.Stream
+        Dim uri1 = New Uri(fn, UriKind.Relative)
+        Dim rs1 = Application.GetResourceStream(uri1)
+        If Not rs1 Is Nothing Then
+            Using s = rs1.Stream
                 ReadStream(s)
             End Using
         End If
+        txtSrc.Text = ReadText(fn + ".c")
     End Sub
 
     Private Sub ReadStream(s As Stream)
@@ -37,7 +45,7 @@ Partial Public Class MainPage
         Dim ofd = New OpenFileDialog()
         If ofd.ShowDialog() <> True Then Return
 
-        textBox1.Text = ""
+        Clear()
         Try
             Dim fi = ofd.File
             If fi.Length >= 64 * 1024 Then
@@ -47,7 +55,7 @@ Partial Public Class MainPage
                 ReadStream(fs)
             End Using
         Catch ex As Exception
-            textBox1.Text = ex.Message + Environment.NewLine +
+            txtDis.Text = ex.Message + Environment.NewLine +
                 "読み込みに失敗しました。" + Environment.NewLine
         End Try
     End Sub
@@ -83,10 +91,10 @@ Partial Public Class MainPage
         aout.UseOct = comboBox1.SelectedIndex = 1
         Dim vm = New VM(aout)
         vm.Run()
-        textBox1.Text = aout.GetDisassemble()
-        textBox2.Text = aout.GetDump()
-        textBox3.Text = vm.Output
-        textBox3.SelectionStart = textBox3.Text.Length
+        txtDis.Text = aout.GetDisassemble()
+        txtBin.Text = aout.GetDump()
+        txtOut.Text = vm.Output
+        txtOut.SelectionStart = txtOut.Text.Length
         Cursor = cur
     End Sub
 End Class
