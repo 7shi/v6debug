@@ -9,6 +9,10 @@
                 Select Case Data(arg)
                     Case 4 : SysWrite(arg) : Return
                 End Select
+            Case 1 ' exit
+                PC += 2US
+                HasExited = True
+                Return
         End Select
         Abort("invaid sys")
     End Sub
