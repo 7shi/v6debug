@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Text
 
 Partial Public Class VM
     Inherits BinData
@@ -315,9 +316,19 @@ Partial Public Class VM
 
     Public Function GetRegs$()
         Return String.Format(
-            "r0={0}, r1={1}, r2={2}, r3={3}, r4={4}, r5={5}, sp={6}{{{7}, {8}}}, pc={9}",
+            "{0} r0={1} r1={2} r2={3} r3={4} r4={5} r5={6} sp={7}{{{8} {9}}} pc={10}",
+            GetFlags,
             Enc(Regs(0)), Enc(Regs(1)), Enc(Regs(2)), Enc(Regs(3)), Enc(Regs(4)), Enc(Regs(5)),
             Enc(Regs(6)), Enc(ReadUInt16(Regs(6))), Enc(ReadUInt16(Regs(6) + 2)), Enc(Regs(7)))
+    End Function
+
+    Public Function GetFlags$()
+        Dim sb = New StringBuilder
+        sb.Append(If(Z, "Z", "-"))
+        sb.Append(If(N, "N", "-"))
+        sb.Append(If(C, "C", "-"))
+        sb.Append(If(V, "V", "-"))
+        Return sb.ToString
     End Function
 
     Public Sub SetFlags(z As Boolean, n As Boolean, c As Boolean, v As Boolean)
