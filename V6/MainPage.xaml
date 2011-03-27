@@ -24,6 +24,8 @@
                 <Button Content="Save" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
                 <Grid Width="4" />
                 <Button Click="btnTest_Click" Content="hello1" />
+                <Button Click="btnTest_Click" Content="hello2" />
+                <Button Click="btnTest_Click" Content="hello3" />
                 <Grid Width="4" />
                 <ComboBox Name="comboBox1" SelectedIndex="0" SelectionChanged="comboBox1_SelectionChanged">
                     <ComboBoxItem Content="hex" />
