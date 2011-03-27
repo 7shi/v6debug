@@ -52,7 +52,6 @@ Partial Public Class VM
             'Case 3 : Return ReadSrcDst("bit")
             'Case 4 : Return ReadSrcDst("bic")
             'Case 5 : Return ReadSrcDst("bis")
-            'Case &O11 : Return ReadSrcDst("movb")
             'Case &O12 : Return ReadSrcDst("cmpb")
             'Case &O13 : Return ReadSrcDst("bitb")
             'Case &O14 : Return ReadSrcDst("bicb")
@@ -83,6 +82,12 @@ Partial Public Class VM
                 Return
             Case &O10
                 Exec10()
+                Return
+            Case &O11 ' movb: MOVe Byte
+                Dim oprs = GetSrcDst()
+                Dim src = oprs(0).GetByte(Me)
+                oprs(1).SetByte(Me, src)
+                SetFlags(src = 0, ConvSByte(src) < 0, C, False)
                 Return
             Case &O16 ' sub: SUBtract
                 Dim oprs = GetSrcDst()

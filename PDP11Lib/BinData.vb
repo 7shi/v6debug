@@ -14,10 +14,13 @@ Public Class BinData
         ReDim Data(size - 1)
     End Sub
 
-    Default Public ReadOnly Property Indexer(pos%) As Byte
+    Default Public Property Indexer(pos%) As Byte
         Get
             Return Data(Offset + pos)
         End Get
+        Set(value As Byte)
+            Data(Offset + pos) = value
+        End Set
     End Property
 
     Public Function ReadUInt16(pos%) As UShort

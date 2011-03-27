@@ -101,4 +101,43 @@
             Case 7 : vm.Write(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)), v)
         End Select
     End Sub
+
+    Public Function GetByte(vm As VM) As Byte
+        If Reg = 7 Then
+            Select Case Type
+                Case 2 : Return vm(Addr)
+                Case 3 : Return vm(vm.ReadUInt16(Addr))
+            End Select
+        End If
+        Select Case Type
+            Case 0 : Return CByte(vm.Regs(Reg) And &HFF)
+            Case 1 : Return vm(vm.Regs(Reg))
+            Case 2 : Return vm(vm.GetInc(Reg))
+            Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(Reg)))
+            Case 4 : Return vm(vm.GetDec(Reg))
+            Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(Reg)))
+            Case 6 : Return vm(CUShort(vm.Regs(Reg) + Dist))
+            Case 7 : Return vm(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)))
+        End Select
+        Throw New Exception("invalid operand")
+    End Function
+
+    Public Sub SetByte(vm As VM, b As Byte)
+        If Reg = 7 Then
+            Select Case Type
+                Case 2 : vm(Addr) = b : Return
+                Case 3 : vm(vm.ReadUInt16(Addr)) = b : Return
+            End Select
+        End If
+        Select Case Type
+            Case 0 : vm.Regs(Reg) = b
+            Case 1 : vm(vm.Regs(Reg)) = b
+            Case 2 : vm(vm.GetInc(Reg)) = b
+            Case 3 : vm(vm.ReadUInt16(vm.GetInc(Reg))) = b
+            Case 4 : vm(vm.GetDec(Reg)) = b
+            Case 5 : vm(vm.ReadUInt16(vm.GetDec(Reg))) = b
+            Case 6 : vm(CUShort(vm.Regs(Reg) + Dist)) = b
+            Case 7 : vm(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))) = b
+        End Select
+    End Sub
 End Class

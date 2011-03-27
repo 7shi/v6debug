@@ -197,4 +197,8 @@
     Public Function ConvShort(v As UShort) As Short
         Return CShort(If(v < &H8000, v, v - &H10000))
     End Function
+
+    Public Function ConvSByte(v As Byte) As SByte
+        Return CSByte(If(v < &H80, v, v - &H100))
+    End Function
 End Module
