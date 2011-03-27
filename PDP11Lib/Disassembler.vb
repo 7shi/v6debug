@@ -55,36 +55,36 @@
                             Case 5 : Return New OpCode("reset", 2)
                             Case 6 : Return New OpCode("rtt", 2)
                         End Select
-                    Case 1 : Return ReadSrcOrDst("jmp", bd, pos)
+                    Case 1 : Return ReadDst("jmp", bd, pos)
                     Case 2
                         Select Case (v >> 3) And 7
                             Case 0 : Return ReadReg("rts", bd, pos)
                             Case 3 : Return New OpCode("spl " + (v & 7), 2)
                         End Select
-                    Case 3 : Return ReadSrcOrDst("swab", bd, pos)
+                    Case 3 : Return ReadDst("swab", bd, pos)
                 End Select
-            Case 4 : Return ReadRegSrcOrDst("jsr", bd, pos)
+            Case 4 : Return ReadRegDst("jsr", bd, pos)
             Case 5
                 Select Case v2
-                    Case 0 : Return ReadSrcOrDst("clr", bd, pos)
-                    Case 1 : Return ReadSrcOrDst("com", bd, pos)
-                    Case 2 : Return ReadSrcOrDst("inc", bd, pos)
-                    Case 3 : Return ReadSrcOrDst("dec", bd, pos)
-                    Case 4 : Return ReadSrcOrDst("neg", bd, pos)
-                    Case 5 : Return ReadSrcOrDst("adc", bd, pos)
-                    Case 6 : Return ReadSrcOrDst("sbc", bd, pos)
-                    Case 7 : Return ReadSrcOrDst("tst", bd, pos)
+                    Case 0 : Return ReadDst("clr", bd, pos)
+                    Case 1 : Return ReadDst("com", bd, pos)
+                    Case 2 : Return ReadDst("inc", bd, pos)
+                    Case 3 : Return ReadDst("dec", bd, pos)
+                    Case 4 : Return ReadDst("neg", bd, pos)
+                    Case 5 : Return ReadDst("adc", bd, pos)
+                    Case 6 : Return ReadDst("sbc", bd, pos)
+                    Case 7 : Return ReadDst("tst", bd, pos)
                 End Select
             Case 6
                 Select Case v2
-                    Case 0 : Return ReadSrcOrDst("ror", bd, pos)
-                    Case 1 : Return ReadSrcOrDst("rol", bd, pos)
-                    Case 2 : Return ReadSrcOrDst("asr", bd, pos)
-                    Case 3 : Return ReadSrcOrDst("asl", bd, pos)
+                    Case 0 : Return ReadDst("ror", bd, pos)
+                    Case 1 : Return ReadDst("rol", bd, pos)
+                    Case 2 : Return ReadDst("asr", bd, pos)
+                    Case 3 : Return ReadDst("asl", bd, pos)
                     Case 4 : Return ReadNum("mark", bd, pos)
-                    Case 5 : Return ReadSrcOrDst("mfpi", bd, pos)
-                    Case 6 : Return ReadSrcOrDst("mtpi", bd, pos)
-                    Case 7 : Return ReadSrcOrDst("sxt", bd, pos)
+                    Case 5 : Return ReadDst("mfpi", bd, pos)
+                    Case 6 : Return ReadDst("mtpi", bd, pos)
+                    Case 7 : Return ReadDst("sxt", bd, pos)
                 End Select
         End Select
         Return Nothing
@@ -93,11 +93,11 @@
     Private Function Read7(bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Select Case (v >> 9) And 7
-            Case 0 : Return ReadRegSrcOrDst("mul", bd, pos)
-            Case 1 : Return ReadRegSrcOrDst("div", bd, pos)
-            Case 2 : Return ReadRegSrcOrDst("ash", bd, pos)
-            Case 3 : Return ReadRegSrcOrDst("ashc", bd, pos)
-            Case 4 : Return ReadRegSrcOrDst("xor", bd, pos)
+            Case 0 : Return ReadRegDst("mul", bd, pos)
+            Case 1 : Return ReadRegDst("div", bd, pos)
+            Case 2 : Return ReadRegDst("ash", bd, pos)
+            Case 3 : Return ReadRegDst("ashc", bd, pos)
+            Case 4 : Return ReadRegDst("xor", bd, pos)
             Case 5
                 Select Case (v >> 3) And &O77
                     Case 0 : Return ReadReg("fadd", bd, pos)
@@ -125,20 +125,20 @@
         End Select
         Dim v = bd.ReadUInt16(pos)
         Select Case (v >> 6) And &O77
-            Case &O50 : Return ReadSrcOrDst("clrb", bd, pos)
-            Case &O51 : Return ReadSrcOrDst("comb", bd, pos)
-            Case &O52 : Return ReadSrcOrDst("incb", bd, pos)
-            Case &O53 : Return ReadSrcOrDst("decb", bd, pos)
-            Case &O54 : Return ReadSrcOrDst("negb", bd, pos)
-            Case &O55 : Return ReadSrcOrDst("adcb", bd, pos)
-            Case &O56 : Return ReadSrcOrDst("sbcb", bd, pos)
-            Case &O57 : Return ReadSrcOrDst("tstb", bd, pos)
-            Case &O60 : Return ReadSrcOrDst("rorb", bd, pos)
-            Case &O61 : Return ReadSrcOrDst("rolb", bd, pos)
-            Case &O62 : Return ReadSrcOrDst("asrb", bd, pos)
-            Case &O63 : Return ReadSrcOrDst("aslb", bd, pos)
-            Case &O64 : Return ReadSrcOrDst("mfpd", bd, pos)
-            Case &O65 : Return ReadSrcOrDst("mtpd", bd, pos)
+            Case &O50 : Return ReadDst("clrb", bd, pos)
+            Case &O51 : Return ReadDst("comb", bd, pos)
+            Case &O52 : Return ReadDst("incb", bd, pos)
+            Case &O53 : Return ReadDst("decb", bd, pos)
+            Case &O54 : Return ReadDst("negb", bd, pos)
+            Case &O55 : Return ReadDst("adcb", bd, pos)
+            Case &O56 : Return ReadDst("sbcb", bd, pos)
+            Case &O57 : Return ReadDst("tstb", bd, pos)
+            Case &O60 : Return ReadDst("rorb", bd, pos)
+            Case &O61 : Return ReadDst("rolb", bd, pos)
+            Case &O62 : Return ReadDst("asrb", bd, pos)
+            Case &O63 : Return ReadDst("aslb", bd, pos)
+            Case &O64 : Return ReadDst("mfpd", bd, pos)
+            Case &O65 : Return ReadDst("mtpd", bd, pos)
         End Select
         Return Nothing
     End Function
@@ -157,14 +157,16 @@
     Private Function ReadSrcDst(op$, bd As BinData, pos%) As OpCode
         Dim len = 2
         Dim v = bd.ReadUInt16(pos)
-        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len) : len += opr1.Length
-        Dim opr2 = New Operand((v >> 3) And 7, v And 7, bd, pos + len) : len += opr2.Length
+        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len)
+        len += opr1.Length
+        Dim opr2 = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
+        len += opr2.Length
         Dim opr1s = opr1.ToString(bd, pos + len)
         Dim opr2s = opr2.ToString(bd, pos + len)
         Return New OpCode(op + " " + opr1s + ", " + opr2s, len)
     End Function
 
-    Private Function ReadSrcOrDst(op$, bd As BinData, pos%) As OpCode
+    Private Function ReadDst(op$, bd As BinData, pos%) As OpCode
         Dim len = 2
         Dim v = bd.ReadUInt16(pos)
         Dim opr = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
@@ -172,10 +174,10 @@
         Return New OpCode(op + " " + opr.ToString(bd, pos + len), len)
     End Function
 
-    Private Function ReadRegSrcOrDst(op$, bd As BinData, pos%) As OpCode
+    Private Function ReadRegDst(op$, bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Dim r = RegNames((v >> 6) And 7)
-        Return ReadSrcOrDst(op + " " + r + ",", bd, pos)
+        Return ReadDst(op + " " + r + ",", bd, pos)
     End Function
 
     Private Function ReadNum(op$, bd As BinData, pos%) As OpCode

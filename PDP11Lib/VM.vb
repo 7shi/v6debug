@@ -18,6 +18,11 @@ Public Class VM
     Public Property IsDouble As Boolean
     Public Property HasExited As Boolean
 
+    Public Property Z As Boolean
+    Public Property N As Boolean
+    Public Property C As Boolean
+    Public Property V As Boolean
+
     Private sw As StringWriter
     Public ReadOnly Property Output$
         Get
@@ -29,6 +34,7 @@ Public Class VM
         MyBase.New(&H10000)
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.Data.Length - aout.Offset)
         Me.UseOct = aout.UseOct
+        Regs(6) = &HFFF0
     End Sub
 
     Public Sub Run()
@@ -40,6 +46,8 @@ Public Class VM
     End Sub
 
     Public Sub RunStep()
+        Dim mne = Disassemble(PC).Mnemonic
+        sw.WriteLine("{0}: {1}", GetRegs, mne)
         Select Case Data(PC + 1) >> 4
             'Case 0 : Return Read0()
             'Case 2 : Return ReadSrcDst("cmp")
@@ -54,63 +62,71 @@ Public Class VM
             'Case &O14 : Return ReadSrcDst("bicb")
             'Case &O15 : Return ReadSrcDst("bisb")
             'Case &O16 : Return ReadSrcDst("sub")
-            Case 1 : ExecMov() : Return
-            Case &O17 : Exec17() : Return
+            Case 1 ' mov: MOVe
+                Dim oprs = GetSrcDst()
+                oprs(1).SetValue(Me, oprs(0).GetValue(Me))
+                Return
+            Case &O17
+                Exec17()
+                Return
         End Select
-        sw.WriteLine("not implemented: " + Disassemble(PC).Mnemonic)
-        sw.WriteLine(GetRegs)
-        HasExited = True
+        Abort("not implemented")
     End Sub
-
-    Private Sub ExecMov()
-        Dim oprs = GetSrcDst()
-        oprs(1).SetValue(Me, oprs(0).GetValue(Me))
-    End Sub
-
-    Private Function GetSrcDst() As Operand()
-        Dim len = 2
-        Dim v = ReadUInt16(PC)
-        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + len) : len += opr1.Length
-        Dim opr2 = New Operand((v >> 3) And 7, v And 7, Me, PC + len) : len += opr2.Length
-        PC += CUShort(len)
-        Return New Operand() {opr1, opr2}
-    End Function
 
     Private Sub Exec17()
         Dim v = ReadUInt16(PC)
-        PC += 2US
         Select Case v And &HFFF
-            Case 1 : IsDouble = False   ' setf
-            Case 2 : IsLong = False     ' seti
-            Case &O11 : IsDouble = True ' setd
-            Case &O12 : IsLong = True   ' setl
+            Case 1 ' setf: SET Float
+                PC += 2US
+                IsDouble = False
+                Return
+            Case 2 ' seti: SET Integer
+                PC += 2US
+                IsLong = False
+                Return
+            Case &O11 ' setd: SET Double
+                PC += 2US
+                IsDouble = True
+                Return
+            Case &O12 ' setl: SET Long
+                PC += 2US
+                IsLong = True
+                Return
         End Select
+        Abort("not implemented")
+    End Sub
+
+    Private Function GetSrcDst() As Operand()
+        Dim len = 2US
+        Dim v = ReadUInt16(PC)
+        Dim opr1 = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + len)
+        len += opr1.Length
+        Dim opr2 = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
+        len += opr2.Length
+        PC += len
+        Return New Operand() {opr1, opr2}
+    End Function
+
+    Public Sub Abort(msg$)
+        sw.WriteLine(msg)
+        'sw.WriteLine(GetRegs)
+        HasExited = True
     End Sub
 
     Public Function Disassemble(pos%) As OpCode
         Return Disassembler.Disassemble(Me, pos)
     End Function
 
-    Public Function ReadUInt16Inc(r%) As UShort
-        Dim ret = ReadUInt16(Regs(r))
-        Regs(r) = CUShort((CInt(Regs(r)) + 2US) And &HFFFF)
+    Public Function GetInc(r%) As UShort
+        Dim ret = Regs(r)
+        Regs(r) += 2US
         Return ret
     End Function
 
-    Public Function ReadUInt16Dec(r%) As UShort
-        Regs(r) = CUShort((CInt(Regs(r)) - 2US) And &HFFFF)
-        Return ReadUInt16(Regs(r))
+    Public Function GetDec(r%) As UShort
+        Regs(r) -= 2US
+        Return Regs(r)
     End Function
-
-    Public Sub WriteInc(r%, v As UShort)
-        Write(Regs(r), v)
-        Regs(r) = CUShort((CInt(Regs(r)) + 2US) And &HFFFF)
-    End Sub
-
-    Public Sub WriteDec(r%, v As UShort)
-        Regs(r) = CUShort((CInt(Regs(r)) - 2US) And &HFFFF)
-        Write(Regs(r), v)
-    End Sub
 
     Public Function GetRegs$()
         Return String.Format(
@@ -118,4 +134,11 @@ Public Class VM
             Enc(Regs(0)), Enc(Regs(1)), Enc(Regs(2)), Enc(Regs(3)),
             Enc(Regs(4)), Enc(Regs(5)), Enc(Regs(6)), Enc(Regs(7)))
     End Function
+
+    Public Sub SetFlags(z As Boolean, n As Boolean, c As Boolean, v As Boolean)
+        Me.Z = z
+        Me.N = n
+        Me.C = c
+        Me.V = v
+    End Sub
 End Class
