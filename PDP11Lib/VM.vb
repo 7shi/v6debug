@@ -78,15 +78,29 @@ Partial Public Class VM
     End Sub
 
     Private Sub Exec0()
-        'Select Case Data(PC + 1)
-        '    Case 1 : Return ReadOffset("br", bd, pos)
-        '    Case 2 : Return ReadOffset("bne", bd, pos)
-        '    Case 3 : Return ReadOffset("beq", bd, pos)
-        '    Case 4 : Return ReadOffset("bge", bd, pos)
-        '    Case 5 : Return ReadOffset("blt", bd, pos)
-        '    Case 6 : Return ReadOffset("bgt", bd, pos)
-        '    Case 7 : Return ReadOffset("ble", bd, pos)
-        'End Select
+        Select Case Data(PC + 1)
+            Case 1 ' br: BRanch
+                PC = GetOffset(PC)
+                Return
+            Case 2 ' bne: Branch if Not Equal
+                PC = If(Not Z, GetOffset(PC), PC + 2US)
+                Return
+            Case 3 ' beq: Branch if EQual
+                PC = If(Z, GetOffset(PC), PC + 2US)
+                Return
+            Case 4 ' bge: Branch if Greater or Equal
+                PC = If(Not (N Xor Me.V), GetOffset(PC), PC + 2US)
+                Return
+            Case 5 ' blt: Branch if Less Than
+                PC = If(N Xor Me.V, GetOffset(PC), PC + 2US)
+                Return
+            Case 6 ' bgt: Branch if Greater Than
+                PC = If(Not (Z Or (N Xor Me.V)), GetOffset(PC), PC + 2US)
+                Return
+            Case 7 ' ble: Branch if Less or Equal
+                PC = If(Z Or (N Xor Me.V), GetOffset(PC), PC + 2US)
+                Return
+        End Select
         Dim len = 2US
         Dim v = ReadUInt16(PC)
         If v = &HA0 Then PC += 2US : Return ' nop
@@ -152,16 +166,34 @@ Partial Public Class VM
 
     Private Sub Exec10()
         Select Case Data(PC + 1)
-            'Case &H80 : Return ReadOffset("bpl", bd, pos)
-            'Case &H81 : Return ReadOffset("bmi", bd, pos)
-            'Case &H82 : Return ReadOffset("bhi", bd, pos)
-            'Case &H83 : Return ReadOffset("blos", bd, pos)
-            'Case &H84 : Return ReadOffset("bvc", bd, pos)
-            'Case &H85 : Return ReadOffset("bvs", bd, pos)
-            'Case &H86 : Return ReadOffset("bcc", bd, pos)
-            'Case &H87 : Return ReadOffset("bcs", bd, pos)
             'Case &H88 : Return New OpCode("emt " + bd.Enc(bd(pos)), 2)
-            Case &H89 : ExecSys() : Return
+            Case &H80 ' bpl: Branch if PLus
+                PC = If(Not N, GetOffset(PC), PC + 2US)
+                Return
+            Case &H81 ' bmi: Branch if MInus
+                PC = If(N, GetOffset(PC), PC + 2US)
+                Return
+            Case &H82 ' bhi: Branch if HIgher
+                PC = If(Not (C Or Z), GetOffset(PC), PC + 2US)
+                Return
+            Case &H83 ' blos: Branch if LOwer or Same
+                PC = If(C Or Z, GetOffset(PC), PC + 2US)
+                Return
+            Case &H84 ' bvc: Branch if oVerflow Clear
+                PC = If(Not V, GetOffset(PC), PC + 2US)
+                Return
+            Case &H85 ' bvs: Branch if oVerflow Set
+                PC = If(V, GetOffset(PC), PC + 2US)
+                Return
+            Case &H86 ' bcc: Branch if Carry Clear
+                PC = If(Not C, GetOffset(PC), PC + 2US)
+                Return
+            Case &H87 ' bcs: Branch if Carry Set
+                PC = If(C, GetOffset(PC), PC + 2US)
+                Return
+            Case &H89 ' sys
+                ExecSys()
+                Return
         End Select
         'Dim v = ReadUInt16(PC)
         'Select Case (v >> 6) And &O77
