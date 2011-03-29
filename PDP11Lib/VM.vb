@@ -36,7 +36,7 @@ Partial Public Class VM
 
     Public Sub New(aout As AOut)
         MyBase.New(&H10000)
-        Array.Copy(aout.Data, aout.Offset, Data, 0, aout.Data.Length - aout.Offset)
+        Array.Copy(aout.Data, aout.Offset, Data, 0, aout.tsize + aout.dsize)
         Me.UseOct = aout.UseOct
         Me.aout = aout
         Regs(6) = &HFFF0
