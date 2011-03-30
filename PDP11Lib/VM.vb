@@ -25,10 +25,17 @@ Partial Public Class VM
     Public Property V As Boolean
 
     Private swt As StringWriter
+    Private swo As StringWriter
 
     Public ReadOnly Property Trace$
         Get
             Return swt.ToString
+        End Get
+    End Property
+
+    Public ReadOnly Property Output$
+        Get
+            Return swo.ToString
         End Get
     End Property
 
@@ -45,6 +52,7 @@ Partial Public Class VM
     Public Sub Run()
         HasExited = False
         swt = New StringWriter
+        swo = New StringWriter
         Dim cur As Symbol = Nothing
         Dim op = New OpCode("", 0)
         While Not HasExited

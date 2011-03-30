@@ -16,6 +16,7 @@ Partial Public Class MainPage
         txtSrc.Text = ""
         txtBin.Text = ""
         txtTrace.Text = ""
+        txtOut.Text = ""
     End Sub
 
     Private Sub ReadResource(fn$)
@@ -95,6 +96,8 @@ Partial Public Class MainPage
         txtBin.Text = aout.GetDump()
         txtTrace.Text = vm.Trace
         txtTrace.SelectionStart = txtTrace.Text.Length
+        txtOut.Text = vm.Output
+        txtOut.SelectionStart = txtOut.Text.Length
         Cursor = cur
     End Sub
 End Class

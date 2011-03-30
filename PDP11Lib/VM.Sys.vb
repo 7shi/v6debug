@@ -28,6 +28,7 @@ Partial Public Class VM
         PC += 4US
         If f = 1 Then
             swt.Write(ReadText(Data, p, len))
+            swo.Write(ReadText(Data, p, len))
             C = False
         Else
             C = True

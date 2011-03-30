@@ -64,6 +64,9 @@
             <sdk:TabItem Header="Trace">
                 <TextBox Name="txtTrace" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>
+            <sdk:TabItem Header="Output">
+                <TextBox Name="txtOut" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+            </sdk:TabItem>
         </sdk:TabControl>
     </Grid>
 </UserControl>
