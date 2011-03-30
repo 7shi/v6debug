@@ -112,6 +112,9 @@ Partial Public Class VM
                 oprs(1).SetValue(Me, CUShort(val And &HFFFF))
                 SetFlags(val = 0, val < 0, CInt(src) + CInt(dst) >= &H10000, val >= &H8000)
                 Return
+            Case 7
+                Exec7()
+                Return
             Case &O10
                 Exec10()
                 Return
@@ -247,6 +250,30 @@ Partial Public Class VM
         Abort("not implemented")
     End Sub
 
+    Private Sub Exec7()
+        Dim v = ReadUInt16(PC)
+        Select Case (v >> 9) And 7
+            'Case 0 : Return ReadSrcReg("mul", bd, pos)
+            'Case 2 : Return ReadSrcReg("ash", bd, pos)
+            'Case 3 : Return ReadSrcReg("ashc", bd, pos)
+            'Case 4 : Return ReadRegDst("xor", bd, pos)
+            'Case 5
+            '    Select Case (v >> 3) And &O77
+            '        Case 0 : Return ReadReg("fadd", bd, pos)
+            '        Case 1 : Return ReadReg("fsub", bd, pos)
+            '        Case 2 : Return ReadReg("fmul", bd, pos)
+            '        Case 3 : Return ReadReg("fdiv", bd, pos)
+            '    End Select
+            'Case 7 : Return ReadRegNum("sob", bd, pos)
+            Case 1 ' div: DIVision
+                Dim src = ConvShort(GetDst().GetValue(Me))
+                Dim r = (v >> 6) And 7
+                SetReg32(r, CInt(GetReg32(r) / src))
+                Return
+        End Select
+        Abort("not implemented")
+    End Sub
+
     Private Sub Exec10()
         Select Case Me(PC + 1)
             'Case &H88 : Return New OpCode("emt " + bd.Enc(bd(pos)), 2)
@@ -362,6 +389,15 @@ Partial Public Class VM
             Enc(Regs(0)), Enc(Regs(1)), Enc(Regs(2)), Enc(Regs(3)), Enc(Regs(4)), Enc(Regs(5)),
             Enc(Regs(6)), Enc(ReadUInt16(Regs(6))), Enc(ReadUInt16(Regs(6) + 2)), Enc(Regs(7)))
     End Function
+
+    Public Function GetReg32%(r%)
+        Return (CInt(Regs(r)) << 16) Or CInt(Regs((r + 1) And 7))
+    End Function
+
+    Public Sub SetReg32(r%, v%)
+        Regs(r) = CUShort((v >> 16) And &HFFFF)
+        Regs((r + 1) And 7) = CUShort(v And &HFFFF)
+    End Sub
 
     Public Function GetFlags$()
         Dim sb = New StringBuilder
