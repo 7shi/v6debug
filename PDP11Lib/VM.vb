@@ -211,7 +211,6 @@ Partial Public Class VM
             Case 5
                 Select Case v2
                     'Case 1 : Return ReadDst("com", bd, pos)
-                    'Case 4 : Return ReadDst("neg", bd, pos)
                     'Case 5 : Return ReadDst("adc", bd, pos)
                     'Case 6 : Return ReadDst("sbc", bd, pos)
                     Case 0 ' clr: CLeaR
@@ -229,6 +228,14 @@ Partial Public Class VM
                         Dim val = CInt(ConvShort(dst.GetValue(Me))) - 1
                         dst.SetValue(Me, CUShort(val And &HFFFF))
                         SetFlags(val = 0, val < 0, C, val < -&H8000)
+                        Return
+                    Case 4 ' neg: NEGate
+                        Dim dst = GetDst()
+                        Dim val0 = dst.GetValue(Me)
+                        Dim val1 = -ConvShort(val0)
+                        Dim val2 = CUShort(val1 And &HFFFF)
+                        dst.SetValue(Me, val2)
+                        SetFlags(val1 = 0, val1 < 0, val0 < val2, val1 = &H8000)
                         Return
                     Case 7 ' tst: TeST
                         Dim dst = ConvShort(GetDst().GetValue(Me))
