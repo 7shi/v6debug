@@ -1,1 +1,4 @@
-main(){write(1,"hello\n",6);}
+main()
+{
+    write(1,"hello\n",6);
+}

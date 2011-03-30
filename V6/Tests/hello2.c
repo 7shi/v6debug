@@ -1,1 +1,4 @@
-main(){printf("hello\n");}
+main()
+{
+    putchar('a');
+}
