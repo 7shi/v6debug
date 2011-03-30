@@ -45,25 +45,24 @@ Partial Public Class VM
     Public Sub Run()
         HasExited = False
         sw = New StringWriter
-        Dim syms = New Stack(Of String)
+        Dim cur As Symbol = Nothing
+        Dim op = New OpCode("", 0)
         While Not HasExited
-            Dim sym = aout.GetSym(PC)
-            If sym <> "" Then
-                sw.WriteLine("     " + sym)
-                syms.Push(sym)
-            End If
-            Dim op = Disassemble(PC)
-            sw.WriteLine("{0}: {1}", GetRegs, op.Mnemonic)
-
-            RunStep()
-
-            Dim mne = op.Mnemonic.Split(CChar(" "))(0)
-            If mne = "rts" OrElse mne = "jmp" Then
-                syms.Pop()
-                If syms.Count > 0 AndAlso aout.GetSym(PC) = "" Then
-                    sw.WriteLine("     >" + syms.Peek)
+            Dim sym = aout.GetSymbol(PC)
+            If Not cur Is sym Then
+                sw.Write("     ")
+                If op.Mnemonic.StartsWith("rts ") Then
+                    sw.WriteLine("<{0}", sym.Name)
+                ElseIf PC = sym.Address Then
+                    sw.WriteLine("{0}", sym)
+                Else
+                    sw.WriteLine(">{0}", sym.Name)
                 End If
+                cur = sym
             End If
+            op = Disassemble(PC)
+            sw.WriteLine("{0}: {1}", GetRegs, op.Mnemonic)
+            RunStep()
         End While
     End Sub
 

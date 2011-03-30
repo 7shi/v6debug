@@ -6,32 +6,44 @@ Public Class AOut
     Public fmagic As UShort, tsize As UShort, dsize As UShort, bsize As UShort,
         ssize As UShort, entry, pad As UShort, relflg As UShort
 
-    Private syms As New Dictionary(Of Integer, String)
-    Private srcs As New Dictionary(Of Integer, String)
+    Private symlist As New List(Of Symbol)
 
-    Public Sub New(data As Byte())
-        MyBase.New(data)
+    Public Sub New(image As Byte())
+        MyBase.New(image)
         Offset = 16
 
-        fmagic = BitConverter.ToUInt16(data, 0)
-        tsize = BitConverter.ToUInt16(data, 2)
-        dsize = BitConverter.ToUInt16(data, 4)
-        bsize = BitConverter.ToUInt16(data, 6)
-        ssize = BitConverter.ToUInt16(data, 8)
-        entry = BitConverter.ToUInt16(data, 10)
-        pad = BitConverter.ToUInt16(data, 12)
-        relflg = BitConverter.ToUInt16(data, 14)
+        fmagic = BitConverter.ToUInt16(image, 0)
+        tsize = BitConverter.ToUInt16(image, 2)
+        dsize = BitConverter.ToUInt16(image, 4)
+        bsize = BitConverter.ToUInt16(image, 6)
+        ssize = BitConverter.ToUInt16(image, 8)
+        entry = BitConverter.ToUInt16(image, 10)
+        pad = BitConverter.ToUInt16(image, 12)
+        relflg = BitConverter.ToUInt16(image, 14)
 
-        For i = Offset + tsize + dsize To data.Length - 1 Step 12
-            Dim name = ReadText(data, i, 8)
-            Dim type = BitConverter.ToUInt16(data, i + 8)
-            Dim addr = BitConverter.ToUInt16(data, i + 10)
-            If name.EndsWith(".o") Then
-                If Not srcs.ContainsKey(addr) Then srcs.Add(addr, name)
-            ElseIf type <> 2 Then
-                If Not syms.ContainsKey(addr) Then syms.Add(addr, name)
+        Dim syms As New Dictionary(Of Integer, Symbol)
+        Dim srcs As New Dictionary(Of Integer, Symbol)
+        For i = Offset + tsize + dsize To image.Length - 1 Step 12
+            Dim sym = New Symbol(image, i)
+            If sym.IsObject Then
+                If Not srcs.ContainsKey(sym.Address) Then
+                    srcs.Add(sym.Address, sym)
+                End If
+            ElseIf sym.Type <> 2 Then
+                If Not syms.ContainsKey(sym.Address) Then
+                    syms.Add(sym.Address, sym)
+                    symlist.Add(sym)
+                End If
             End If
         Next
+        For Each src In srcs.Values
+            If syms.ContainsKey(src.Address) Then
+                syms(src.Address).Source = src
+            Else
+                symlist.Add(src)
+            End If
+        Next
+        symlist.Sort(Function(a, b) a.Address - b.Address)
     End Sub
 
     Public Sub Disassemble(tw As TextWriter)
@@ -46,9 +58,13 @@ Public Class AOut
         tw.WriteLine("[{0:x4}] relflg = {1}", 14, Enc0(relflg))
         tw.WriteLine()
         tw.WriteLine(".text")
+        Dim en = symlist.GetEnumerator
+        Dim hasSym = en.MoveNext()
         For i = 0 To tsize - 1
-            Dim sym = GetSym(i)
-            If sym <> "" Then tw.WriteLine("       " + sym)
+            If hasSym AndAlso en.Current.Address = i Then
+                tw.WriteLine("       {0}", en.Current)
+                hasSym = en.MoveNext()
+            End If
 
             Dim op = Disassembler.Disassemble(Me, i)
             Dim len = 2
@@ -82,13 +98,12 @@ Public Class AOut
         End Using
     End Function
 
-    Public Function GetSym$(pos%)
-        Dim sym = ""
-        If syms.ContainsKey(pos) Then sym = syms(pos) + ":"
-        If srcs.ContainsKey(pos) Then
-            If sym <> "" Then sym += " "
-            sym += "(" + srcs(pos) + ")"
-        End If
-        Return sym
+    Public Function GetSymbol(addr%) As Symbol
+        Dim ret As Symbol = Nothing
+        For Each sym In symlist
+            If addr < sym.Address Then Exit For
+            ret = sym
+        Next
+        Return ret
     End Function
 End Class
