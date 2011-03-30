@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
     mc:Ignorable="d"
-    d:DesignHeight="400" d:DesignWidth="450">
+    d:DesignHeight="400" d:DesignWidth="500">
 
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
@@ -26,6 +26,7 @@
                 <Button Click="btnTest_Click" Content="hello1" />
                 <Button Click="btnTest_Click" Content="hello2" />
                 <Button Click="btnTest_Click" Content="hello3" />
+                <Button Click="btnTest_Click" Content="hello4" />
                 <Grid Width="4" />
                 <ComboBox Name="comboBox1" SelectedIndex="0" SelectionChanged="comboBox1_SelectionChanged">
                     <ComboBoxItem Content="hex" />
