@@ -106,7 +106,7 @@
                     Case 2 : Return ReadReg("fmul", bd, pos)
                     Case 3 : Return ReadReg("fdiv", bd, pos)
                 End Select
-            Case 7 : Return ReadRegNum("sob", bd, pos)
+            Case 7 : Return ReadRegOffset("sob", bd, pos)
         End Select
         Return Nothing
     End Function
@@ -185,10 +185,10 @@
         Return New OpCode(op + " " + bd.Enc(CByte(bd(pos) And &O77)), 2)
     End Function
 
-    Private Function ReadRegNum(op$, bd As BinData, pos%) As OpCode
+    Private Function ReadRegOffset(op$, bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Dim r = RegNames((v >> 6) And 7)
-        Return ReadNum(op + " " + r + ",", bd, pos)
+        Return New OpCode(op + " " + r + ", " + bd.Enc(CUShort(pos + 2 - (v And &O77) * 2)), 2)
     End Function
 
     Private Function ReadOffset(op$, bd As BinData, pos%) As OpCode
