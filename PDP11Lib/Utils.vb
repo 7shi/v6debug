@@ -24,7 +24,7 @@ Public Module Utils
     Public Function ReadText$(path$)
         Dim uri = New Uri(path, UriKind.Relative)
         Dim rs = Application.GetResourceStream(uri)
-        If Not rs Is Nothing Then
+        If rs IsNot Nothing Then
             Using s = rs.Stream
                 Return ReadText(s)
             End Using

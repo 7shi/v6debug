@@ -68,7 +68,7 @@ Public Class AOut
 
             Dim op = Disassembler.Disassemble(Me, i)
             Dim len = 2
-            If Not op Is Nothing Then len = op.Length
+            If op IsNot Nothing Then len = op.Length
             Dim s = ReadUInt16(i)
             tw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc0(CUShort(i)), Enc0(s))
             For j = 2 To 4 Step 2
@@ -81,7 +81,7 @@ Public Class AOut
                 End If
             Next
             tw.Write("  ")
-            If Not op Is Nothing Then
+            If op IsNot Nothing Then
                 tw.Write(op.Mnemonic)
             Else
                 tw.Write(Enc(s))

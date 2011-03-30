@@ -21,7 +21,7 @@ Partial Public Class MainPage
     Private Sub ReadResource(fn$)
         Dim uri1 = New Uri(fn, UriKind.Relative)
         Dim rs1 = Application.GetResourceStream(uri1)
-        If Not rs1 Is Nothing Then
+        If rs1 IsNot Nothing Then
             Using s = rs1.Stream
                 ReadStream(s)
             End Using

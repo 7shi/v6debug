@@ -49,7 +49,7 @@ Partial Public Class VM
         Dim op = New OpCode("", 0)
         While Not HasExited
             Dim sym = aout.GetSymbol(PC)
-            If Not cur Is sym Then
+            If cur IsNot sym Then
                 sw.Write("     ")
                 If op.Mnemonic.StartsWith("rts ") Then
                     sw.WriteLine("<{0}", sym.Name)
