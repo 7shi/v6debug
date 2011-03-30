@@ -69,8 +69,14 @@ Partial Public Class VM
                 cur = sym
             End If
             op = Disassemble(PC)
-            swt.WriteLine("{0}: {1}", GetRegs, op.Mnemonic)
-            RunStep()
+            swt.Write("{0}: ", GetRegs)
+            If op Is Nothing Then
+                swt.WriteLine(Enc(ReadUInt16(PC)))
+                Abort("undefined instruction")
+            Else
+                swt.WriteLine(op.Mnemonic)
+                RunStep()
+            End If
         End While
     End Sub
 
