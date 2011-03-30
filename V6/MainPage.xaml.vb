@@ -15,7 +15,7 @@ Partial Public Class MainPage
         txtDis.Text = ""
         txtSrc.Text = ""
         txtBin.Text = ""
-        txtOut.Text = ""
+        txtTrace.Text = ""
     End Sub
 
     Private Sub ReadResource(fn$)
@@ -93,8 +93,8 @@ Partial Public Class MainPage
         vm.Run()
         txtDis.Text = aout.GetDisassemble()
         txtBin.Text = aout.GetDump()
-        txtOut.Text = vm.Output
-        txtOut.SelectionStart = txtOut.Text.Length
+        txtTrace.Text = vm.Trace
+        txtTrace.SelectionStart = txtTrace.Text.Length
         Cursor = cur
     End Sub
 End Class

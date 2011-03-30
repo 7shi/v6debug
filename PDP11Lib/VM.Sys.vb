@@ -27,7 +27,7 @@ Partial Public Class VM
         Dim len = ReadUInt16(PC + 2)
         PC += 4US
         If f = 1 Then
-            sw.Write(ReadText(Data, p, len))
+            swt.Write(ReadText(Data, p, len))
             C = False
         Else
             C = True

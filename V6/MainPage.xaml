@@ -61,8 +61,8 @@
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="2" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <sdk:TabControl Grid.Row="3" Grid.ColumnSpan="2">
-            <sdk:TabItem Header="Output">
-                <TextBox Name="txtOut" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+            <sdk:TabItem Header="Trace">
+                <TextBox Name="txtTrace" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>
         </sdk:TabControl>
     </Grid>

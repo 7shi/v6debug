@@ -24,11 +24,11 @@ Partial Public Class VM
     Public Property C As Boolean
     Public Property V As Boolean
 
-    Private sw As StringWriter
+    Private swt As StringWriter
 
-    Public ReadOnly Property Output$
+    Public ReadOnly Property Trace$
         Get
-            Return sw.ToString
+            Return swt.ToString
         End Get
     End Property
 
@@ -44,24 +44,24 @@ Partial Public Class VM
 
     Public Sub Run()
         HasExited = False
-        sw = New StringWriter
+        swt = New StringWriter
         Dim cur As Symbol = Nothing
         Dim op = New OpCode("", 0)
         While Not HasExited
             Dim sym = aout.GetSymbol(PC)
             If cur IsNot sym Then
-                sw.Write("     ")
+                swt.Write("     ")
                 If op.Mnemonic.StartsWith("rts ") Then
-                    sw.WriteLine("<{0}", sym.Name)
+                    swt.WriteLine("<{0}", sym.Name)
                 ElseIf PC = sym.Address Then
-                    sw.WriteLine("{0}", sym)
+                    swt.WriteLine("{0}", sym)
                 Else
-                    sw.WriteLine(">{0}", sym.Name)
+                    swt.WriteLine(">{0}", sym.Name)
                 End If
                 cur = sym
             End If
             op = Disassemble(PC)
-            sw.WriteLine("{0}: {1}", GetRegs, op.Mnemonic)
+            swt.WriteLine("{0}: {1}", GetRegs, op.Mnemonic)
             RunStep()
         End While
     End Sub
@@ -315,7 +315,7 @@ Partial Public Class VM
     End Function
 
     Public Sub Abort(msg$)
-        sw.WriteLine(msg)
+        swt.WriteLine(msg)
         'sw.WriteLine(GetRegs)
         HasExited = True
     End Sub
