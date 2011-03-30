@@ -274,7 +274,9 @@ Partial Public Class VM
             Case 1 ' div: DIVision
                 Dim src = ConvShort(GetDst().GetValue(Me))
                 Dim r = (v >> 6) And 7
-                SetReg32(r, CInt(GetReg32(r) / src))
+                Dim dst = GetReg32(r)
+                Regs(r) = CUShort(CInt(dst / src) And &HFFFF)
+                Regs((r + 1) And 7) = CUShort(CInt(dst Mod src) And &HFFFF)
                 Return
             Case 7 ' sob: Subtract One from register, Branch if not zero
                 Dim r = (v >> 6) And 7
