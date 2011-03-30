@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
     mc:Ignorable="d"
-    d:DesignHeight="400" d:DesignWidth="500">
+    d:DesignHeight="400" d:DesignWidth="400">
 
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
@@ -19,19 +19,15 @@
             <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="2">
-            <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
+            <StackPanel Name="menuStack" HorizontalAlignment="Left" Orientation="Horizontal">
                 <Button Content="Open" Name="btnOpen" Click="btnOpen_Click" />
                 <Button Content="Save" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
-                <Grid Width="4" />
-                <Button Click="btnTest_Click" Content="hello1" />
-                <Button Click="btnTest_Click" Content="hello2" />
-                <Button Click="btnTest_Click" Content="hello3" />
-                <Button Click="btnTest_Click" Content="hello4" />
                 <Grid Width="4" />
                 <ComboBox Name="comboBox1" SelectedIndex="0" SelectionChanged="comboBox1_SelectionChanged">
                     <ComboBoxItem Content="hex" />
                     <ComboBoxItem Content="oct" />
                 </ComboBox>
+                <Grid Width="4" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
                 PDP-11 Interpreter for UNIX V6

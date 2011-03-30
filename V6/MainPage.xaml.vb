@@ -8,6 +8,10 @@ Partial Public Class MainPage
 
     Public Sub New()
         InitializeComponent()
+        addTest("hello1")
+        addTest("hello2")
+        addTest("hello3")
+        addTest("hello4")
         ReadResource("Tests/hello1")
     End Sub
 
@@ -17,6 +21,12 @@ Partial Public Class MainPage
         txtBin.Text = ""
         txtTrace.Text = ""
         txtOut.Text = ""
+    End Sub
+
+    Private Sub addTest(t$)
+        Dim button = New Button With {.Content = t}
+        AddHandler button.Click, AddressOf btnTest_Click
+        menuStack.Children.Add(button)
     End Sub
 
     Private Sub ReadResource(fn$)
