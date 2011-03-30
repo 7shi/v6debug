@@ -79,7 +79,6 @@ Partial Public Class VM
             'Case 3 : Return ReadSrcDst("bit")
             'Case 4 : Return ReadSrcDst("bic")
             'Case 5 : Return ReadSrcDst("bis")
-            'Case &O12 : Return ReadSrcDst("cmpb")
             'Case &O13 : Return ReadSrcDst("bitb")
             'Case &O14 : Return ReadSrcDst("bicb")
             'Case &O15 : Return ReadSrcDst("bisb")
@@ -115,6 +114,13 @@ Partial Public Class VM
                 Dim src = oprs(0).GetByte(Me)
                 oprs(1).SetByte(Me, src)
                 SetFlags(src = 0, ConvSByte(src) < 0, C, False)
+                Return
+            Case &O12 ' cmpb: CoMPare Byte
+                Dim oprs = GetSrcDst()
+                Dim src = oprs(0).GetByte(Me)
+                Dim dst = oprs(1).GetByte(Me)
+                Dim val = CInt(ConvSByte(src)) - CInt(ConvSByte(dst))
+                SetFlags(val = 0, val < 0, src < dst, val < -&H80)
                 Return
             Case &O16 ' sub: SUBtract
                 Dim oprs = GetSrcDst()
