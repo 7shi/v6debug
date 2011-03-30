@@ -21,8 +21,8 @@
         If Reg = 7 Then
             Select Case Type
                 Case 2 : Return "$" + bd.Enc(bd.ReadUInt16(Addr))
-                Case 3 : Return "*$" + bd.Enc(bd.ReadUInt16(Addr))
-                Case 6 : Return bd.Enc(CUShort(pc + Dist))
+                Case 3 : Return "*$" + bd.EncAddr(bd.ReadUInt16(Addr))
+                Case 6 : Return bd.EncAddr(CUShort(pc + Dist))
                 Case 7 : Return "*" + bd.Enc(CUShort(pc + Dist))
             End Select
         End If

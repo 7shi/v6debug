@@ -87,4 +87,8 @@ Public Class BinData
         If d >= 128 Then d -= 256
         Return CUShort(pos + 2 + d * 2)
     End Function
+
+    Public Overridable Function EncAddr$(v As UShort)
+        Return Enc(v)
+    End Function
 End Class

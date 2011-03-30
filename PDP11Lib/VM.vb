@@ -358,4 +358,8 @@ Partial Public Class VM
         Me.C = c
         Me.V = v
     End Sub
+
+    Public Overrides Function EncAddr(v As UShort) As String
+        Return MyBase.EncAddr(v) + "{" + Enc(ReadUInt16(v)) + "}"
+    End Function
 End Class
