@@ -5,7 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:sdk="http://schemas.microsoft.com/winfx/2006/xaml/presentation/sdk"
     mc:Ignorable="d"
-    d:DesignHeight="400" d:DesignWidth="400">
+    d:DesignHeight="400" d:DesignWidth="450">
 
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
@@ -33,7 +33,7 @@
                 </ComboBox>
             </StackPanel>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
-                PDP-11 Interpreter
+                PDP-11 Interpreter for UNIX V6
             </TextBlock>
         </Grid>
         <sdk:TabControl Grid.Row="1" Grid.RowSpan="2" Margin="0,0,6,6">
