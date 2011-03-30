@@ -271,11 +271,15 @@ Partial Public Class VM
             '        Case 2 : Return ReadReg("fmul", bd, pos)
             '        Case 3 : Return ReadReg("fdiv", bd, pos)
             '    End Select
-            'Case 7 : Return ReadRegNum("sob", bd, pos)
             Case 1 ' div: DIVision
                 Dim src = ConvShort(GetDst().GetValue(Me))
                 Dim r = (v >> 6) And 7
                 SetReg32(r, CInt(GetReg32(r) / src))
+                Return
+            Case 7 ' sob: Subtract One from register, Branch if not zero
+                Dim r = (v >> 6) And 7
+                Regs(r) = CUShort((Regs(r) - 1) And &HFFFF)
+                PC = If(Regs(r) <> 0, CUShort(PC + 2 - (v And &O77) * 2), PC + 2US)
                 Return
         End Select
         Abort("not implemented")
