@@ -106,4 +106,10 @@ Public Class AOut
         Next
         Return ret
     End Function
+
+    Public Overrides Function EncAddr(v As UShort) As String
+        Dim ad = MyBase.EncAddr(v)
+        Dim sym = GetSymbol(v)
+        Return If(sym.Address = v AndAlso Not sym.IsObject, sym.Name + "<" + ad + ">", ad)
+    End Function
 End Class

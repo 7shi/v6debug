@@ -188,11 +188,11 @@
     Private Function ReadRegOffset(op$, bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Dim r = RegNames((v >> 6) And 7)
-        Return New OpCode(op + " " + r + ", " + bd.Enc(CUShort(pos + 2 - (v And &O77) * 2)), 2)
+        Return New OpCode(op + " " + r + ", " + bd.EncAddr(CUShort(pos + 2 - (v And &O77) * 2)), 2)
     End Function
 
     Private Function ReadOffset(op$, bd As BinData, pos%) As OpCode
-        Return New OpCode(op + " " + bd.Enc(bd.GetOffset(pos)), 2)
+        Return New OpCode(op + " " + bd.EncAddr(bd.GetOffset(pos)), 2)
     End Function
 
     Private Function ReadReg(op$, bd As BinData, pos%) As OpCode
