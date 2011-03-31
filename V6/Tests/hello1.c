@@ -1,4 +1,4 @@
 main()
 {
-    write(1,"hello\n",6);
+    write(1, "hello\n", 6);
 }
