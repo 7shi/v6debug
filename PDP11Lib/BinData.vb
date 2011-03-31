@@ -88,7 +88,7 @@ Public Class BinData
         Return CUShort(pos + 2 + d * 2)
     End Function
 
-    Public Overridable Function EncAddr$(v As UShort)
-        Return Enc(v)
+    Public Overridable Function EncAddr$(addr As UShort)
+        Return Enc(addr)
     End Function
 End Class

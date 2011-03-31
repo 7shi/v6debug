@@ -428,7 +428,7 @@ Partial Public Class VM
         Me.V = v
     End Sub
 
-    Public Overrides Function EncAddr(v As UShort) As String
-        Return aout.EncAddr(v) + "{" + Enc(ReadUInt16(v)) + "}"
+    Public Overrides Function EncAddr(addr As UShort) As String
+        Return aout.EncAddr(addr) + "{" + Enc(ReadUInt16(addr)) + "}"
     End Function
 End Class

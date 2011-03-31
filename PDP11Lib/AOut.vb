@@ -100,16 +100,22 @@ Public Class AOut
 
     Public Function GetSymbol(addr%) As Symbol
         Dim ret As Symbol = Nothing
-        For Each sym In symlist
-            If addr < sym.Address Then Exit For
-            ret = sym
-        Next
+        If addr < tsize + dsize + bsize Then
+            For Each sym In symlist
+                If addr < sym.Address Then Exit For
+                ret = sym
+            Next
+        End If
         Return ret
     End Function
 
-    Public Overrides Function EncAddr(v As UShort) As String
-        Dim ad = MyBase.EncAddr(v)
-        Dim sym = GetSymbol(v)
-        Return If(sym.Address = v AndAlso Not sym.IsObject, sym.Name + "<" + ad + ">", ad)
+    Public Overrides Function EncAddr(addr As UShort) As String
+        Dim ad = MyBase.EncAddr(addr)
+        Dim sym = GetSymbol(addr)
+        If sym Is Nothing Then Return ad
+        Dim d = addr - sym.Address
+        Dim ad2 = sym.Name
+        If d > 0 Then ad2 += "+" + Enc(CUShort(d))
+        Return ad2 + "<" + ad + ">"
     End Function
 End Class
