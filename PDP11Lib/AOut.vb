@@ -22,27 +22,17 @@ Public Class AOut
         relflg = BitConverter.ToUInt16(image, 14)
 
         Dim syms As New Dictionary(Of Integer, Symbol)
-        Dim srcs As New Dictionary(Of Integer, Symbol)
         For i = Offset + tsize + dsize To image.Length - 1 Step 12
             Dim sym = New Symbol(image, i)
-            If sym.IsObject Then
-                If Not srcs.ContainsKey(sym.Address) Then
-                    srcs.Add(sym.Address, sym)
-                End If
-            ElseIf sym.Type <> 2 Then
-                If Not syms.ContainsKey(sym.Address) Then
-                    syms.Add(sym.Address, sym)
-                    symlist.Add(sym)
-                End If
-            End If
-        Next
-        For Each src In srcs.Values
-            If syms.ContainsKey(src.Address) Then
-                syms(src.Address).Source = src
+            If syms.ContainsKey(sym.Address) Then
+                syms(sym.Address).SetSymbol(sym)
+            ElseIf sym.IsObject Then
+                syms.Add(sym.Address, New Symbol(sym))
             Else
-                symlist.Add(src)
+                syms.Add(sym.Address, sym)
             End If
         Next
+        symlist.AddRange(syms.Values)
         symlist.Sort(Function(a, b) a.Address - b.Address)
     End Sub
 
@@ -89,6 +79,29 @@ Public Class AOut
             tw.WriteLine()
             i += len - 1
         Next
+
+        Dim baddr = tsize + dsize
+        Dim dsyms = From sym In symlist
+                   Where tsize <= sym.Address AndAlso sym.Address < baddr
+                   Select sym
+        If dsyms.Count > 0 Then
+            tw.WriteLine()
+            tw.WriteLine(".data")
+            For Each sym In dsyms
+                tw.WriteLine("[{0:x4}] {1}: {2}:",
+                             sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
+            Next
+        End If
+        Dim bsyms = From sym In symlist
+                  Where baddr <= sym.Address
+                  Select sym
+        If bsyms.Count > 0 Then
+            tw.WriteLine()
+            tw.WriteLine(".bss")
+            For Each sym In bsyms
+                tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
+            Next
+        End If
     End Sub
 
     Public Function GetDisassemble$()
