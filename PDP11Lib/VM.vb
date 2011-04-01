@@ -47,6 +47,7 @@ Partial Public Class VM
         Me.UseOct = aout.UseOct
         Me.aout = aout
         Regs(6) = &HFFF0
+        PC = aout.entry
     End Sub
 
     Public Sub Run()
