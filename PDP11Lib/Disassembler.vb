@@ -1,8 +1,23 @@
-﻿Public Module Disassembler
+﻿Imports System.Text
+
+Public Module Disassembler
     Public ReadOnly RegNames As String() =
         {"r0", "r1", "r2", "r3", "r4", "r5", "sp", "pc"}
 
     Public ReadOnly SectionNames As String() = {Nothing, ".text", ".data", ".bss"}
+
+    Public ReadOnly SysNames As String() =
+        {"indir", "exit", "fork", "read", "write", "open", "close", "wait",
+         "creat", "link", "unlink", "exec", "chdir", "time", "mknod", "chmod",
+         "chown", "break", "stat", "seek", "getpid", "mount", "umount", "setuid",
+         "getuid", "stime", "ptrace", Nothing, "fstat", Nothing, "smdate", "stty",
+         "gtty", Nothing, "nice", "sleep", "sync", "kill", "switch", Nothing,
+         Nothing, "dup", "pipe", "times", "prof", "tiu", "setgid", "getgid", "sig"}
+
+    Public ReadOnly SysArgs As Integer() =
+        {1, 0, 0, 2, 2, 2, 0, 0, 2, 2, 1, 2, 1, 0, 3, 2,
+         2, 1, 2, 2, 0, 3, 1, 0, 0, 0, 3, 0, 1, 0, 1, 1,
+         1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 4, 0, 0, 0, 2}
 
     Public Function Disassemble(data As Byte(), oct As Boolean) As OpCode
         If data.Length < 6 Then Array.Resize(data, 6)
@@ -138,7 +153,25 @@
             Case &H86 : Return ReadOffset("bcc", bd, pos)
             Case &H87 : Return ReadOffset("bcs", bd, pos)
             Case &H88 : Return New OpCode("emt " + bd.Enc(bd(pos)), 2)
-            Case &H89 : Return New OpCode("sys " + bd.Enc(bd(pos)), 2)
+            Case &H89
+                Dim arg = bd(pos)
+                If arg < SysNames.Length Then
+                    Dim n = SysNames(arg)
+                    If n IsNot Nothing Then
+                        Dim sb = New StringBuilder("sys " + n)
+                        If arg = 0 Then ' indir
+                            Dim addr = bd.ReadUInt16(pos + 2)
+                            sb.Append("; " + bd.EncAddr(addr))
+                        Else
+                            Dim argc = SysArgs(arg)
+                            For i = 1 To argc
+                                sb.Append("; " + bd.Enc(bd.ReadUInt16(pos + i * 2)))
+                            Next
+                        End If
+                        Return New OpCode(sb.ToString, 2 + SysArgs(arg) * 2)
+                    End If
+                End If
+                Return New OpCode("sys " & arg, 2)
         End Select
         Dim v = bd.ReadUInt16(pos)
         Select Case (v >> 6) And &O77

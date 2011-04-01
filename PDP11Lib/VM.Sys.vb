@@ -5,7 +5,7 @@ Partial Public Class VM
         Dim t = Me(PC)
         PC += 2US
         Select Case t
-            Case 0 ' indirect
+            Case 0 ' indir: INDIRect
                 Dim bak = PC + 2US
                 PC = ReadUInt16(PC)
                 ExecSys()

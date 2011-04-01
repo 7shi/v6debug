@@ -52,6 +52,7 @@ Public Class AOut
                      16, Enc(0US), tsize + 15, Enc(tsize - 1US))
         Dim en = symlist.GetEnumerator
         Dim hasSym = en.MoveNext()
+        Dim spclen = Enc0(0US).Length
         For i = 0 To tsize - 1
             If hasSym AndAlso en.Current.Address = i Then
                 tw.WriteLine("       {0}", en.Current)
@@ -66,10 +67,8 @@ Public Class AOut
             For j = 2 To 4 Step 2
                 If j < len Then
                     tw.Write(" " + Enc0(ReadUInt16(i + j)))
-                ElseIf UseOct Then
-                    tw.Write("       ")
                 Else
-                    tw.Write("     ")
+                    tw.Write(Space(1 + spclen))
                 End If
             Next
             tw.Write("  ")
@@ -77,6 +76,20 @@ Public Class AOut
                 tw.Write(op.Mnemonic)
             Else
                 tw.Write(Enc(s))
+            End If
+            If len > 6 Then
+                Dim indent = Space(9 + spclen * 2)
+                For j = 6 To op.Length Step 2
+                    If ((j - 2) And 3) = 0 Then
+                        tw.WriteLine()
+                        tw.Write(indent)
+                    End If
+                    If j < len Then
+                        tw.Write(" " + Enc0(ReadUInt16(i + j)))
+                    Else
+                        tw.Write(Space(1 + spclen))
+                    End If
+                Next
             End If
             tw.WriteLine()
             i += len - 1
