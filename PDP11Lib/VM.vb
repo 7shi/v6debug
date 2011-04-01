@@ -173,7 +173,7 @@ Partial Public Class VM
         End Select
         Dim len = 2US
         Dim v = ReadUInt16(PC)
-        If v = &O240 Then PC += 2US : Return ' nop
+        If v = &O240 Then PC += 2US : Return ' nop: No OPeration
         Dim v1 = (v >> 9) And 7, v2 = (v >> 6) And 7
         Select Case v1
             Case 0 ' 00 0x xx
