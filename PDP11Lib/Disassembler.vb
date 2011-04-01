@@ -43,12 +43,11 @@
             Case 7 : Return ReadOffset("ble", bd, pos)
         End Select
         Dim v = bd.ReadUInt16(pos)
-        If v = &HA0 Then Return New OpCode("nop", 2)
         Dim v1 = (v >> 9) And 7, v2 = (v >> 6) And 7
         Select Case v1
-            Case 0
+            Case 0 ' 00 0x xx
                 Select Case v2
-                    Case 0
+                    Case 0 ' 00 00 xx
                         Select Case v And &O77
                             Case 0 : Return New OpCode("halt", 2)
                             Case 1 : Return New OpCode("wait", 2)
@@ -59,10 +58,25 @@
                             Case 6 : Return New OpCode("rtt", 2)
                         End Select
                     Case 1 : Return ReadDst("jmp", bd, pos)
-                    Case 2
+                    Case 2 ' 00 02 xx
                         Select Case (v >> 3) And 7
                             Case 0 : Return ReadReg("rts", bd, pos)
                             Case 3 : Return New OpCode("spl " + (v & 7), 2)
+                            Case 4 - 7 ' 00 02 4x - 00 02 7x
+                                Dim mne As String
+                                Select Case v
+                                    'Case &O260 : mne = "nop"
+                                    Case &O240 : mne = "nop"
+                                    Case &O257 : mne = "ccc"
+                                    Case &O277 : mne = "scc"
+                                    Case Else
+                                        mne = If((v And 16) <> 0, "se", "cl") +
+                                            If((v And 8) <> 0, "n", "") +
+                                            If((v And 4) <> 0, "z", "") +
+                                            If((v And 2) <> 0, "v", "") +
+                                            If((v And 1) <> 0, "c", "")
+                                End Select
+                                Return New OpCode(mne, 2)
                         End Select
                     Case 3 : Return ReadDst("swab", bd, pos)
                 End Select

@@ -173,12 +173,12 @@ Partial Public Class VM
         End Select
         Dim len = 2US
         Dim v = ReadUInt16(PC)
-        If v = &HA0 Then PC += 2US : Return ' nop
+        If v = &O240 Then PC += 2US : Return ' nop
         Dim v1 = (v >> 9) And 7, v2 = (v >> 6) And 7
         Select Case v1
-            Case 0
+            Case 0 ' 00 0x xx
                 Select Case v2
-                    'Case 0
+                    'Case 0 ' 00 00 xx
                     '    Select Case v And &O77
                     '        Case 0 : Return New OpCode("halt", 2)
                     '        Case 1 : Return New OpCode("wait", 2)
@@ -192,13 +192,21 @@ Partial Public Class VM
                     Case 1 ' jmp: JuMP
                         PC = GetDst().GetAddress(Me)
                         Return
-                    Case 2
+                    Case 2 ' 00 02 xx
                         Select Case (v >> 3) And 7
                             'Case 3 : Return New OpCode("spl " + (v & 7), 2)
                             Case 0 ' rts: ReTurn from Subroutine
                                 Dim r = v And 7
                                 PC = Regs(r)
                                 Regs(r) = ReadUInt16(GetInc(6))
+                                Return
+                            Case 4 - 7 ' cl*/se*/ccc/scc: CLear/SEt (Condition Codes)
+                                Dim f = (v And 16) <> 0
+                                If (v And 8) <> 0 Then Me.N = f
+                                If (v And 4) <> 0 Then Me.Z = f
+                                If (v And 2) <> 9 Then Me.V = f
+                                If (v And 1) <> 0 Then Me.C = f
+                                PC += 2US
                                 Return
                         End Select
                 End Select
