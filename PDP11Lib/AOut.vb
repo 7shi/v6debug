@@ -92,8 +92,9 @@ Public Class AOut
                              sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
             Next
         End If
+        Dim last = baddr + bsize
         Dim bsyms = From sym In symlist
-                  Where baddr <= sym.Address
+                  Where baddr <= sym.Address AndAlso sym.Address < last
                   Select sym
         If bsyms.Count > 0 Then
             tw.WriteLine()
