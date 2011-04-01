@@ -2,6 +2,8 @@
     Public ReadOnly RegNames As String() =
         {"r0", "r1", "r2", "r3", "r4", "r5", "sp", "pc"}
 
+    Public ReadOnly SectionNames As String() = {Nothing, ".text", ".data", ".bss"}
+
     Public Function Disassemble(data As Byte(), oct As Boolean) As OpCode
         If data.Length < 6 Then Array.Resize(data, 6)
         Dim bd = New BinData(data) With {.UseOct = oct}

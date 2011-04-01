@@ -46,8 +46,10 @@ Public Class AOut
         tw.WriteLine("[{0:x4}] entry  = {1}", 10, Enc0(entry))
         tw.WriteLine("[{0:x4}] pad    = {1}", 12, Enc0(pad))
         tw.WriteLine("[{0:x4}] relflg = {1}", 14, Enc0(relflg))
+
         tw.WriteLine()
-        tw.WriteLine(".text")
+        tw.WriteLine(".text [{0:x4}]{1} - [{2:x4}]{3}",
+                     16, Enc(0US), tsize + 15, Enc(tsize - 1US))
         Dim en = symlist.GetEnumerator
         Dim hasSym = en.MoveNext()
         For i = 0 To tsize - 1
@@ -81,28 +83,22 @@ Public Class AOut
         Next
 
         Dim baddr = tsize + dsize
-        Dim dsyms = From sym In symlist
-                   Where tsize <= sym.Address AndAlso sym.Address < baddr
-                   Select sym
-        If dsyms.Count > 0 Then
-            tw.WriteLine()
-            tw.WriteLine(".data")
-            For Each sym In dsyms
-                tw.WriteLine("[{0:x4}] {1}: {2}:",
-                             sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
-            Next
-        End If
+        tw.WriteLine()
+        tw.WriteLine(".data [{0:x4}]{1} - [{2:x4}]{3}",
+                     tsize + 16, Enc(tsize), baddr + 15, Enc(baddr - 1US))
+        Dim dsyms = From sym In symlist Where GetSection(sym) = 2 Select sym
+        For Each sym In dsyms
+            tw.WriteLine("[{0:x4}] {1}: {2}:",
+                         sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
+        Next
+
         Dim last = baddr + bsize
-        Dim bsyms = From sym In symlist
-                  Where baddr <= sym.Address AndAlso sym.Address < last
-                  Select sym
-        If bsyms.Count > 0 Then
-            tw.WriteLine()
-            tw.WriteLine(".bss")
-            For Each sym In bsyms
-                tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
-            Next
-        End If
+        tw.WriteLine()
+        tw.WriteLine(".bss  [----]{0} - [----]{1}", Enc(baddr), Enc(last - 1US))
+        Dim bsyms = From sym In symlist Where GetSection(sym) = 3 Select sym
+        For Each sym In bsyms
+            tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
+        Next
     End Sub
 
     Public Function GetDisassemble$()
@@ -113,11 +109,12 @@ Public Class AOut
     End Function
 
     Public Function GetSymbol(addr%) As Symbol
+        Dim sect = GetSection(addr)
         Dim ret As Symbol = Nothing
         If addr < tsize + dsize + bsize Then
             For Each sym In symlist
                 If addr < sym.Address Then Exit For
-                ret = sym
+                If GetSection(sym) = sect Then ret = sym
             Next
         End If
         Return ret
@@ -131,5 +128,18 @@ Public Class AOut
         Dim ad2 = sym.Name
         If d > 0 Then ad2 += "+" + Enc(CUShort(d))
         Return ad2 + "<" + ad + ">"
+    End Function
+
+    Public Function GetSection%(pos%)
+        If pos < 0 Then Return 0
+        If pos < tsize Then Return 1
+        Dim baddr = tsize + dsize
+        If pos < baddr Then Return 2
+        If pos < baddr + bsize Then Return 3
+        Return 0
+    End Function
+
+    Public Function GetSection%(sym As Symbol)
+        Return GetSection(sym.Address)
     End Function
 End Class
