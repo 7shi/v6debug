@@ -160,8 +160,12 @@ Public Module Disassembler
                     If n IsNot Nothing Then
                         Dim sb = New StringBuilder("sys " + n)
                         If arg = 0 Then ' indir
-                            Dim addr = bd.ReadUInt16(pos + 2)
-                            sb.Append("; " + bd.EncAddr(addr))
+                            Dim ad = bd.ReadUInt16(pos + 2)
+                            Dim argad = bd.EncAddr(ad)
+                            Dim p = argad.IndexOf("{")
+                            If p > 0 Then argad = argad.Substring(0, p)
+                            Dim op = Disassemble(bd, ad)
+                            sb.Append("; " + argad + "{" + op.Mnemonic + "}")
                         Else
                             Dim argc = SysArgs(arg)
                             For i = 1 To argc

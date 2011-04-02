@@ -16,6 +16,16 @@
         End Get
     End Property
 
+    Public ReadOnly Property IsNull As Boolean
+        Get
+            Return Name Is Nothing AndAlso ObjSym Is Nothing
+        End Get
+    End Property
+
+    Public Sub New(pos%)
+        Address = pos
+    End Sub
+
     Public Sub New(data As Byte(), pos%)
         Name = ReadText(data, pos, 8)
         Type = BitConverter.ToUInt16(data, pos + 8)

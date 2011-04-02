@@ -52,57 +52,32 @@ Public Class AOut
                      16, Enc(0US), tsize + 15, Enc(tsize - 1US))
         Dim en = symlist.GetEnumerator
         Dim hasSym = en.MoveNext()
-        Dim spclen = Enc0(0US).Length
+        Dim thunks = New List(Of Symbol)
         For i = 0 To tsize - 1
             If hasSym AndAlso en.Current.Address = i Then
                 tw.WriteLine("       {0}", en.Current)
                 hasSym = en.MoveNext()
             End If
-
-            Dim op = Disassembler.Disassemble(Me, i)
-            Dim len = 2
-            If op IsNot Nothing Then len = op.Length
-            Dim s = ReadUInt16(i)
-            tw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc0(CUShort(i)), Enc0(s))
-            For j = 2 To 4 Step 2
-                If j < len Then
-                    tw.Write(" " + Enc0(ReadUInt16(i + j)))
-                Else
-                    tw.Write(Space(1 + spclen))
-                End If
-            Next
-            tw.Write("  ")
-            If op IsNot Nothing Then
-                tw.Write(op.Mnemonic)
-            Else
-                tw.Write(Enc(s))
+            If ReadUInt16(i) = &H8900 Then
+                thunks.Add(New Symbol(ReadUInt16(i + 2)))
             End If
-            If len > 6 Then
-                Dim indent = Space(9 + spclen * 2)
-                For j = 6 To op.Length Step 2
-                    If ((j - 2) And 3) = 0 Then
-                        tw.WriteLine()
-                        tw.Write(indent)
-                    End If
-                    If j < len Then
-                        tw.Write(" " + Enc0(ReadUInt16(i + j)))
-                    Else
-                        tw.Write(Space(1 + spclen))
-                    End If
-                Next
-            End If
-            tw.WriteLine()
-            i += len - 1
+            i += Disassemble(tw, i) - 1
         Next
 
         Dim baddr = tsize + dsize
         tw.WriteLine()
         tw.WriteLine(".data [{0:x4}]{1} - [{2:x4}]{3}",
                      tsize + 16, Enc(tsize), baddr + 15, Enc(baddr - 1US))
-        Dim dsyms = From sym In symlist Where GetSection(sym) = 2 Select sym
+        Dim dsyms = From sym In symlist.Concat(thunks)
+                    Where GetSection(sym) = 2
+                    Select sym
+                    Order By sym.Address * 2 + If(sym.IsNull, 1, 0)
         For Each sym In dsyms
-            tw.WriteLine("[{0:x4}] {1}: {2}:",
-                         sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
+            If Not sym.IsNull Then
+                tw.WriteLine("[{0:x4}] {1}: {2}:", sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
+            Else
+                Disassemble(tw, sym.Address)
+            End If
         Next
 
         Dim last = baddr + bsize
@@ -113,6 +88,44 @@ Public Class AOut
             tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
         Next
     End Sub
+
+    Private Function Disassemble%(tw As TextWriter, i%)
+        Dim spclen = Enc0(0US).Length
+        Dim op = Disassembler.Disassemble(Me, i)
+        Dim len = 2
+        If op IsNot Nothing Then len = op.Length
+        Dim s = ReadUInt16(i)
+        tw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc0(CUShort(i)), Enc0(s))
+        For j = 2 To 4 Step 2
+            If j < len Then
+                tw.Write(" " + Enc0(ReadUInt16(i + j)))
+            Else
+                tw.Write(Space(1 + spclen))
+            End If
+        Next
+        tw.Write("  ")
+        If op IsNot Nothing Then
+            tw.Write(op.Mnemonic)
+        Else
+            tw.Write(Enc(s))
+        End If
+        If len > 6 Then
+            Dim indent = Space(9 + spclen * 2)
+            For j = 6 To op.Length Step 2
+                If ((j - 2) And 3) = 0 Then
+                    tw.WriteLine()
+                    tw.Write(indent)
+                End If
+                If j < len Then
+                    tw.Write(" " + Enc0(ReadUInt16(i + j)))
+                Else
+                    tw.Write(Space(1 + spclen))
+                End If
+            Next
+        End If
+        tw.WriteLine()
+        Return len
+    End Function
 
     Public Function GetDisassemble$()
         Using sw = New StringWriter()
