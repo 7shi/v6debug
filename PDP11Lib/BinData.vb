@@ -91,4 +91,12 @@ Public Class BinData
     Public Overridable Function EncAddr$(addr As UShort)
         Return Enc(addr)
     End Function
+
+    Public Overridable Function GetValue$(r%, d%)
+        Return ""
+    End Function
+
+    Public Overridable Function GetPtr$(r%, d%)
+        Return ""
+    End Function
 End Class

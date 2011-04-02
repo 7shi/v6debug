@@ -440,4 +440,13 @@ Partial Public Class VM
     Public Overrides Function EncAddr(addr As UShort) As String
         Return aout.EncAddr(addr) + "{" + Enc(ReadUInt16(addr)) + "}"
     End Function
+
+    Public Overrides Function GetValue$(r%, d%)
+        Return "{" + Enc(ReadUInt16(CUShort((Regs(r) + d) And &HFFFF))) + "}"
+    End Function
+
+    Public Overrides Function GetPtr$(r%, d%)
+        Dim p = ReadUInt16(CUShort((Regs(r) + d) And &HFFFF))
+        Return "{" + Enc(p) + "->" + Enc(ReadUInt16(p)) + "}"
+    End Function
 End Class
