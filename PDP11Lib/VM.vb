@@ -407,10 +407,11 @@ Partial Public Class VM
 
     Public Function GetRegs$()
         Return String.Format(
-            "{0} r0={1} r1={2} r2={3} r3={4} r4={5} r5={6} sp={7}{{{8} {9}}} pc={10}",
+            "{0} r0={1} r1={2} r2={3} r3={4} r4={5} r5={6} sp={7}{{{8} {9} {10} {11}}} pc={12}",
             GetFlags,
-            Enc(Regs(0)), Enc(Regs(1)), Enc(Regs(2)), Enc(Regs(3)), Enc(Regs(4)), Enc(Regs(5)),
-            Enc(Regs(6)), Enc(ReadUInt16(Regs(6))), Enc(ReadUInt16(Regs(6) + 2)), Enc(Regs(7)))
+            Enc0(Regs(0)), Enc0(Regs(1)), Enc0(Regs(2)), Enc0(Regs(3)), Enc0(Regs(4)), Enc0(Regs(5)),
+            Enc0(Regs(6)), Enc0(ReadUInt16(Regs(6))), Enc0(ReadUInt16(Regs(6) + 2)),
+            Enc0(ReadUInt16(Regs(6) + 4)), Enc0(ReadUInt16(Regs(6) + 6)), Enc0(Regs(7)))
     End Function
 
     Public Function GetReg32%(r%)
