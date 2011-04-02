@@ -92,11 +92,11 @@ Public Class BinData
         Return Enc(addr)
     End Function
 
-    Public Overridable Function GetValue$(r%, d%)
+    Public Overridable Function GetValue$(r%, d1%, d2%)
         Return ""
     End Function
 
-    Public Overridable Function GetPtr$(r%, d%)
+    Public Overridable Function GetPtr$(r%, d1%, d2%)
         Return ""
     End Function
 End Class

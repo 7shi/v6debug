@@ -26,6 +26,14 @@ Public Module Disassembler
     End Function
 
     Public Function Disassemble(bd As BinData, pos%) As OpCode
+        Dim vm = TryCast(bd, VM)
+        If vm IsNot Nothing Then vm.SaveRegs()
+        Dim ret = _Disassemble(bd, pos)
+        If vm IsNot Nothing Then vm.LoadRegs()
+        Return ret
+    End Function
+
+    Private Function _Disassemble(bd As BinData, pos%) As OpCode
         Select Case bd(pos + 1) >> 4
             Case 0 : Return Read0(bd, pos)
             Case 1 : Return ReadSrcDst("mov", bd, pos)

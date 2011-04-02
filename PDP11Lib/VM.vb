@@ -5,6 +5,7 @@ Partial Public Class VM
     Inherits BinData
 
     Public Regs(7) As UShort
+    Private bakRegs(7) As UShort
 
     Public Property PC As UShort
         Get
@@ -441,12 +442,23 @@ Partial Public Class VM
         Return aout.EncAddr(addr) + "{" + Enc(ReadUInt16(addr)) + "}"
     End Function
 
-    Public Overrides Function GetValue$(r%, d%)
-        Return "{" + Enc(ReadUInt16(CUShort((Regs(r) + d) And &HFFFF))) + "}"
+    Public Overrides Function GetValue$(r%, d1%, d2%)
+        Dim p = ReadUInt16(CUShort((Regs(r) + d1) And &HFFFF))
+        Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
+        Return "{" + Enc(p) + "}"
     End Function
 
-    Public Overrides Function GetPtr$(r%, d%)
-        Dim p = ReadUInt16(CUShort((Regs(r) + d) And &HFFFF))
+    Public Overrides Function GetPtr$(r%, d1%, d2%)
+        Dim p = ReadUInt16(CUShort((Regs(r) + d1) And &HFFFF))
+        Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
         Return "{" + Enc(p) + "->" + Enc(ReadUInt16(p)) + "}"
     End Function
+
+    Public Sub SaveRegs()
+        Array.Copy(Regs, bakRegs, Regs.Length)
+    End Sub
+
+    Public Sub LoadRegs()
+        Array.Copy(bakRegs, Regs, Regs.Length)
+    End Sub
 End Class
