@@ -400,10 +400,6 @@ Partial Public Class VM
             'Case &O51 : Return ReadDst("comb", bd, pos)
             'Case &O55 : Return ReadDst("adcb", bd, pos)
             'Case &O56 : Return ReadDst("sbcb", bd, pos)
-            'Case &O60 : Return ReadDst("rorb", bd, pos)
-            'Case &O61 : Return ReadDst("rolb", bd, pos)
-            'Case &O62 : Return ReadDst("asrb", bd, pos)
-            'Case &O63 : Return ReadDst("aslb", bd, pos)
             'Case &O64 : Return ReadDst("mfpd", bd, pos)
             'Case &O65 : Return ReadDst("mtpd", bd, pos)
             Case &O50 ' clrb: CLeaR Byte
@@ -433,6 +429,43 @@ Partial Public Class VM
             Case &O57 ' tstb: TeST Byte
                 Dim dst = ConvSByte(GetDst(1).GetByte(Me))
                 SetFlags(dst = 0, dst < 0, False, False)
+                Return
+            Case &O60 ' rorb: ROtate Right Byte
+                Dim dst = GetDst(1)
+                Dim val0 = dst.GetByte(Me)
+                Dim val1 = val0 >> 1
+                If C Then val1 = CByte(val1 + &H80)
+                dst.SetByte(Me, val1)
+                Dim lsb0 = (val0 And 1) <> 0
+                Dim msb1 = C
+                SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
+                Return
+            Case &O61 ' rolb: ROtate Left Byte
+                Dim dst = GetDst(1)
+                Dim val0 = dst.GetByte(Me)
+                Dim val1 = CByte(((CUInt(val0) << 1) + If(C, 1, 0)) And &HFF)
+                dst.SetByte(Me, val1)
+                Dim msb0 = (val0 And &H80) <> 0
+                Dim msb1 = (val1 And &H80) <> 0
+                SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
+                Return
+            Case &O62 ' asrb: Arithmetic Shift Right Byte
+                Dim dst = GetDst(1)
+                Dim val0 = dst.GetByte(Me)
+                Dim val1 = ConvSByte(val0) >> 1
+                dst.SetByte(Me, CByte(val1 And &HFF))
+                Dim lsb0 = (val0 And 1) <> 0
+                Dim msb1 = val1 < 0
+                SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
+                Return
+            Case &O63 ' aslb: Arithmetic Shift Left Byte
+                Dim dst = GetDst(1)
+                Dim val0 = dst.GetByte(Me)
+                Dim val1 = CByte((CUInt(val0) << 1) And &HFF)
+                dst.SetByte(Me, val1)
+                Dim msb0 = (val0 And &H80) <> 0
+                Dim msb1 = val1 < 0
+                SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
                 Return
         End Select
         Abort("not implemented")
