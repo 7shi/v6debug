@@ -4,12 +4,6 @@ Imports System.Text
 Partial Public Class VM
     Public Sub RunStep()
         Select Case Me(PC + 1) >> 4
-            'Case 3 : Return ReadSrcDst("bit")
-            'Case 4 : Return ReadSrcDst("bic")
-            'Case 5 : Return ReadSrcDst("bis")
-            'Case &O13 : Return ReadSrcDst("bitb")
-            'Case &O14 : Return ReadSrcDst("bicb")
-            'Case &O15 : Return ReadSrcDst("bisb")
             Case 0
                 Exec0()
                 Return
@@ -25,6 +19,23 @@ Partial Public Class VM
                 Dim dst = oprs(1).GetValue(Me)
                 Dim val = CInt(ConvShort(src)) - CInt(ConvShort(dst))
                 SetFlags(val = 0, val < 0, src < dst, val < -&H8000)
+                Return
+            Case 3 ' bit: BIt Test
+                Dim oprs = GetSrcDst(2)
+                Dim val = oprs(0).GetValue(Me) And oprs(1).GetValue(Me)
+                SetFlags(val = 0, (val And &H8000) <> 0, C, False)
+                Return
+            Case 4 ' bic: BIt Clear
+                Dim oprs = GetSrcDst(2)
+                Dim val = (Not oprs(0).GetValue(Me)) And oprs(1).GetValue(Me)
+                oprs(1).SetValue(Me, val)
+                SetFlags(val = 0, (val And &H8000) <> 0, C, False)
+                Return
+            Case 5 ' bis: BIt Set
+                Dim oprs = GetSrcDst(2)
+                Dim val = oprs(0).GetValue(Me) Or oprs(1).GetValue(Me)
+                oprs(1).SetValue(Me, val)
+                SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 6 ' add: ADD
                 Dim oprs = GetSrcDst(2)
@@ -52,6 +63,23 @@ Partial Public Class VM
                 Dim dst = oprs(1).GetByte(Me)
                 Dim val = CInt(ConvSByte(src)) - CInt(ConvSByte(dst))
                 SetFlags(val = 0, val < 0, src < dst, val < -&H80)
+                Return
+            Case &O13 ' bitb: BIt Test Byte
+                Dim oprs = GetSrcDst(1)
+                Dim val = oprs(0).GetByte(Me) And oprs(1).GetByte(Me)
+                SetFlags(val = 0, (val And &H80) <> 0, C, False)
+                Return
+            Case &O14 ' bicb: BIt Clear Byte
+                Dim oprs = GetSrcDst(1)
+                Dim val = (Not oprs(0).GetByte(Me)) And oprs(1).GetByte(Me)
+                oprs(1).SetByte(Me, val)
+                SetFlags(val = 0, (val And &H80) <> 0, C, False)
+                Return
+            Case &O15 ' bisb: BIt Set Byte
+                Dim oprs = GetSrcDst(1)
+                Dim val = oprs(0).GetByte(Me) Or oprs(1).GetByte(Me)
+                oprs(1).SetByte(Me, val)
+                SetFlags(val = 0, (val And &H80) <> 0, C, False)
                 Return
             Case &O16 ' sub: SUBtract
                 Dim oprs = GetSrcDst(2)
