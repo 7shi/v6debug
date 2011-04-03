@@ -141,8 +141,6 @@ Partial Public Class VM
             Case 5
                 Select Case v2
                     'Case 1 : Return ReadDst("com", bd, pos)
-                    'Case 5 : Return ReadDst("adc", bd, pos)
-                    'Case 6 : Return ReadDst("sbc", bd, pos)
                     Case 0 ' clr: CLeaR
                         GetDst(2).SetValue(Me, 0)
                         SetFlags(True, False, False, False)
@@ -166,6 +164,18 @@ Partial Public Class VM
                         Dim val2 = CUShort(val1 And &HFFFF)
                         dst.SetValue(Me, val2)
                         SetFlags(val1 = 0, val1 < 0, val1 <> 0, val1 = &H8000)
+                        Return
+                    Case 5 ' adc: ADd Carry
+                        Dim dst = GetDst(2)
+                        Dim val = CInt(ConvShort(dst.GetValue(Me))) + If(C, 1, 0)
+                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        SetFlags(val = 0, val < 0, C AndAlso val = 0, val = &H8000)
+                        Return
+                    Case 6 ' sbc: SuBtract Carry
+                        Dim dst = GetDst(2)
+                        Dim val = CInt(ConvShort(dst.GetValue(Me))) - If(C, 1, 0)
+                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        SetFlags(val = 0, val < 0, C AndAlso val = -1, val = -&H8001)
                         Return
                     Case 7 ' tst: TeST
                         Dim dst = ConvShort(GetDst(2).GetValue(Me))
