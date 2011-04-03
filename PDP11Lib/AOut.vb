@@ -28,7 +28,7 @@ Public Class AOut
                 syms(sym.Address).SetSymbol(sym)
             ElseIf sym.IsObject Then
                 syms.Add(sym.Address, New Symbol(sym))
-            Else
+            ElseIf sym.Type <> 1 AndAlso sym.Type <> &H14 Then
                 syms.Add(sym.Address, sym)
             End If
         Next
