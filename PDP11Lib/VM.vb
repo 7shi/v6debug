@@ -397,11 +397,7 @@ Partial Public Class VM
         End Select
         Dim v = ReadUInt16(PC)
         Select Case (v >> 6) And &O77
-            'Case &O50 : Return ReadDst("clrb", bd, pos)
             'Case &O51 : Return ReadDst("comb", bd, pos)
-            'Case &O52 : Return ReadDst("incb", bd, pos)
-            'Case &O53 : Return ReadDst("decb", bd, pos)
-            'Case &O54 : Return ReadDst("negb", bd, pos)
             'Case &O55 : Return ReadDst("adcb", bd, pos)
             'Case &O56 : Return ReadDst("sbcb", bd, pos)
             'Case &O60 : Return ReadDst("rorb", bd, pos)
@@ -410,6 +406,30 @@ Partial Public Class VM
             'Case &O63 : Return ReadDst("aslb", bd, pos)
             'Case &O64 : Return ReadDst("mfpd", bd, pos)
             'Case &O65 : Return ReadDst("mtpd", bd, pos)
+            Case &O50 ' clrb: CLeaR Byte
+                GetDst(1).SetByte(Me, 0)
+                SetFlags(True, False, False, False)
+                Return
+            Case &O52 ' incb: INCrement Byte
+                Dim dst = GetDst(1)
+                Dim val = CInt(ConvSByte(dst.GetByte(Me))) + 1
+                dst.SetByte(Me, CByte(val And &HFF))
+                SetFlags(val = 0, val < 0, C, val >= &H80)
+                Return
+            Case &O53 ' decb: DECrement Byte
+                Dim dst = GetDst(1)
+                Dim val = CInt(ConvSByte(dst.GetByte(Me))) - 1
+                dst.SetByte(Me, CByte(val And &HFF))
+                SetFlags(val = 0, val < 0, C, val < -&H80)
+                Return
+            Case &O54 ' negb: NEGate Byte
+                Dim dst = GetDst(1)
+                Dim val0 = dst.GetByte(Me)
+                Dim val1 = -ConvSByte(val0)
+                Dim val2 = CByte(val1 And &HFF)
+                dst.SetByte(Me, val2)
+                SetFlags(val1 = 0, val1 < 0, val1 <> 0, val1 = &H80)
+                Return
             Case &O57 ' tstb: TeST Byte
                 Dim dst = ConvSByte(GetDst(1).GetByte(Me))
                 SetFlags(dst = 0, dst < 0, False, False)
