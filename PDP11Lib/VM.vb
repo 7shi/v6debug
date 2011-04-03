@@ -273,16 +273,48 @@ Partial Public Class VM
                         Return
                 End Select
             Case 6
-                'Select Case v2
-                '    Case 0 : Return ReadDst("ror", bd, pos)
-                '    Case 1 : Return ReadDst("rol", bd, pos)
-                '    Case 2 : Return ReadDst("asr", bd, pos)
-                '    Case 3 : Return ReadDst("asl", bd, pos)
-                '    Case 4 : Return ReadNum("mark", bd, pos)
-                '    Case 5 : Return ReadDst("mfpi", bd, pos)
-                '    Case 6 : Return ReadDst("mtpi", bd, pos)
-                '    Case 7 : Return ReadDst("sxt", bd, pos)
-                'End Select
+                Select Case v2
+                    'Case 4 : Return ReadNum("mark", bd, pos)
+                    'Case 5 : Return ReadDst("mfpi", bd, pos)
+                    'Case 6 : Return ReadDst("mtpi", bd, pos)
+                    'Case 7 : Return ReadDst("sxt", bd, pos)
+                    Case 0 ' ror: ROtate Right
+                        Dim dst = GetDst()
+                        Dim val0 = dst.GetValue(Me)
+                        Dim val1 = (val0 >> 1) Or If(C, &H8000US, 0US)
+                        dst.SetValue(Me, val1)
+                        Dim lsb0 = (val0 And 1) <> 0
+                        Dim msb1 = C
+                        SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
+                        Return
+                    Case 1 ' rol: ROtate Left
+                        Dim dst = GetDst()
+                        Dim val0 = dst.GetValue(Me)
+                        Dim val1 = CUShort((CUInt(val0) << 1) And &HFFFF) Or If(C, 1US, 0US)
+                        dst.SetValue(Me, val1)
+                        Dim msb0 = (val0 And &H8000) <> 0
+                        Dim msb1 = (val1 And &H8000) <> 0
+                        SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
+                        Return
+                    Case 2 ' asr: Arithmetic Shift Right
+                        Dim dst = GetDst()
+                        Dim val0 = dst.GetValue(Me)
+                        Dim val1 = ConvShort(val0) >> 1
+                        dst.SetValue(Me, CUShort(val1 And &HFFFF))
+                        Dim lsb0 = (val0 And 1) <> 0
+                        Dim msb1 = val1 < 0
+                        SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
+                        Return
+                    Case 3 ' asl: Arithmetic Shift Left
+                        Dim dst = GetDst()
+                        Dim val0 = dst.GetValue(Me)
+                        Dim val1 = CUShort((CUInt(val0) << 1) And &HFFFF)
+                        dst.SetValue(Me, val1)
+                        Dim msb0 = (val0 And &H8000) <> 0
+                        Dim msb1 = val1 < 0
+                        SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
+                        Return
+                End Select
         End Select
         Abort("not implemented")
     End Sub
