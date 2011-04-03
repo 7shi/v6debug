@@ -265,7 +265,7 @@ Partial Public Class VM
                         Dim val1 = -ConvShort(val0)
                         Dim val2 = CUShort(val1 And &HFFFF)
                         dst.SetValue(Me, val2)
-                        SetFlags(val1 = 0, val1 < 0, val0 < val2, val1 = &H8000)
+                        SetFlags(val1 = 0, val1 < 0, val1 <> 0, val1 = &H8000)
                         Return
                     Case 7 ' tst: TeST
                         Dim dst = ConvShort(GetDst().GetValue(Me))
@@ -337,8 +337,11 @@ Partial Public Class VM
                 Dim src = ConvShort(GetDst().GetValue(Me))
                 Dim r = (v >> 6) And 7
                 Dim dst = GetReg32(r)
-                Regs(r) = CUShort((dst \ src) And &HFFFF)
-                Regs((r + 1) And 7) = CUShort(CInt(dst Mod src) And &HFFFF)
+                Dim r1 = dst \ src
+                Dim r2 = dst Mod src
+                Regs(r) = CUShort(r1 And &HFFFF)
+                Regs((r + 1) And 7) = CUShort(r2 And &HFFFF)
+                SetFlags(r1 = 0, r1 < 0, r2 <> 0, r1 < -&H8000 OrElse r1 >= &H8000)
                 Return
             Case 7 ' sob: Subtract One from register, Branch if not zero
                 Dim r = (v >> 6) And 7
