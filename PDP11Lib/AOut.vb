@@ -48,8 +48,8 @@ Public Class AOut
         tw.WriteLine("[{0:x4}] relflg = {1}", 14, Enc0(relflg))
 
         tw.WriteLine()
-        tw.WriteLine(".text [{0:x4}]{1} - [{2:x4}]{3}",
-                     16, Enc(0US), tsize + 15, Enc(tsize - 1US))
+        tw.WriteLine(".text [{0:x4}] {1} - [{2:x4}] {3}",
+                     16, Enc0(0US), tsize + 15, Enc0(tsize - 1US))
         Dim en = symlist.GetEnumerator
         Dim hasSym = en.MoveNext()
         Dim thunks = New List(Of Symbol)
@@ -65,28 +65,32 @@ Public Class AOut
         Next
 
         Dim baddr = tsize + dsize
-        tw.WriteLine()
-        tw.WriteLine(".data [{0:x4}]{1} - [{2:x4}]{3}",
-                     tsize + 16, Enc(tsize), baddr + 15, Enc(baddr - 1US))
-        Dim dsyms = From sym In symlist.Concat(thunks)
-                    Where GetSection(sym) = 2
-                    Select sym
-                    Order By sym.Address * 2 + If(sym.IsNull, 1, 0)
-        For Each sym In dsyms
-            If Not sym.IsNull Then
-                tw.WriteLine("[{0:x4}] {1}: {2}:", sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
-            Else
-                Disassemble(tw, sym.Address)
-            End If
-        Next
+        If dsize > 0 Then
+            tw.WriteLine()
+            tw.WriteLine(".data [{0:x4}] {1} - [{2:x4}] {3}",
+                         tsize + 16, Enc0(tsize), baddr + 15, Enc0(baddr - 1US))
+            Dim dsyms = From sym In symlist.Concat(thunks)
+                        Where GetSection(sym) = 2
+                        Select sym
+                        Order By sym.Address * 2 + If(sym.IsNull, 1, 0)
+            For Each sym In dsyms
+                If Not sym.IsNull Then
+                    tw.WriteLine("[{0:x4}] {1}: {2}:", sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
+                Else
+                    Disassemble(tw, sym.Address)
+                End If
+            Next
+        End If
 
-        Dim last = baddr + bsize
-        tw.WriteLine()
-        tw.WriteLine(".bss  [----]{0} - [----]{1}", Enc(baddr), Enc(last - 1US))
-        Dim bsyms = From sym In symlist Where GetSection(sym) = 3 Select sym
-        For Each sym In bsyms
-            tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
-        Next
+        If bsize > 0 Then
+            Dim last = baddr + bsize
+            tw.WriteLine()
+            tw.WriteLine(".bss  [----] {0} - [----] {1}", Enc0(baddr), Enc0(last - 1US))
+            Dim bsyms = From sym In symlist Where GetSection(sym) = 3 Select sym
+            For Each sym In bsyms
+                tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
+            Next
+        End If
     End Sub
 
     Private Function Disassemble%(tw As TextWriter, i%)
