@@ -13,6 +13,7 @@ Partial Public Class MainPage
         addTest("hello2")
         addTest("hello3")
         addTest("hello4")
+        addTest("args")
         addTest("nm")
     End Sub
 
