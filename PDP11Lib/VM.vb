@@ -505,18 +505,19 @@ Partial Public Class VM
         Return "{" + Enc0(Regs(r)) + "}"
     End Function
 
-    Public Overrides Function GetValue$(r%, d1%, d2%)
+    Public Overrides Function GetValue$(r%, size%, d1%, d2%)
         Dim ad = CUShort((Regs(r) + d1) And &HFFFF)
-        Dim p = ReadUInt16(ad)
+        Dim p = If(size = 2, Enc0(ReadUInt16(ad)), Enc0(Me(ad)))
         Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
-        Return "{" + Enc0(ad) + ":" + Enc0(p) + "}"
+        Return "{" + Enc0(ad) + ":" + p + "}"
     End Function
 
-    Public Overrides Function GetPtr$(r%, d1%, d2%)
+    Public Overrides Function GetPtr$(r%, size%, d1%, d2%)
         Dim ad = CUShort((Regs(r) + d1) And &HFFFF)
         Dim p = ReadUInt16(ad)
         Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
-        Return "{" + Enc0(ad) + ":" + Enc0(p) + ":" + Enc0(ReadUInt16(p)) + "}"
+        Dim pp = If(size = 2, Enc0(ReadUInt16(p)), Enc0(Me(p)))
+        Return "{" + Enc0(ad) + ":" + Enc0(p) + ":" + pp + "}"
     End Function
 
     Public Sub SaveRegs()

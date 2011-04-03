@@ -74,6 +74,10 @@ Public Class BinData
         Return If(UseOct, Oct(v, 6), v.ToString("x4"))
     End Function
 
+    Public Function Enc0$(v As Byte)
+        Return If(UseOct, Oct(v, 3), v.ToString("x2"))
+    End Function
+
     Public Function Enc$(v As UShort)
         Return If(UseOct, Oct(v, 7), "0x" + v.ToString("x4"))
     End Function
@@ -96,11 +100,11 @@ Public Class BinData
         Return ""
     End Function
 
-    Public Overridable Function GetValue$(r%, d1%, d2%)
+    Public Overridable Function GetValue$(r%, size%, d1%, d2%)
         Return ""
     End Function
 
-    Public Overridable Function GetPtr$(r%, d1%, d2%)
+    Public Overridable Function GetPtr$(r%, size%, d1%, d2%)
         Return ""
     End Function
 End Class
