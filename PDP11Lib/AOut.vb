@@ -52,14 +52,15 @@ Public Class AOut
                      16, Enc0(0US), tsize + 15, Enc0(tsize - 1US))
         Dim en = symlist.GetEnumerator
         Dim hasSym = en.MoveNext()
-        Dim thunks = New List(Of Symbol)
+        Dim thunks = New Dictionary(Of Integer, Symbol)
         For i = 0 To tsize - 1
             If hasSym AndAlso en.Current.Address = i Then
                 tw.WriteLine("       {0}", en.Current)
                 hasSym = en.MoveNext()
             End If
             If ReadUInt16(i) = &H8900 Then
-                thunks.Add(New Symbol(ReadUInt16(i + 2)))
+                Dim ad = ReadUInt16(i + 2)
+                If Not thunks.ContainsKey(ad) Then thunks.Add(ad, New Symbol(ad))
             End If
             i += Disassemble(tw, i) - 1
         Next
@@ -69,7 +70,7 @@ Public Class AOut
             tw.WriteLine()
             tw.WriteLine(".data [{0:x4}] {1} - [{2:x4}] {3}",
                          tsize + 16, Enc0(tsize), baddr + 15, Enc0(baddr - 1US))
-            Dim dsyms = From sym In symlist.Concat(thunks)
+            Dim dsyms = From sym In symlist.Concat(thunks.Values)
                         Where GetSection(sym) = 2
                         Select sym
                         Order By sym.Address * 2 + If(sym.IsNull, 1, 0)
