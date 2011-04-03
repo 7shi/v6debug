@@ -102,6 +102,7 @@
     <Compile Include="Utils.vb" />
     <Compile Include="VM.Sys.vb" />
     <Compile Include="VM.vb" />
+    <Compile Include="VM.Inst.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Silverlight\$(SilverlightVersion)\Microsoft.Silverlight.VisualBasic.targets" />
   <ProjectExtensions>
