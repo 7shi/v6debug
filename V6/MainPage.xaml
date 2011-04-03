@@ -39,7 +39,7 @@
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
-        <sdk:GridSplitter Grid.Row="1" Grid.RowSpan="2" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
+        <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
         <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
             <sdk:TabItem Header="Source">
                 <Grid>
@@ -52,7 +52,7 @@
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
-        <sdk:GridSplitter Grid.Row="2" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="2">
             <sdk:TabItem Header="Trace">
                 <TextBox Name="txtTrace" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
