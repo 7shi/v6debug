@@ -5,15 +5,16 @@ Partial Public Class MainPage
     Inherits UserControl
 
     Private aout As AOut
+    Private args$()
 
     Public Sub New()
         InitializeComponent()
-        ReadResource("Tests/hello1")
+        ReadResource("Tests/hello1", Nothing)
         addTest("hello1")
         addTest("hello2")
         addTest("hello3")
         addTest("hello4")
-        addTest("args")
+        addTest("args", "test", "arg")
         addTest("nm")
     End Sub
 
@@ -25,31 +26,28 @@ Partial Public Class MainPage
         txtOut.Text = ""
     End Sub
 
-    Private Sub addTest(t$)
-        Dim button = New Button With {.Content = t}
+    Private Sub addTest(t$, ParamArray args$())
+        Dim button = New Button With {.Content = t, .Tag = args}
         AddHandler button.Click, AddressOf btnTest_Click
         menuStack.Children.Add(button)
     End Sub
 
-    Private Sub ReadResource(path$)
+    Private Sub ReadResource(path$, args$())
         Dim uri1 = New Uri(path, UriKind.Relative)
         Dim rs1 = Application.GetResourceStream(uri1)
         If rs1 IsNot Nothing Then
             Using s = rs1.Stream
-                ReadStream(s, GetFileName(path))
+                ReadStream(s, GetFileName(path), args)
             End Using
         End If
         txtSrc.Text = ReadText(path + ".c")
     End Sub
 
-    Private Sub ReadStream(s As Stream, path$)
+    Private Sub ReadStream(s As Stream, path$, args$())
         Dim data(CInt(s.Length - 1)) As Byte
         s.Read(data, 0, data.Length)
-        ReadBytes(data, path)
-    End Sub
-
-    Private Sub ReadBytes(data As Byte(), path$)
         aout = New AOut(data, path)
+        Me.args = args
         Run()
         btnSave.IsEnabled = True
     End Sub
@@ -65,7 +63,7 @@ Partial Public Class MainPage
                 Throw New Exception("ファイルが大き過ぎます。上限は64KBです。")
             End If
             Using fs = ofd.File.OpenRead()
-                ReadStream(fs, ofd.File.Name)
+                ReadStream(fs, ofd.File.Name, Nothing)
             End Using
         Catch ex As Exception
             txtDis.Text = ex.Message + Environment.NewLine +
@@ -88,7 +86,7 @@ Partial Public Class MainPage
 
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        ReadResource("Tests/" + button.Content.ToString())
+        ReadResource("Tests/" + button.Content.ToString(), CType(button.Tag, String()))
         Cursor = cur
     End Sub
 
@@ -103,7 +101,7 @@ Partial Public Class MainPage
         Cursor = Cursors.Wait
         aout.UseOct = comboBox1.SelectedIndex = 1
         Dim vm = New VM(aout)
-        vm.Run()
+        vm.Run(args)
         txtDis.Text = aout.GetDisassemble()
         txtBin.Text = aout.GetDump()
         txtTrace.Text = vm.Trace

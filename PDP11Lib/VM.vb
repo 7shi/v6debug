@@ -71,6 +71,18 @@ Partial Public Class VM
         Regs(6) = CUShort(p)
     End Sub
 
+    Public Sub Run(args$())
+        If args IsNot Nothing Then
+            Dim args2$(args.Length)
+            Array.Copy(args, 0, args2, 1, args.Length)
+            args2(0) = aout.Path
+            SetArgs(args2)
+        Else
+            SetArgs(New String() {aout.Path})
+        End If
+        Run()
+    End Sub
+
     Public Sub Run()
         HasExited = False
         swt = New StringWriter
