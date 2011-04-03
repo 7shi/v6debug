@@ -168,10 +168,15 @@ Partial Public Class VM
                 Return
             Case 5
                 Select Case v2
-                    'Case 1 : Return ReadDst("com", bd, pos)
                     Case 0 ' clr: CLeaR
                         GetDst(2).SetValue(Me, 0)
                         SetFlags(True, False, False, False)
+                        Return
+                    Case 1 ' com: COMplement
+                        Dim dst = GetDst(2)
+                        Dim val = Not dst.GetValue(Me)
+                        dst.SetValue(Me, val)
+                        SetFlags(val = 0, (val And &H8000) <> 0, True, False)
                         Return
                     Case 2 ' inc: INCrement
                         Dim dst = GetDst(2)
@@ -323,12 +328,17 @@ Partial Public Class VM
         End Select
         Dim v = ReadUInt16(PC)
         Select Case (v >> 6) And &O77
-            'Case &O51 : Return ReadDst("comb", bd, pos)
             'Case &O64 : Return ReadDst("mfpd", bd, pos)
             'Case &O65 : Return ReadDst("mtpd", bd, pos)
             Case &O50 ' clrb: CLeaR Byte
                 GetDst(1).SetByte(Me, 0)
                 SetFlags(True, False, False, False)
+                Return
+            Case &O51 ' comb: COMplement Byte
+                Dim dst = GetDst(1)
+                Dim val = Not dst.GetByte(Me)
+                dst.SetByte(Me, val)
+                SetFlags(val = 0, (val And &H80) <> 0, True, False)
                 Return
             Case &O52 ' incb: INCrement Byte
                 Dim dst = GetDst(1)
