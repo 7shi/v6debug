@@ -47,8 +47,28 @@ Partial Public Class VM
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.tsize + aout.dsize)
         Me.UseOct = aout.UseOct
         Me.aout = aout
-        Regs(6) = &HFFF0
         PC = aout.entry
+        SetArgs(New String() {aout.Path})
+    End Sub
+
+    Public Sub SetArgs(args As String())
+        Dim p = &H10000
+        Dim list = New List(Of Integer)
+        For i = args.Length - 1 To 0 Step -1
+            Dim bytes = Encoding.UTF8.GetBytes(args(i))
+            Dim len = (bytes.Length \ 2) * 2 + 2
+            p -= len
+            Array.Copy(bytes, 0, Data, p, bytes.Length)
+            Array.Clear(Data, p + bytes.Length, len - bytes.Length)
+            list.Add(p)
+        Next
+        For Each arg In list
+            p -= 2
+            Write(p, CUShort(arg))
+        Next
+        p -= 2
+        Write(p, CUShort(args.Length))
+        Regs(6) = CUShort(p)
     End Sub
 
     Public Sub Run()

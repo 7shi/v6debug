@@ -31,25 +31,25 @@ Partial Public Class MainPage
         menuStack.Children.Add(button)
     End Sub
 
-    Private Sub ReadResource(fn$)
-        Dim uri1 = New Uri(fn, UriKind.Relative)
+    Private Sub ReadResource(path$)
+        Dim uri1 = New Uri(path, UriKind.Relative)
         Dim rs1 = Application.GetResourceStream(uri1)
         If rs1 IsNot Nothing Then
             Using s = rs1.Stream
-                ReadStream(s)
+                ReadStream(s, GetFileName(path))
             End Using
         End If
-        txtSrc.Text = ReadText(fn + ".c")
+        txtSrc.Text = ReadText(path + ".c")
     End Sub
 
-    Private Sub ReadStream(s As Stream)
+    Private Sub ReadStream(s As Stream, path$)
         Dim data(CInt(s.Length - 1)) As Byte
         s.Read(data, 0, data.Length)
-        ReadBytes(data)
+        ReadBytes(data, path)
     End Sub
 
-    Private Sub ReadBytes(data As Byte())
-        aout = New AOut(data)
+    Private Sub ReadBytes(data As Byte(), path$)
+        aout = New AOut(data, path)
         Run()
         btnSave.IsEnabled = True
     End Sub
@@ -65,7 +65,7 @@ Partial Public Class MainPage
                 Throw New Exception("ファイルが大き過ぎます。上限は64KBです。")
             End If
             Using fs = ofd.File.OpenRead()
-                ReadStream(fs)
+                ReadStream(fs, ofd.File.Name)
             End Using
         Catch ex As Exception
             txtDis.Text = ex.Message + Environment.NewLine +
@@ -112,4 +112,9 @@ Partial Public Class MainPage
         txtOut.SelectionStart = txtOut.Text.Length
         Cursor = cur
     End Sub
+
+    Public Shared Function GetFileName$(path$)
+        Dim p = path.LastIndexOf(CChar("/"))
+        Return If(p < 0, path, path.Substring(p + 1))
+    End Function
 End Class

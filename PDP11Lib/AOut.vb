@@ -6,11 +6,14 @@ Public Class AOut
     Public fmagic As UShort, tsize As UShort, dsize As UShort, bsize As UShort,
         ssize As UShort, entry, pad As UShort, relflg As UShort
 
+    Public Property Path$
+
     Private symlist As New List(Of Symbol)
 
-    Public Sub New(image As Byte())
+    Public Sub New(image As Byte(), p$)
         MyBase.New(image)
         Offset = 16
+        Path = p
 
         fmagic = BitConverter.ToUInt16(image, 0)
         tsize = BitConverter.ToUInt16(image, 2)
