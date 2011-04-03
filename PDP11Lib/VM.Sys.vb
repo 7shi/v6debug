@@ -18,7 +18,7 @@ Partial Public Class VM
                 SysWrite()
                 Return
         End Select
-        Abort("invaid sys")
+        Abort("invalid sys")
     End Sub
 
     Private Sub SysWrite()
