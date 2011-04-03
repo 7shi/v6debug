@@ -296,8 +296,6 @@ Partial Public Class VM
         Dim v = ReadUInt16(PC)
         Select Case (v >> 6) And &O77
             'Case &O51 : Return ReadDst("comb", bd, pos)
-            'Case &O55 : Return ReadDst("adcb", bd, pos)
-            'Case &O56 : Return ReadDst("sbcb", bd, pos)
             'Case &O64 : Return ReadDst("mfpd", bd, pos)
             'Case &O65 : Return ReadDst("mtpd", bd, pos)
             Case &O50 ' clrb: CLeaR Byte
@@ -323,6 +321,18 @@ Partial Public Class VM
                 Dim val2 = CByte(val1 And &HFF)
                 dst.SetByte(Me, val2)
                 SetFlags(val1 = 0, val1 < 0, val1 <> 0, val1 = &H80)
+                Return
+            Case &O55 ' adcb: ADd Carry Byte
+                Dim dst = GetDst(1)
+                Dim val = CInt(ConvSByte(dst.GetByte(Me))) + If(C, 1, 0)
+                dst.SetByte(Me, CByte(val And &HFF))
+                SetFlags(val = 0, val < 0, C AndAlso val = 0, val = &H80)
+                Return
+            Case &O56 ' sbcb: SuBtract Carry Byte
+                Dim dst = GetDst(1)
+                Dim val = CInt(ConvSByte(dst.GetByte(Me))) - If(C, 1, 0)
+                dst.SetByte(Me, CByte(val And &HFF))
+                SetFlags(val = 0, val < 0, C AndAlso val = -1, val = -&H81)
                 Return
             Case &O57 ' tstb: TeST Byte
                 Dim dst = ConvSByte(GetDst(1).GetByte(Me))
