@@ -440,19 +440,25 @@ Partial Public Class VM
     End Sub
 
     Public Overrides Function EncAddr(addr As UShort) As String
-        Return aout.EncAddr(addr) + "{" + Enc(ReadUInt16(addr)) + "}"
+        Return aout.EncAddr(addr) + "{" + Enc0(ReadUInt16(addr)) + "}"
+    End Function
+
+    Public Overrides Function GetReg$(r%)
+        Return "{" + Enc0(Regs(r)) + "}"
     End Function
 
     Public Overrides Function GetValue$(r%, d1%, d2%)
-        Dim p = ReadUInt16(CUShort((Regs(r) + d1) And &HFFFF))
+        Dim ad = CUShort((Regs(r) + d1) And &HFFFF)
+        Dim p = ReadUInt16(ad)
         Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
-        Return "{" + Enc(p) + "}"
+        Return "{" + Enc0(ad) + ":" + Enc0(p) + "}"
     End Function
 
     Public Overrides Function GetPtr$(r%, d1%, d2%)
-        Dim p = ReadUInt16(CUShort((Regs(r) + d1) And &HFFFF))
+        Dim ad = CUShort((Regs(r) + d1) And &HFFFF)
+        Dim p = ReadUInt16(ad)
         Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
-        Return "{" + Enc(p) + "->" + Enc(ReadUInt16(p)) + "}"
+        Return "{" + Enc0(ad) + ":" + Enc0(p) + ":" + Enc0(ReadUInt16(p)) + "}"
     End Function
 
     Public Sub SaveRegs()

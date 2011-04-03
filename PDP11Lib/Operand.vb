@@ -22,7 +22,7 @@
         Dim r = RegNames(Reg)
         If Reg = 7 Then
             Select Case Type
-                Case 0 : Return r
+                Case 0 : Return r + bd.GetReg(Reg)
                 Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, 0, 0)
                 Case 2 : Return "$" + bd.Enc(bd.ReadUInt16(PC))
                 Case 3 : Return "*$" + bd.EncAddr(bd.ReadUInt16(PC))
@@ -35,7 +35,7 @@
             Dim dd = Dist.ToString
             If v3a >= 10 Then dd = sign + bd.Enc(CUShort(v3a))
             Select Case Type
-                Case 0 : Return r
+                Case 0 : Return r + bd.GetReg(Reg)
                 Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, 0, 0)
                 Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, 0, 2)
                 Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, 0, 2)
