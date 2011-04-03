@@ -268,7 +268,6 @@ Partial Public Class VM
             'Case 0 : Return ReadSrcReg("mul", bd, pos)
             'Case 2 : Return ReadSrcReg("ash", bd, pos)
             'Case 3 : Return ReadSrcReg("ashc", bd, pos)
-            'Case 4 : Return ReadRegDst("xor", bd, pos)
             'Case 5
             '    Select Case (v >> 3) And &O77
             '        Case 0 : Return ReadReg("fadd", bd, pos)
@@ -285,6 +284,12 @@ Partial Public Class VM
                 Regs(r) = CUShort(r1 And &HFFFF)
                 Regs((r + 1) And 7) = CUShort(r2 And &HFFFF)
                 SetFlags(r1 = 0, r1 < 0, r2 <> 0, r1 < -&H8000 OrElse r1 >= &H8000)
+                Return
+            Case 4 ' xor: eXclusive OR
+                Dim dst = GetDst(2)
+                Dim val = Regs((v >> 6) And 7) Xor dst.GetValue(Me)
+                dst.SetValue(Me, val)
+                SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 7 ' sob: Subtract One from register, Branch if not zero
                 Dim r = (v >> 6) And 7
