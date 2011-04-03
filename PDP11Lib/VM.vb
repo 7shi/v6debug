@@ -452,14 +452,14 @@ Partial Public Class VM
         Return Disassembler.Disassemble(Me, pos)
     End Function
 
-    Public Function GetInc(r%, size As UShort) As UShort
+    Public Function GetInc(r%, size%) As UShort
         Dim ret = Regs(r)
-        Regs(r) += size
+        Regs(r) = CUShort((Regs(r) + size) And &HFFFF)
         Return ret
     End Function
 
-    Public Function GetDec(r%, size As UShort) As UShort
-        Regs(r) -= size
+    Public Function GetDec(r%, size%) As UShort
+        Regs(r) = CUShort((Regs(r) - size) And &HFFFF)
         Return Regs(r)
     End Function
 
