@@ -368,10 +368,10 @@ Partial Public Class VM
                 PC = If(C Or Z, GetOffset(PC), PC + 2US)
                 Return
             Case &H84 ' bvc: Branch if oVerflow Clear
-                PC = If(Not V, GetOffset(PC), PC + 2US)
+                PC = If(Not Me.V, GetOffset(PC), PC + 2US)
                 Return
             Case &H85 ' bvs: Branch if oVerflow Set
-                PC = If(V, GetOffset(PC), PC + 2US)
+                PC = If(Me.V, GetOffset(PC), PC + 2US)
                 Return
             Case &H86 ' bcc: Branch if Carry Clear
                 PC = If(Not C, GetOffset(PC), PC + 2US)
@@ -383,23 +383,26 @@ Partial Public Class VM
                 ExecSys()
                 Return
         End Select
-        'Dim v = ReadUInt16(PC)
-        'Select Case (v >> 6) And &O77
-        '    Case &O50 : Return ReadDst("clrb", bd, pos)
-        '    Case &O51 : Return ReadDst("comb", bd, pos)
-        '    Case &O52 : Return ReadDst("incb", bd, pos)
-        '    Case &O53 : Return ReadDst("decb", bd, pos)
-        '    Case &O54 : Return ReadDst("negb", bd, pos)
-        '    Case &O55 : Return ReadDst("adcb", bd, pos)
-        '    Case &O56 : Return ReadDst("sbcb", bd, pos)
-        '    Case &O57 : Return ReadDst("tstb", bd, pos)
-        '    Case &O60 : Return ReadDst("rorb", bd, pos)
-        '    Case &O61 : Return ReadDst("rolb", bd, pos)
-        '    Case &O62 : Return ReadDst("asrb", bd, pos)
-        '    Case &O63 : Return ReadDst("aslb", bd, pos)
-        '    Case &O64 : Return ReadDst("mfpd", bd, pos)
-        '    Case &O65 : Return ReadDst("mtpd", bd, pos)
-        'End Select
+        Dim v = ReadUInt16(PC)
+        Select Case (v >> 6) And &O77
+            'Case &O50 : Return ReadDst("clrb", bd, pos)
+            'Case &O51 : Return ReadDst("comb", bd, pos)
+            'Case &O52 : Return ReadDst("incb", bd, pos)
+            'Case &O53 : Return ReadDst("decb", bd, pos)
+            'Case &O54 : Return ReadDst("negb", bd, pos)
+            'Case &O55 : Return ReadDst("adcb", bd, pos)
+            'Case &O56 : Return ReadDst("sbcb", bd, pos)
+            'Case &O60 : Return ReadDst("rorb", bd, pos)
+            'Case &O61 : Return ReadDst("rolb", bd, pos)
+            'Case &O62 : Return ReadDst("asrb", bd, pos)
+            'Case &O63 : Return ReadDst("aslb", bd, pos)
+            'Case &O64 : Return ReadDst("mfpd", bd, pos)
+            'Case &O65 : Return ReadDst("mtpd", bd, pos)
+            Case &O57 ' tstb: TeST Byte
+                Dim dst = ConvSByte(GetDst(1).GetByte(Me))
+                SetFlags(dst = 0, dst < 0, False, False)
+                Return
+        End Select
         Abort("not implemented")
     End Sub
 
