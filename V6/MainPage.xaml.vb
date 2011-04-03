@@ -8,11 +8,12 @@ Partial Public Class MainPage
 
     Public Sub New()
         InitializeComponent()
+        ReadResource("Tests/hello1")
         addTest("hello1")
         addTest("hello2")
         addTest("hello3")
         addTest("hello4")
-        ReadResource("Tests/hello1")
+        addTest("nm")
     End Sub
 
     Public Sub Clear()
