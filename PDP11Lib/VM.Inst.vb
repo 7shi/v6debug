@@ -149,13 +149,13 @@ Partial Public Class VM
                         Dim dst = GetDst(2)
                         Dim val = CInt(ConvShort(dst.GetValue(Me))) + 1
                         dst.SetValue(Me, CUShort(val And &HFFFF))
-                        SetFlags(val = 0, val < 0, C, val >= &H8000)
+                        SetFlags(val = 0, val < 0, C, val = &H8000)
                         Return
                     Case 3 ' dec: DECrement
                         Dim dst = GetDst(2)
                         Dim val = CInt(ConvShort(dst.GetValue(Me))) - 1
                         dst.SetValue(Me, CUShort(val And &HFFFF))
-                        SetFlags(val = 0, val < 0, C, val < -&H8000)
+                        SetFlags(val = 0, val < 0, C, val = -&H8001)
                         Return
                     Case 4 ' neg: NEGate
                         Dim dst = GetDst(2)
