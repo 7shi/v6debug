@@ -52,7 +52,6 @@
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
-        <sdk:GridSplitter Grid.Column="1" Grid.Row="1" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <sdk:GridSplitter Grid.Row="2" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="2">
             <sdk:TabItem Header="Trace">
