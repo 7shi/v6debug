@@ -306,13 +306,13 @@ Partial Public Class VM
                 Dim dst = GetDst(1)
                 Dim val = CInt(ConvSByte(dst.GetByte(Me))) + 1
                 dst.SetByte(Me, CByte(val And &HFF))
-                SetFlags(val = 0, val < 0, C, val >= &H80)
+                SetFlags(val = 0, val < 0, C, val = &H80)
                 Return
             Case &O53 ' decb: DECrement Byte
                 Dim dst = GetDst(1)
                 Dim val = CInt(ConvSByte(dst.GetByte(Me))) - 1
                 dst.SetByte(Me, CByte(val And &HFF))
-                SetFlags(val = 0, val < 0, C, val < -&H80)
+                SetFlags(val = 0, val < 0, C, val = -&H81)
                 Return
             Case &O54 ' negb: NEGate Byte
                 Dim dst = GetDst(1)
