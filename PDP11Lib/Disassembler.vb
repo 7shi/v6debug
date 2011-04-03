@@ -36,20 +36,20 @@ Public Module Disassembler
     Private Function _Disassemble(bd As BinData, pos%) As OpCode
         Select Case bd(pos + 1) >> 4
             Case 0 : Return Read0(bd, pos)
-            Case 1 : Return ReadSrcDst("mov", bd, pos)
-            Case 2 : Return ReadSrcDst("cmp", bd, pos)
-            Case 3 : Return ReadSrcDst("bit", bd, pos)
-            Case 4 : Return ReadSrcDst("bic", bd, pos)
-            Case 5 : Return ReadSrcDst("bis", bd, pos)
-            Case 6 : Return ReadSrcDst("add", bd, pos)
+            Case 1 : Return ReadSrcDst("mov", bd, pos, 2)
+            Case 2 : Return ReadSrcDst("cmp", bd, pos, 2)
+            Case 3 : Return ReadSrcDst("bit", bd, pos, 2)
+            Case 4 : Return ReadSrcDst("bic", bd, pos, 2)
+            Case 5 : Return ReadSrcDst("bis", bd, pos, 2)
+            Case 6 : Return ReadSrcDst("add", bd, pos, 2)
             Case 7 : Return Read7(bd, pos)
             Case &O10 : Return Read10(bd, pos)
-            Case &O11 : Return ReadSrcDst("movb", bd, pos)
-            Case &O12 : Return ReadSrcDst("cmpb", bd, pos)
-            Case &O13 : Return ReadSrcDst("bitb", bd, pos)
-            Case &O14 : Return ReadSrcDst("bicb", bd, pos)
-            Case &O15 : Return ReadSrcDst("bisb", bd, pos)
-            Case &O16 : Return ReadSrcDst("sub", bd, pos)
+            Case &O11 : Return ReadSrcDst("movb", bd, pos, 1)
+            Case &O12 : Return ReadSrcDst("cmpb", bd, pos, 1)
+            Case &O13 : Return ReadSrcDst("bitb", bd, pos, 1)
+            Case &O14 : Return ReadSrcDst("bicb", bd, pos, 1)
+            Case &O15 : Return ReadSrcDst("bisb", bd, pos, 1)
+            Case &O16 : Return ReadSrcDst("sub", bd, pos, 2)
             Case &O17 : Return Read17(bd, pos)
         End Select
         Return Nothing
@@ -80,7 +80,7 @@ Public Module Disassembler
                             Case 5 : Return New OpCode("reset", 2)
                             Case 6 : Return New OpCode("rtt", 2)
                         End Select
-                    Case 1 : Return ReadDst("jmp", bd, pos)
+                    Case 1 : Return ReadDst("jmp", bd, pos, 2)
                     Case 2 ' 00 02 xx
                         Select Case (v >> 3) And 7
                             Case 0 : Return ReadReg("rts", bd, pos)
@@ -101,30 +101,30 @@ Public Module Disassembler
                                 End Select
                                 Return New OpCode(mne, 2)
                         End Select
-                    Case 3 : Return ReadDst("swab", bd, pos)
+                    Case 3 : Return ReadDst("swab", bd, pos, 2)
                 End Select
-            Case 4 : Return ReadRegDst("jsr", bd, pos)
+            Case 4 : Return ReadRegDst("jsr", bd, pos, 2)
             Case 5
                 Select Case v2
-                    Case 0 : Return ReadDst("clr", bd, pos)
-                    Case 1 : Return ReadDst("com", bd, pos)
-                    Case 2 : Return ReadDst("inc", bd, pos)
-                    Case 3 : Return ReadDst("dec", bd, pos)
-                    Case 4 : Return ReadDst("neg", bd, pos)
-                    Case 5 : Return ReadDst("adc", bd, pos)
-                    Case 6 : Return ReadDst("sbc", bd, pos)
-                    Case 7 : Return ReadDst("tst", bd, pos)
+                    Case 0 : Return ReadDst("clr", bd, pos, 2)
+                    Case 1 : Return ReadDst("com", bd, pos, 2)
+                    Case 2 : Return ReadDst("inc", bd, pos, 2)
+                    Case 3 : Return ReadDst("dec", bd, pos, 2)
+                    Case 4 : Return ReadDst("neg", bd, pos, 2)
+                    Case 5 : Return ReadDst("adc", bd, pos, 2)
+                    Case 6 : Return ReadDst("sbc", bd, pos, 2)
+                    Case 7 : Return ReadDst("tst", bd, pos, 2)
                 End Select
             Case 6
                 Select Case v2
-                    Case 0 : Return ReadDst("ror", bd, pos)
-                    Case 1 : Return ReadDst("rol", bd, pos)
-                    Case 2 : Return ReadDst("asr", bd, pos)
-                    Case 3 : Return ReadDst("asl", bd, pos)
+                    Case 0 : Return ReadDst("ror", bd, pos, 2)
+                    Case 1 : Return ReadDst("rol", bd, pos, 2)
+                    Case 2 : Return ReadDst("asr", bd, pos, 2)
+                    Case 3 : Return ReadDst("asl", bd, pos, 2)
                     Case 4 : Return ReadNum("mark", bd, pos)
-                    Case 5 : Return ReadDst("mfpi", bd, pos)
-                    Case 6 : Return ReadDst("mtpi", bd, pos)
-                    Case 7 : Return ReadDst("sxt", bd, pos)
+                    Case 5 : Return ReadDst("mfpi", bd, pos, 2)
+                    Case 6 : Return ReadDst("mtpi", bd, pos, 2)
+                    Case 7 : Return ReadDst("sxt", bd, pos, 2)
                 End Select
         End Select
         Return Nothing
@@ -133,11 +133,11 @@ Public Module Disassembler
     Private Function Read7(bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Select Case (v >> 9) And 7
-            Case 0 : Return ReadSrcReg("mul", bd, pos)
-            Case 1 : Return ReadSrcReg("div", bd, pos)
-            Case 2 : Return ReadSrcReg("ash", bd, pos)
-            Case 3 : Return ReadSrcReg("ashc", bd, pos)
-            Case 4 : Return ReadRegDst("xor", bd, pos)
+            Case 0 : Return ReadSrcReg("mul", bd, pos, 2)
+            Case 1 : Return ReadSrcReg("div", bd, pos, 2)
+            Case 2 : Return ReadSrcReg("ash", bd, pos, 2)
+            Case 3 : Return ReadSrcReg("ashc", bd, pos, 2)
+            Case 4 : Return ReadRegDst("xor", bd, pos, 2)
             Case 5
                 Select Case (v >> 3) And &O77
                     Case 0 : Return ReadReg("fadd", bd, pos)
@@ -187,20 +187,20 @@ Public Module Disassembler
         End Select
         Dim v = bd.ReadUInt16(pos)
         Select Case (v >> 6) And &O77
-            Case &O50 : Return ReadDst("clrb", bd, pos)
-            Case &O51 : Return ReadDst("comb", bd, pos)
-            Case &O52 : Return ReadDst("incb", bd, pos)
-            Case &O53 : Return ReadDst("decb", bd, pos)
-            Case &O54 : Return ReadDst("negb", bd, pos)
-            Case &O55 : Return ReadDst("adcb", bd, pos)
-            Case &O56 : Return ReadDst("sbcb", bd, pos)
-            Case &O57 : Return ReadDst("tstb", bd, pos)
-            Case &O60 : Return ReadDst("rorb", bd, pos)
-            Case &O61 : Return ReadDst("rolb", bd, pos)
-            Case &O62 : Return ReadDst("asrb", bd, pos)
-            Case &O63 : Return ReadDst("aslb", bd, pos)
-            Case &O64 : Return ReadDst("mfpd", bd, pos)
-            Case &O65 : Return ReadDst("mtpd", bd, pos)
+            Case &O50 : Return ReadDst("clrb", bd, pos, 1)
+            Case &O51 : Return ReadDst("comb", bd, pos, 1)
+            Case &O52 : Return ReadDst("incb", bd, pos, 1)
+            Case &O53 : Return ReadDst("decb", bd, pos, 1)
+            Case &O54 : Return ReadDst("negb", bd, pos, 1)
+            Case &O55 : Return ReadDst("adcb", bd, pos, 1)
+            Case &O56 : Return ReadDst("sbcb", bd, pos, 1)
+            Case &O57 : Return ReadDst("tstb", bd, pos, 1)
+            Case &O60 : Return ReadDst("rorb", bd, pos, 1)
+            Case &O61 : Return ReadDst("rolb", bd, pos, 1)
+            Case &O62 : Return ReadDst("asrb", bd, pos, 1)
+            Case &O63 : Return ReadDst("aslb", bd, pos, 1)
+            Case &O64 : Return ReadDst("mfpd", bd, pos, 1)
+            Case &O65 : Return ReadDst("mtpd", bd, pos, 1)
         End Select
         Return Nothing
     End Function
@@ -216,29 +216,29 @@ Public Module Disassembler
         Return Nothing
     End Function
 
-    Private Function ReadSrcDst(op$, bd As BinData, pos%) As OpCode
+    Private Function ReadSrcDst(op$, bd As BinData, pos%, d As UShort) As OpCode
         Dim len = 2
         Dim v = bd.ReadUInt16(pos)
-        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len)
-        Return ReadDst(op + " " + src.ToString(bd) + ",", bd, pos, len + src.Length)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, bd, pos + len, d)
+        Return ReadDst(op + " " + src.ToString(bd) + ",", bd, pos, d, len + src.Length)
     End Function
 
-    Private Function ReadDst(op$, bd As BinData, pos%, Optional len% = 2) As OpCode
+    Private Function ReadDst(op$, bd As BinData, pos%, d As UShort, Optional len% = 2) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim dst = New Operand((v >> 3) And 7, v And 7, bd, pos + len)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, bd, pos + len, d)
         Return New OpCode(op + " " + dst.ToString(bd), len + dst.Length)
     End Function
 
-    Private Function ReadRegDst(op$, bd As BinData, pos%) As OpCode
+    Private Function ReadRegDst(op$, bd As BinData, pos%, d As UShort) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Dim r = RegNames((v >> 6) And 7)
-        Return ReadDst(op + " " + r + ",", bd, pos)
+        Return ReadDst(op + " " + r + ",", bd, pos, d)
     End Function
 
-    Private Function ReadSrcReg(op$, bd As BinData, pos%) As OpCode
+    Private Function ReadSrcReg(op$, bd As BinData, pos%, d As UShort) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Dim r = RegNames((v >> 6) And 7)
-        Dim src = New Operand((v >> 3) And 7, v And 7, bd, pos + 2)
+        Dim src = New Operand((v >> 3) And 7, v And 7, bd, pos + 2, d)
         Return New OpCode(op + " " + src.ToString(bd) + ", " + r, 2 + src.Length)
     End Function
 
