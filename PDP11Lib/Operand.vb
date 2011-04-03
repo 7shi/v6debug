@@ -4,12 +4,12 @@
     Public Property Dist%
     Public Property Length As UShort
     Public Property PC As UShort
-    Public Property Diff As UShort
+    Public Property Size As UShort
 
-    Public Sub New(t%, r%, bd As BinData, ad%, d As UShort)
+    Public Sub New(t%, r%, bd As BinData, ad%, sz As UShort)
         Type = t
         Reg = r
-        Diff = d
+        Size = sz
         PC = CUShort(ad)
         If t >= 6 Then
             Dist = bd.ReadInt16(ad)
@@ -39,10 +39,10 @@
             Select Case Type
                 Case 0 : Return r + bd.GetReg(Reg)
                 Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, 0, 0)
-                Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, 0, Diff)
-                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, 0, Diff)
-                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, -Diff, -Diff)
-                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, -Diff, -Diff)
+                Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, 0, Size)
+                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, 0, Size)
+                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, -Size, -Size)
+                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, -Size, -Size)
                 Case 6 : Return dd + "(" + r + ")" + bd.GetValue(Reg, Dist, 0)
                 Case 7 : Return "*" + dd + "(" + r + ")" + bd.GetPtr(Reg, Dist, 0)
             End Select
@@ -62,10 +62,10 @@
         Else
             Select Case Type
                 Case 1 : Return vm.Regs(Reg)
-                Case 2 : Return vm.GetInc(Reg, Diff)
-                Case 3 : Return vm.ReadUInt16(vm.GetInc(Reg, Diff))
-                Case 4 : Return vm.GetDec(Reg, Diff)
-                Case 5 : Return vm.ReadUInt16(vm.GetDec(Reg, Diff))
+                Case 2 : Return vm.GetInc(Reg, Size)
+                Case 3 : Return vm.ReadUInt16(vm.GetInc(Reg, Size))
+                Case 4 : Return vm.GetDec(Reg, Size)
+                Case 5 : Return vm.ReadUInt16(vm.GetDec(Reg, Size))
                 Case 6 : Return CUShort(vm.Regs(Reg) + Dist)
                 Case 7 : Return vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))
             End Select
@@ -86,10 +86,10 @@
             Select Case Type
                 Case 0 : Return vm.Regs(Reg)
                 Case 1 : Return vm.ReadUInt16(vm.Regs(Reg))
-                Case 2 : Return vm.ReadUInt16(vm.GetInc(Reg, Diff))
-                Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetInc(Reg, Diff)))
-                Case 4 : Return vm.ReadUInt16(vm.GetDec(Reg, Diff))
-                Case 5 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetDec(Reg, Diff)))
+                Case 2 : Return vm.ReadUInt16(vm.GetInc(Reg, Size))
+                Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetInc(Reg, Size)))
+                Case 4 : Return vm.ReadUInt16(vm.GetDec(Reg, Size))
+                Case 5 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetDec(Reg, Size)))
                 Case 6 : Return vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))
                 Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)))
             End Select
@@ -110,10 +110,10 @@
             Select Case Type
                 Case 0 : vm.Regs(Reg) = v : Return
                 Case 1 : vm.Write(vm.Regs(Reg), v) : Return
-                Case 2 : vm.Write(vm.GetInc(Reg, Diff), v) : Return
-                Case 3 : vm.Write(vm.ReadUInt16(vm.GetInc(Reg, Diff)), v) : Return
-                Case 4 : vm.Write(vm.GetDec(Reg, Diff), v) : Return
-                Case 5 : vm.Write(vm.ReadUInt16(vm.GetDec(Reg, Diff)), v) : Return
+                Case 2 : vm.Write(vm.GetInc(Reg, Size), v) : Return
+                Case 3 : vm.Write(vm.ReadUInt16(vm.GetInc(Reg, Size)), v) : Return
+                Case 4 : vm.Write(vm.GetDec(Reg, Size), v) : Return
+                Case 5 : vm.Write(vm.ReadUInt16(vm.GetDec(Reg, Size)), v) : Return
                 Case 6 : vm.Write(CUShort(vm.Regs(Reg) + Dist), v) : Return
                 Case 7 : vm.Write(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)), v) : Return
             End Select
@@ -134,10 +134,10 @@
             Select Case Type
                 Case 0 : Return CByte(vm.Regs(Reg) And &HFF)
                 Case 1 : Return vm(vm.Regs(Reg))
-                Case 2 : Return vm(vm.GetInc(Reg, Diff))
-                Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(Reg, Diff)))
-                Case 4 : Return vm(vm.GetDec(Reg, Diff))
-                Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(Reg, Diff)))
+                Case 2 : Return vm(vm.GetInc(Reg, Size))
+                Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(Reg, Size)))
+                Case 4 : Return vm(vm.GetDec(Reg, Size))
+                Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(Reg, Size)))
                 Case 6 : Return vm(CUShort(vm.Regs(Reg) + Dist))
                 Case 7 : Return vm(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)))
             End Select
@@ -158,10 +158,10 @@
             Select Case Type
                 Case 0 : vm.Regs(Reg) = b : Return
                 Case 1 : vm(vm.Regs(Reg)) = b : Return
-                Case 2 : vm(vm.GetInc(Reg, Diff)) = b : Return
-                Case 3 : vm(vm.ReadUInt16(vm.GetInc(Reg, Diff))) = b : Return
-                Case 4 : vm(vm.GetDec(Reg, Diff)) = b : Return
-                Case 5 : vm(vm.ReadUInt16(vm.GetDec(Reg, Diff))) = b : Return
+                Case 2 : vm(vm.GetInc(Reg, Size)) = b : Return
+                Case 3 : vm(vm.ReadUInt16(vm.GetInc(Reg, Size))) = b : Return
+                Case 4 : vm(vm.GetDec(Reg, Size)) = b : Return
+                Case 5 : vm(vm.ReadUInt16(vm.GetDec(Reg, Size))) = b : Return
                 Case 6 : vm(CUShort(vm.Regs(Reg) + Dist)) = b : Return
                 Case 7 : vm(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))) = b : Return
             End Select

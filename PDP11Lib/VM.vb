@@ -51,7 +51,7 @@ Partial Public Class VM
         SetArgs(New String() {aout.Path})
     End Sub
 
-    Public Sub SetArgs(args As String())
+    Public Sub SetArgs(args$())
         Dim p = &H10000
         Dim list = New List(Of Integer)
         For i = args.Length - 1 To 0 Step -1
@@ -429,15 +429,15 @@ Partial Public Class VM
         Abort("not implemented")
     End Sub
 
-    Private Function GetSrcDst(d As UShort) As Operand()
+    Private Function GetSrcDst(size As UShort) As Operand()
         Dim v = ReadUInt16(PC)
-        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + 2, d)
-        Return New Operand() {src, GetDst(d, src.Length + 2US)}
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + 2, size)
+        Return New Operand() {src, GetDst(size, src.Length + 2US)}
     End Function
 
-    Private Function GetDst(d As UShort, Optional len As UShort = 2) As Operand
+    Private Function GetDst(size As UShort, Optional len As UShort = 2) As Operand
         Dim v = ReadUInt16(PC)
-        Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len, d)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len, size)
         PC += len + dst.Length
         Return dst
     End Function
@@ -452,14 +452,14 @@ Partial Public Class VM
         Return Disassembler.Disassemble(Me, pos)
     End Function
 
-    Public Function GetInc(r%, d As UShort) As UShort
+    Public Function GetInc(r%, size As UShort) As UShort
         Dim ret = Regs(r)
-        Regs(r) += d
+        Regs(r) += size
         Return ret
     End Function
 
-    Public Function GetDec(r%, d As UShort) As UShort
-        Regs(r) -= d
+    Public Function GetDec(r%, size As UShort) As UShort
+        Regs(r) -= size
         Return Regs(r)
     End Function
 
