@@ -205,6 +205,10 @@ Partial Public Class VM
         Return "{" + Enc0(ad) + ":" + Enc0(p) + ":" + pp + "}"
     End Function
 
+    Public Overrides Function GetRelative$(r%, d%, ad%)
+        Return aout.GetRelative(r, d, ad)
+    End Function
+
     Public Sub SaveRegs()
         Array.Copy(Regs, bakRegs, Regs.Length)
     End Sub

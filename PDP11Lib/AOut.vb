@@ -25,14 +25,20 @@ Public Class AOut
         relflg = BitConverter.ToUInt16(image, 14)
 
         Dim syms As New Dictionary(Of Integer, Symbol)
+        Dim last As Symbol = Nothing
         For i = Offset + tsize + dsize To image.Length - 1 Step 12
             Dim sym = New Symbol(image, i)
-            If syms.ContainsKey(sym.Address) Then
-                syms(sym.Address).SetSymbol(sym)
-            ElseIf sym.IsObject Then
-                syms.Add(sym.Address, New Symbol(sym))
-            ElseIf sym.Type <> 1 AndAlso sym.Type <> &H14 Then
-                syms.Add(sym.Address, sym)
+            If sym.IsLocal Then
+                If last IsNot Nothing Then last.AddLocal(sym)
+            ElseIf sym.Type <> &H14 Then
+                If sym.IsObject Then sym = New Symbol(sym)
+                If syms.ContainsKey(sym.Address) Then
+                    last = syms(sym.Address)
+                    last.SetSymbol(sym)
+                Else
+                    syms.Add(sym.Address, sym)
+                    last = sym
+                End If
             End If
         Next
         symlist.AddRange(syms.Values)
@@ -58,7 +64,10 @@ Public Class AOut
         Dim thunks = New Dictionary(Of Integer, Symbol)
         For i = 0 To tsize - 1
             If hasSym AndAlso en.Current.Address = i Then
-                tw.WriteLine("       {0}", en.Current)
+                tw.WriteLine("{0}{1}", Space(7), en.Current)
+                For Each local In en.Current.GetLocals
+                    tw.WriteLine("{0}{1} = {2}", Space(11), local.Name, local.Address)
+                Next
                 hasSym = en.MoveNext()
             End If
             If ReadUInt16(i) = &H8900 Then
@@ -162,6 +171,19 @@ Public Class AOut
         Dim ad2 = sym.Name
         If d > 0 Then ad2 += "+" + Enc(CUShort(d))
         Return ad2 + "<" + ad + ">"
+    End Function
+
+    Public Overrides Function GetRelative$(r%, d%, ad%)
+        If r = 5 Then
+            Dim sym = GetSymbol(ad)
+            If sym IsNot Nothing Then
+                Dim local = sym.GetLocal(d)
+                If local IsNot Nothing Then
+                    Return local.Name + "(" + RegNames(r) + ")"
+                End If
+            End If
+        End If
+        Return MyBase.GetRelative(r, d, ad)
     End Function
 
     Public Function GetSection%(pos%)

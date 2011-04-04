@@ -107,4 +107,11 @@ Public Class BinData
     Public Overridable Function GetPtr$(r%, size%, d1%, d2%)
         Return ""
     End Function
+
+    Public Overridable Function GetRelative$(r%, d%, ad%)
+        Dim sign = If(d < 0, "-", "")
+        Dim da = CUShort(Math.Abs(d))
+        Dim dd = If(da < 10, d.ToString, If(d < 0, "-", "") + Enc(da))
+        Return dd + "(" + RegNames(r) + ")"
+    End Function
 End Class

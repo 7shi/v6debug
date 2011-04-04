@@ -32,10 +32,6 @@
                 Case 7 : Return "*" + bd.Enc(CUShort(PC + Dist))
             End Select
         Else
-            Dim sign = If(Dist < 0, "-", "")
-            Dim v3a = Math.Abs(Dist)
-            Dim dd = Dist.ToString
-            If v3a >= 10 Then dd = sign + bd.Enc(CUShort(v3a))
             Select Case Type
                 Case 0 : Return r + bd.GetReg(Reg)
                 Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, Size, 0, 0)
@@ -43,8 +39,8 @@
                 Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, Size, 0, Size)
                 Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, Size, -Size, -Size)
                 Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, Size, -Size, -Size)
-                Case 6 : Return dd + "(" + r + ")" + bd.GetValue(Reg, Size, Dist, 0)
-                Case 7 : Return "*" + dd + "(" + r + ")" + bd.GetPtr(Reg, Size, Dist, 0)
+                Case 6 : Return bd.GetRelative(Reg, Dist, PC - 2US) + bd.GetValue(Reg, Size, Dist, 0)
+                Case 7 : Return "*" + bd.GetRelative(Reg, Dist, PC - 2US) + bd.GetPtr(Reg, Size, Dist, 0)
             End Select
         End If
         Throw New Exception("invalid operand")
