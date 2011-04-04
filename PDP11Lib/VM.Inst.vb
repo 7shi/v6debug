@@ -227,7 +227,6 @@ Partial Public Class VM
                 Select Case v2
                     'Case 5 : Return ReadDst("mfpi", bd, pos)
                     'Case 6 : Return ReadDst("mtpi", bd, pos)
-                    'Case 7 : Return ReadDst("sxt", bd, pos)
                     Case 0 ' ror: ROtate Right
                         Dim dst = GetDst(2)
                         Dim val0 = dst.GetValue(Me)
@@ -269,6 +268,10 @@ Partial Public Class VM
                         Regs(6) = CUShort((Regs(6) + 2 * nn) And &HFFFF)
                         PC = Regs(5)
                         Regs(5) = ReadUInt16(GetInc(6, 2))
+                        Return
+                    Case 7 ' sxt: Sign eXTend
+                        GetDst(2).SetValue(Me, If(N, &HFFFFUS, 0US))
+                        SetFlags(Not N, N, C, Me.V)
                         Return
                 End Select
         End Select
