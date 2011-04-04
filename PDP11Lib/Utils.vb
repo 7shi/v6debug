@@ -21,13 +21,16 @@ Public Module Utils
         Return Encoding.UTF8.GetString(bytes, 0, bytes.Length)
     End Function
 
-    Public Function ReadText$(src As Byte(), start%, length%)
+    Public Function ReadText$(src As Byte(), start%, Optional length% = -1)
         Dim list = New List(Of Byte)
         Dim prev = 0
-        For i = 0 To length - 1
-            Dim b = src(start + i)
+        Dim p = start
+        Dim ep = start + length
+        Do
+            If length >= 0 AndAlso p >= ep Then Exit Do
+            Dim b = src(p)
             If b <= 0 Then
-                Exit For
+                Exit Do
             ElseIf b = 13 OrElse (b = 10 AndAlso prev <> 13) Then
                 list.Add(13)
                 list.Add(10)
@@ -35,7 +38,8 @@ Public Module Utils
                 list.Add(CByte(b))
             End If
             prev = b
-        Next
+            p += 1
+        Loop
         Dim bytes = list.ToArray
         Return Encoding.UTF8.GetString(bytes, 0, bytes.Length)
     End Function

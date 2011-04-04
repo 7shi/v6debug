@@ -4,31 +4,40 @@ Partial Public Class VM
     Private Sub ExecSys()
         Dim t = Me(PC)
         PC += 2US
-        Select Case t
-            Case 0 ' indir: INDIRect
-                Dim bak = PC + 2US
-                PC = ReadUInt16(PC)
-                ExecSys()
-                PC = bak
-                Return
-            Case 1 ' exit
-                HasExited = True
-                Return
-            Case 4 ' write
-                SysWrite()
-                Return
-        End Select
+        If t < SysNames.Length AndAlso SysNames(t) IsNot Nothing Then
+            Dim args = New UShort() {}
+            Dim argc = SysArgs(t)
+            If argc > 0 Then
+                ReDim args(argc - 1)
+                For i = 0 To argc - 1
+                    args(i) = ReadUInt16(PC)
+                    PC += 2US
+                Next
+            End If
+            Select Case t
+                Case 0 ' indir: INDIRect
+                    Dim bak = PC
+                    PC = args(0)
+                    ExecSys()
+                    PC = bak
+                    Return
+                Case 1 ' exit
+                    HasExited = True
+                    Return
+                Case 4 ' write
+                    SysWrite(args)
+                    Return
+            End Select
+        End If
         Abort("invalid sys")
     End Sub
 
-    Private Sub SysWrite()
+    Private Sub SysWrite(args As UShort())
         Dim f = Regs(0)
-        Dim p = ReadUInt16(PC)
-        Dim len = ReadUInt16(PC + 2)
-        PC += 4US
         If f = 1 Then
-            swt.Write(ReadText(Data, p, len))
-            swo.Write(ReadText(Data, p, len))
+            Dim t = ReadText(Data, args(0), args(1))
+            swt.Write(t)
+            swo.Write(t)
             C = False
         Else
             C = True
