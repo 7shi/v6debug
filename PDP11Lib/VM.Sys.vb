@@ -16,7 +16,6 @@ Partial Public Class VM
             End If
             Select Case t
                 'Case 2 : _fork(args) : Return
-                'Case 3 : _read(args) : Return
                 'Case 6 : _close(args) : Return
                 'Case 7 : _wait(args) : Return
                 'Case 8 : _creat(args) : Return
@@ -57,6 +56,7 @@ Partial Public Class VM
                 'Case 48 : _sig(args) : Return
                 Case 0 : _indir(args) : Return
                 Case 1 : _exit(args) : Return
+                Case 3 : _read(args) : Return
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
             End Select
@@ -73,6 +73,18 @@ Partial Public Class VM
 
     Private Sub _exit(args As UShort())
         HasExited = True
+    End Sub
+
+    Private Sub _read(args As UShort())
+        swt.WriteLine("sys read: r0={0}, {1}, len={2}", Enc0(Regs(0)), Enc0(args(0)), args(1))
+        Try
+            Dim fss = fs.GetStream(Regs(0))
+            Regs(0) = CUShort(fss.Stream.Read(Data, args(0), args(1)))
+            C = False
+        Catch
+            Regs(0) = 0
+            C = True
+        End Try
     End Sub
 
     Private Sub _write(args As UShort())

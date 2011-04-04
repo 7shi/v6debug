@@ -82,4 +82,8 @@ Public MustInherit Class FileSystem
         Next
         FSStream.handleCount = 64
     End Sub
+
+    Public Function GetStream(handle%) As FSStream
+        Return If(fshnds.ContainsKey(handle), fshnds(handle), Nothing)
+    End Function
 End Class
