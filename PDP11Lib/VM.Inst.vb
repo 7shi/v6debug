@@ -225,7 +225,6 @@ Partial Public Class VM
                 End Select
             Case 6
                 Select Case v2
-                    'Case 4 : Return ReadNum("mark", bd, pos)
                     'Case 5 : Return ReadDst("mfpi", bd, pos)
                     'Case 6 : Return ReadDst("mtpi", bd, pos)
                     'Case 7 : Return ReadDst("sxt", bd, pos)
@@ -264,6 +263,12 @@ Partial Public Class VM
                         Dim msb0 = (val0 And &H8000) <> 0
                         Dim msb1 = val1 < 0
                         SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
+                        Return
+                    Case 4 ' mark: MARK
+                        Dim nn = v And &O77
+                        Regs(6) = CUShort((Regs(6) + 2 * nn) And &HFFFF)
+                        PC = Regs(5)
+                        Regs(5) = ReadUInt16(GetInc(6, 2))
                         Return
                 End Select
         End Select
