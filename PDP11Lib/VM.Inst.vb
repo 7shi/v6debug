@@ -265,7 +265,6 @@ Partial Public Class VM
     Private Sub Exec7()
         Dim v = ReadUInt16(PC)
         Select Case (v >> 9) And 7
-            'Case 0 : Return ReadSrcReg("mul", bd, pos)
             'Case 2 : Return ReadSrcReg("ash", bd, pos)
             'Case 3 : Return ReadSrcReg("ashc", bd, pos)
             'Case 5
@@ -275,6 +274,17 @@ Partial Public Class VM
             '        Case 2 : Return ReadReg("fmul", bd, pos)
             '        Case 3 : Return ReadReg("fdiv", bd, pos)
             '    End Select
+            Case 0 ' mul:MULtiply
+                Dim src = ConvShort(GetDst(2).GetValue(Me))
+                Dim r = (v >> 6) And 7
+                Dim val = CInt(Regs(r)) * src
+                If (r And 1) = 0 Then
+                    SetReg32(r, val)
+                Else
+                    Regs(r) = CUShort(val And &HFFFF)
+                End If
+                SetFlags(val = 0, val < 0, val < -&H8000 OrElse val >= &H8000, False)
+                Return
             Case 1 ' div: DIVide
                 Dim src = ConvShort(GetDst(2).GetValue(Me))
                 Dim r = (v >> 6) And 7
