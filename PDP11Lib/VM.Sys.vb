@@ -15,27 +15,27 @@ Partial Public Class VM
                 Next
             End If
             Select Case t
-                Case 0 ' indir: INDIRect
-                    Dim bak = PC
-                    PC = args(0)
-                    ExecSys()
-                    PC = bak
-                    Return
-                Case 1 ' exit
-                    HasExited = True
-                    Return
-                Case 4 ' write
-                    SysWrite(args)
-                    Return
-                Case 5 ' open
-                    SysOpen(args)
-                    Return
+                Case 0 : _indir(args) : Return
+                Case 1 : _exit(args) : Return
+                Case 4 : _write(args) : Return
+                Case 5 : _open(args) : Return
             End Select
         End If
         Abort("invalid sys")
     End Sub
 
-    Private Sub SysWrite(args As UShort())
+    Private Sub _indir(args As UShort())
+        Dim bak = PC
+        PC = args(0)
+        ExecSys()
+        PC = bak
+    End Sub
+
+    Private Sub _exit(args As UShort())
+        HasExited = True
+    End Sub
+
+    Private Sub _write(args As UShort())
         Dim t = ReadString(Data, args(0), args(1))
         swt.WriteLine("sys write: r0={0}, {1}""{2}"", {3}",
                       Enc0(Regs(0)), Enc0(args(0)), Escape(t), args(1))
@@ -50,7 +50,7 @@ Partial Public Class VM
         End If
     End Sub
 
-    Private Sub SysOpen(args As UShort())
+    Private Sub _open(args As UShort())
         Dim p = ReadString(Data, args(0))
         swt.WriteLine("sys open: {0}""{1}"", {2}", Enc0(args(0)), Escape(p), args(1))
         Dim fss = fs.Open(p)
