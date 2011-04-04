@@ -137,7 +137,6 @@ Partial Public Class VM
                     '        Case 5 : Return New OpCode("reset", 2)
                     '        Case 6 : Return New OpCode("rtt", 2)
                     '    End Select
-                    'Case 3 : Return ReadDst("swab", bd, pos)
                     Case 1 ' jmp: JuMP
                         PC = GetDst(2).GetAddress(Me)
                         Return
@@ -158,6 +157,15 @@ Partial Public Class VM
                                 PC += 2US
                                 Return
                         End Select
+                    Case 3 ' swab: SWAp Bytes
+                        Dim dst = GetDst(2)
+                        Dim val0 = dst.GetValue(Me)
+                        Dim bh = (val0 >> 8) And &HFF
+                        Dim bl = val0 And &HFF
+                        Dim val1 = CUShort(((bl << 8) Or bh) And &HFFFF)
+                        dst.SetValue(Me, val1)
+                        SetFlags(val1 = 0, (val1 And &H8000) <> 0, False, False)
+                        Return
                 End Select
             Case 4 ' jsr: Jump to SubRoutine
                 Dim r = (v >> 6) And 7
