@@ -21,17 +21,6 @@ Public Module Utils
         Return Encoding.UTF8.GetString(bytes, 0, bytes.Length)
     End Function
 
-    Public Function ReadText$(path$)
-        Dim uri = New Uri(path, UriKind.Relative)
-        Dim rs = Application.GetResourceStream(uri)
-        If rs IsNot Nothing Then
-            Using s = rs.Stream
-                Return ReadText(s)
-            End Using
-        End If
-        Return ""
-    End Function
-
     Public Function ReadText$(src As Byte(), start%, length%)
         Dim list = New List(Of Byte)
         Dim prev = 0

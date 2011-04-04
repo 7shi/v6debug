@@ -6,10 +6,11 @@ Partial Public Class MainPage
 
     Private aout As AOut
     Private args$()
+    Private fs As New SLFileSystem("Tests")
 
     Public Sub New()
         InitializeComponent()
-        ReadResource("Tests/hello1", Nothing)
+        ReadFile("hello1", Nothing)
         addTest("hello1")
         addTest("hello2")
         addTest("hello3")
@@ -32,15 +33,13 @@ Partial Public Class MainPage
         menuStack.Children.Add(button)
     End Sub
 
-    Private Sub ReadResource(path$, args$())
-        Dim uri1 = New Uri(path, UriKind.Relative)
-        Dim rs1 = Application.GetResourceStream(uri1)
-        If rs1 IsNot Nothing Then
-            Using s = rs1.Stream
-                ReadStream(s, GetFileName(path), args)
-            End Using
-        End If
-        txtSrc.Text = ReadText(path + ".c")
+    Private Sub ReadFile(path$, args$())
+        Using s = fs.Open(path)
+            ReadStream(s.Stream, GetFileName(path), args)
+        End Using
+        Using s = fs.Open(path + ".c")
+            txtSrc.Text = ReadText(s.Stream)
+        End Using
     End Sub
 
     Private Sub ReadStream(s As Stream, path$, args$())
@@ -86,7 +85,7 @@ Partial Public Class MainPage
 
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        ReadResource("Tests/" + button.Content.ToString(), CType(button.Tag, String()))
+        ReadFile(button.Content.ToString(), CType(button.Tag, String()))
         Cursor = cur
     End Sub
 
