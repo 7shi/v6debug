@@ -43,13 +43,16 @@ Partial Public Class VM
 
     Private aout As AOut
     Private fs As FileSystem
+    Private verbose As Boolean
+    Private prevPC As UShort
 
-    Public Sub New(aout As AOut, fs As FileSystem)
+    Public Sub New(aout As AOut, fs As FileSystem, verbose As Boolean)
         MyBase.New(&H10000)
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.tsize + aout.dsize)
         Me.UseOct = aout.UseOct
         Me.aout = aout
         Me.fs = fs
+        Me.verbose = verbose
         breakpt = aout.BreakPoint
         PC = aout.entry
         SetArgs(New String() {aout.Path})
@@ -94,25 +97,27 @@ Partial Public Class VM
         Dim cur As Symbol = Nothing
         Dim op = New OpCode("", 0)
         While Not HasExited
-            Dim sym = aout.GetSymbol(PC)
-            If cur IsNot sym Then
-                swt.Write("     ")
-                If op.Mnemonic.StartsWith("rts ") Then
-                    swt.WriteLine("<{0}", sym.Name)
-                ElseIf PC = sym.Address Then
-                    swt.WriteLine("{0}", sym)
-                Else
-                    swt.WriteLine(">{0}", sym.Name)
+            If verbose Then
+                Dim sym = aout.GetSymbol(PC)
+                If cur IsNot sym Then
+                    swt.Write("     ")
+                    If op.Mnemonic.StartsWith("rts ") Then
+                        swt.WriteLine("<{0}", sym.Name)
+                    ElseIf PC = sym.Address Then
+                        swt.WriteLine("{0}", sym)
+                    Else
+                        swt.WriteLine(">{0}", sym.Name)
+                    End If
+                    cur = sym
                 End If
-                cur = sym
             End If
             op = Disassemble(PC)
-            swt.Write("{0}: ", GetRegs)
+            If verbose Then swt.Write("{0}: ", GetRegs)
             If op Is Nothing Then
-                swt.WriteLine(Enc(ReadUInt16(PC)))
+                If verbose Then swt.WriteLine(Enc(ReadUInt16(PC)))
                 Abort("undefined instruction")
             Else
-                swt.WriteLine(op.Mnemonic)
+                If verbose Then swt.WriteLine(op.Mnemonic)
                 RunStep()
             End If
         End While
@@ -133,8 +138,23 @@ Partial Public Class VM
     End Function
 
     Public Sub Abort(msg$)
+        If Not verbose Then
+            Dim bak = PC
+            PC = prevPC
+            Dim sym = aout.GetSymbol(PC)
+            If sym IsNot Nothing Then
+                swt.WriteLine("in {0}", sym)
+            End If
+            Dim op = Disassemble(PC)
+            swt.Write("{0}: ", GetRegs)
+            If op Is Nothing Then
+                swt.WriteLine(Enc(ReadUInt16(PC)))
+            Else
+                swt.WriteLine(op.Mnemonic)
+            End If
+            PC = bak
+        End If
         swt.WriteLine(msg)
-        'sw.WriteLine(GetRegs)
         HasExited = True
     End Sub
 

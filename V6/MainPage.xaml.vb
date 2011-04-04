@@ -5,18 +5,23 @@ Partial Public Class MainPage
     Inherits UserControl
 
     Private aout As AOut
-    Private args$()
+    Private parg As ProcArg
     Private fs As New SLFileSystem("Tests")
+
+    Private Class ProcArg
+        Public Args As String()
+        Public Verbose As Boolean
+    End Class
 
     Public Sub New()
         InitializeComponent()
-        ReadFile("hello1", Nothing)
-        addTest("hello1")
-        addTest("hello2")
-        addTest("hello3")
-        addTest("hello4")
-        addTest("args", "test", "arg")
-        addTest("nm", "args")
+        ReadFile("hello1", New ProcArg With {.Verbose = True})
+        addTest(True, "hello1")
+        addTest(True, "hello2")
+        addTest(True, "hello3")
+        addTest(True, "hello4")
+        addTest(True, "args", "test", "arg")
+        addTest(False, "nm", "args")
     End Sub
 
     Public Sub Clear()
@@ -27,26 +32,27 @@ Partial Public Class MainPage
         txtOut.Text = ""
     End Sub
 
-    Private Sub addTest(t$, ParamArray args$())
-        Dim button = New Button With {.Content = t, .Tag = args}
+    Private Sub addTest(verbose As Boolean, t$, ParamArray args$())
+        Dim parg = New ProcArg With {.Args = args, .Verbose = verbose}
+        Dim button = New Button With {.Content = t, .Tag = parg}
         AddHandler button.Click, AddressOf btnTest_Click
         menuStack.Children.Add(button)
     End Sub
 
-    Private Sub ReadFile(path$, args$())
+    Private Sub ReadFile(path$, parg As ProcArg)
         Using s = fs.Open(path)
-            ReadStream(s.Stream, GetFileName(path), args)
+            ReadStream(s.Stream, GetFileName(path), parg)
         End Using
         Using s = fs.Open(path + ".c")
             txtSrc.Text = ReadText(s.Stream)
         End Using
     End Sub
 
-    Private Sub ReadStream(s As Stream, path$, args$())
+    Private Sub ReadStream(s As Stream, path$, parg As ProcArg)
         Dim data(CInt(s.Length - 1)) As Byte
         s.Read(data, 0, data.Length)
         aout = New AOut(data, path)
-        Me.args = args
+        Me.parg = parg
         Run()
         btnSave.IsEnabled = True
     End Sub
@@ -85,7 +91,7 @@ Partial Public Class MainPage
 
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        ReadFile(button.Content.ToString(), CType(button.Tag, String()))
+        ReadFile(button.Content.ToString(), CType(button.Tag, ProcArg))
         Cursor = cur
     End Sub
 
@@ -99,8 +105,8 @@ Partial Public Class MainPage
         Dim cur = Cursor
         Cursor = Cursors.Wait
         aout.UseOct = comboBox1.SelectedIndex = 1
-        Dim vm = New VM(aout, fs)
-        vm.Run(args)
+        Dim vm = New VM(aout, fs, parg.Verbose)
+        vm.Run(parg.Args)
         txtDis.Text = aout.GetDisassemble()
         txtBin.Text = aout.GetDump()
         txtTrace.Text = vm.Trace
