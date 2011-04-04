@@ -88,7 +88,7 @@ Public Class AOut
                         Order By sym.Address * 2 + If(sym.IsNull, 1, 0)
             For Each sym In dsyms
                 If Not sym.IsNull Then
-                    tw.WriteLine("[{0:x4}] {1}: {2}:", sym.Address + 16, Enc0(CUShort(sym.Address)), sym.Name)
+                    tw.WriteLine("[{0:x4}] {1}: {2}", sym.Address + 16, Enc0(CUShort(sym.Address)), sym)
                 Else
                     Disassemble(tw, sym.Address)
                 End If
@@ -101,7 +101,7 @@ Public Class AOut
             tw.WriteLine(".bss  [----] {0} - [----] {1}", Enc0(baddr), Enc0(last - 1US))
             Dim bsyms = From sym In symlist Where GetSection(sym) = 3 Select sym
             For Each sym In bsyms
-                tw.WriteLine("[----] {0}: {1}:", Enc0(CUShort(sym.Address)), sym.Name)
+                tw.WriteLine("[----] {0}: {1}", Enc0(CUShort(sym.Address)), sym)
             Next
         End If
     End Sub

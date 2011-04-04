@@ -14,7 +14,7 @@
 
     Public ReadOnly Property IsGlobal As Boolean
         Get
-            Return Type = &H22
+            Return Type = &H22 Or Type = &H24
         End Get
     End Property
 
