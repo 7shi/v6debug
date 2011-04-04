@@ -27,9 +27,9 @@ Public Module Disassembler
 
     Public Function Disassemble(bd As BinData, pos%) As OpCode
         Dim vm = TryCast(bd, VM)
-        If vm IsNot Nothing Then vm.SaveRegs()
+        Dim st = If(vm IsNot Nothing, New VMState(vm), Nothing)
         Dim ret = _Disassemble(bd, pos)
-        If vm IsNot Nothing Then vm.LoadRegs()
+        If st IsNot Nothing Then st.Restore()
         Return ret
     End Function
 

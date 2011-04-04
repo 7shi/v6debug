@@ -3,6 +3,12 @@ Imports System.Text
 
 Partial Public Class VM
     Public Sub RunStep()
+        While callStack.Count > 0 AndAlso Regs(6) > callStack.Peek().Regs(6) - 2
+            callStack.Pop()
+        End While
+        prevState = New VMState(Me)
+        If verbose Then WriteState(prevState, False)
+
         Select Case Me(PC + 1) >> 4
             Case 0
                 Exec0()
@@ -168,6 +174,7 @@ Partial Public Class VM
                         Return
                 End Select
             Case 4 ' jsr: Jump to SubRoutine
+                callStack.Push(New VMState(Me))
                 Dim r = (v >> 6) And 7
                 Dim dst = GetDst(2).GetAddress(Me)
                 Write(GetDec(6, 2), Regs(r))

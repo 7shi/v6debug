@@ -5,7 +5,6 @@ Partial Public Class VM
     Inherits BinData
 
     Public Regs(7) As UShort
-    Private bakRegs(7) As UShort
     Private breakpt As UShort
 
     Public Property PC As UShort
@@ -44,7 +43,8 @@ Partial Public Class VM
     Private aout As AOut
     Private fs As FileSystem
     Private verbose As Boolean
-    Private prevPC As UShort
+    Private prevState As VMState
+    Private callStack As New Stack(Of VMState)
 
     Public Sub New(aout As AOut, fs As FileSystem, verbose As Boolean)
         MyBase.New(&H10000)
@@ -95,13 +95,13 @@ Partial Public Class VM
         swt = New StringWriter
         swo = New StringWriter
         Dim cur As Symbol = Nothing
-        Dim op = New OpCode("", 0)
+        Dim prevStack = callStack.Count
         While Not HasExited
             If verbose Then
                 Dim sym = aout.GetSymbol(PC)
                 If cur IsNot sym Then
                     swt.Write("     ")
-                    If op.Mnemonic.StartsWith("rts ") Then
+                    If prevStack > callStack.Count Then
                         swt.WriteLine("<{0}", sym.Name)
                     ElseIf PC = sym.Address Then
                         swt.WriteLine("{0}", sym)
@@ -109,17 +109,10 @@ Partial Public Class VM
                         swt.WriteLine(">{0}", sym.Name)
                     End If
                     cur = sym
+                    prevStack = callStack.Count
                 End If
             End If
-            op = Disassemble(PC)
-            If verbose Then swt.Write("{0}: ", GetRegs)
-            If op Is Nothing Then
-                If verbose Then swt.WriteLine(Enc(ReadUInt16(PC)))
-                Abort("undefined instruction")
-            Else
-                If verbose Then swt.WriteLine(op.Mnemonic)
-                RunStep()
-            End If
+            RunStep()
         End While
         fs.CloseAll()
     End Sub
@@ -138,24 +131,28 @@ Partial Public Class VM
     End Function
 
     Public Sub Abort(msg$)
-        If Not verbose Then
-            Dim bak = PC
-            PC = prevPC
+        If Not verbose Then WriteState(prevState, True)
+        swt.WriteLine(msg)
+        swt.WriteLine()
+        swt.WriteLine("==== backtrace ====")
+        For Each st In callStack
+            WriteState(st, True)
+        Next
+        HasExited = True
+    End Sub
+
+    Private Sub WriteState(st As VMState, showSym As Boolean)
+        Dim bak = PC
+        PC = st.Regs(7)
+        If showSym Then
             Dim sym = aout.GetSymbol(PC)
             If sym IsNot Nothing Then
                 swt.WriteLine("in {0}", sym)
             End If
-            Dim op = Disassemble(PC)
-            swt.Write("{0}: ", GetRegs)
-            If op Is Nothing Then
-                swt.WriteLine(Enc(ReadUInt16(PC)))
-            Else
-                swt.WriteLine(op.Mnemonic)
-            End If
-            PC = bak
         End If
-        swt.WriteLine(msg)
-        HasExited = True
+        Dim op = Disassemble(PC)
+        swt.WriteLine("{0}: {1}", st, If(op IsNot Nothing, op.Mnemonic, Enc(ReadUInt16(PC))))
+        PC = bak
     End Sub
 
     Public Function Disassemble(pos%) As OpCode
@@ -173,15 +170,6 @@ Partial Public Class VM
         Return Regs(r)
     End Function
 
-    Public Function GetRegs$()
-        Return String.Format(
-            "{0} r0={1} r1={2} r2={3} r3={4} r4={5} r5={6} sp={7}{{{8} {9} {10} {11}}} pc={12}",
-            GetFlags,
-            Enc0(Regs(0)), Enc0(Regs(1)), Enc0(Regs(2)), Enc0(Regs(3)), Enc0(Regs(4)), Enc0(Regs(5)),
-            Enc0(Regs(6)), Enc0(ReadUInt16(Regs(6))), Enc0(ReadUInt16(Regs(6) + 2)),
-            Enc0(ReadUInt16(Regs(6) + 4)), Enc0(ReadUInt16(Regs(6) + 6)), Enc0(Regs(7)))
-    End Function
-
     Public Function GetReg32%(r%)
         Return (CInt(Regs(r)) << 16) Or CInt(Regs((r + 1) And 7))
     End Function
@@ -190,15 +178,6 @@ Partial Public Class VM
         Regs(r) = CUShort((v >> 16) And &HFFFF)
         Regs((r + 1) And 7) = CUShort(v And &HFFFF)
     End Sub
-
-    Public Function GetFlags$()
-        Dim sb = New StringBuilder
-        sb.Append(If(Z, "Z", "-"))
-        sb.Append(If(N, "N", "-"))
-        sb.Append(If(C, "C", "-"))
-        sb.Append(If(V, "V", "-"))
-        Return sb.ToString
-    End Function
 
     Public Sub SetFlags(z As Boolean, n As Boolean, c As Boolean, v As Boolean)
         Me.Z = z
@@ -233,12 +212,4 @@ Partial Public Class VM
     Public Overrides Function GetRelative$(r%, d%, ad%)
         Return aout.GetRelative(r, d, ad)
     End Function
-
-    Public Sub SaveRegs()
-        Array.Copy(Regs, bakRegs, Regs.Length)
-    End Sub
-
-    Public Sub LoadRegs()
-        Array.Copy(bakRegs, Regs, Regs.Length)
-    End Sub
 End Class

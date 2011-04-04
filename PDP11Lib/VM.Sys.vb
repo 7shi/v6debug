@@ -3,7 +3,6 @@ Imports System.Text
 
 Partial Public Class VM
     Private Sub ExecSys()
-        prevPC = PC
         Dim t = Me(PC)
         PC += 2US
         If t < SysNames.Length AndAlso SysNames(t) IsNot Nothing Then
