@@ -275,15 +275,19 @@ Partial Public Class VM
             '        Case 2 : Return ReadReg("fmul", bd, pos)
             '        Case 3 : Return ReadReg("fdiv", bd, pos)
             '    End Select
-            Case 1 ' div: DIVision
+            Case 1 ' div: DIVide
                 Dim src = ConvShort(GetDst(2).GetValue(Me))
                 Dim r = (v >> 6) And 7
-                Dim dst = GetReg32(r)
-                Dim r1 = dst \ src
-                Dim r2 = dst Mod src
-                Regs(r) = CUShort(r1 And &HFFFF)
-                Regs((r + 1) And 7) = CUShort(r2 And &HFFFF)
-                SetFlags(r1 = 0, r1 < 0, r2 <> 0, r1 < -&H8000 OrElse r1 >= &H8000)
+                If src = 0 OrElse Math.Abs(ConvShort(Regs(r))) > Math.Abs(src) Then
+                    SetFlags(False, False, src = 0, True)
+                Else
+                    Dim dst = GetReg32(r)
+                    Dim r1 = dst \ src
+                    Dim r2 = dst Mod src
+                    Regs(r) = CUShort(r1 And &HFFFF)
+                    Regs((r + 1) And 7) = CUShort(r2 And &HFFFF)
+                    SetFlags(r1 = 0, r1 < 0, False, False)
+                End If
                 Return
             Case 4 ' xor: eXclusive OR
                 Dim dst = GetDst(2)
