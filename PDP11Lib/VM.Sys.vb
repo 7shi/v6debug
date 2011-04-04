@@ -1,4 +1,5 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Text
 
 Partial Public Class VM
     Private Sub ExecSys()
@@ -29,7 +30,6 @@ Partial Public Class VM
                 'Case 16 : _chown(args) : Return
                 'Case 17 : _break(args) : Return
                 'Case 18 : _stat(args) : Return
-                'Case 19 : _seek(args) : Return
                 'Case 20 : _getpid(args) : Return
                 'Case 21 : _mount(args) : Return
                 'Case 22 : _umount(args) : Return
@@ -59,6 +59,7 @@ Partial Public Class VM
                 Case 3 : _read(args) : Return
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
+                Case 19 : _seek(args) : Return
             End Select
         End If
         Abort("invalid sys")
@@ -113,5 +114,17 @@ Partial Public Class VM
             Regs(0) = 0
             C = True
         End If
+    End Sub
+
+    Private Sub _seek(args As UShort()) ' 19
+        swt.WriteLine("sys seek: fd(r0)={0}, offset={1}, origin={2}", Enc0(Regs(0)), Enc0(args(0)), args(1))
+        Try
+            Dim fss = fs.GetStream(Regs(0))
+            Regs(0) = CUShort(fss.Stream.Seek(args(0), CType(args(1), SeekOrigin)))
+            C = False
+        Catch
+            Regs(0) = 0
+            C = True
+        End Try
     End Sub
 End Class
