@@ -28,7 +28,6 @@ Partial Public Class VM
                 'Case 14 : _mknod(args) : Return
                 'Case 15 : _chmod(args) : Return
                 'Case 16 : _chown(args) : Return
-                'Case 17 : _break(args) : Return
                 'Case 18 : _stat(args) : Return
                 'Case 20 : _getpid(args) : Return
                 'Case 21 : _mount(args) : Return
@@ -59,6 +58,7 @@ Partial Public Class VM
                 Case 3 : _read(args) : Return
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
+                Case 17 : _break(args) : Return
                 Case 19 : _seek(args) : Return
             End Select
         End If
@@ -113,6 +113,20 @@ Partial Public Class VM
         Else
             Regs(0) = 0
             C = True
+        End If
+    End Sub
+
+    Private Sub _break(args As UShort()) ' 17
+        Dim incr = ConvShort(args(0))
+        swt.WriteLine("sys break: incr={0}", incr)
+        Dim newbrk = breakpt + incr
+        If newbrk < aout.BreakPoint OrElse newbrk >= &HF000 Then
+            Regs(0) = 0
+            C = True
+        Else
+            Regs(0) = breakpt
+            breakpt = CUShort(newbrk)
+            C = False
         End If
     End Sub
 

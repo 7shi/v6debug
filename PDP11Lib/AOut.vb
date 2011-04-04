@@ -96,9 +96,9 @@ Public Class AOut
         End If
 
         If bsize > 0 Then
-            Dim last = baddr + bsize
+            Dim brkpt = BreakPoint
             tw.WriteLine()
-            tw.WriteLine(".bss  [----] {0} - [----] {1}", Enc0(baddr), Enc0(last - 1US))
+            tw.WriteLine(".bss  [----] {0} - [----] {1}", Enc0(baddr), Enc0(brkpt - 1US))
             Dim bsyms = From sym In symlist Where GetSection(sym) = 3 Select sym
             For Each sym In bsyms
                 tw.WriteLine("[----] {0}: {1}", Enc0(CUShort(sym.Address)), sym)
@@ -198,4 +198,10 @@ Public Class AOut
     Public Function GetSection%(sym As Symbol)
         Return GetSection(sym.Address)
     End Function
+
+    Public ReadOnly Property BreakPoint As UShort
+        Get
+            Return tsize + dsize + bsize
+        End Get
+    End Property
 End Class

@@ -6,6 +6,7 @@ Partial Public Class VM
 
     Public Regs(7) As UShort
     Private bakRegs(7) As UShort
+    Private breakpt As UShort
 
     Public Property PC As UShort
         Get
@@ -49,6 +50,7 @@ Partial Public Class VM
         Me.UseOct = aout.UseOct
         Me.aout = aout
         Me.fs = fs
+        breakpt = aout.BreakPoint
         PC = aout.entry
         SetArgs(New String() {aout.Path})
     End Sub
