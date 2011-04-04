@@ -16,7 +16,7 @@ Partial Public Class MainPage
         addTest("hello3")
         addTest("hello4")
         addTest("args", "test", "arg")
-        addTest("nm")
+        addTest("nm", "args")
     End Sub
 
     Public Sub Clear()
@@ -99,7 +99,7 @@ Partial Public Class MainPage
         Dim cur = Cursor
         Cursor = Cursors.Wait
         aout.UseOct = comboBox1.SelectedIndex = 1
-        Dim vm = New VM(aout)
+        Dim vm = New VM(aout, fs)
         vm.Run(args)
         txtDis.Text = aout.GetDisassemble()
         txtBin.Text = aout.GetDump()

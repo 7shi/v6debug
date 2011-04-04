@@ -41,7 +41,7 @@
     End Sub
 
     Public Sub New(data As Byte(), pos%)
-        Name = ReadText(data, pos, 8)
+        Name = ReadString(data, pos, 8)
         Type = BitConverter.ToUInt16(data, pos + 8)
         Address = BitConverter.ToUInt16(data, pos + 10)
         If IsLocal And Address >= &H8000 Then Address -= &H10000

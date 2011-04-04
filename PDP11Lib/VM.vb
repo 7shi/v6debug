@@ -41,12 +41,14 @@ Partial Public Class VM
     End Property
 
     Private aout As AOut
+    Private fs As FileSystem
 
-    Public Sub New(aout As AOut)
+    Public Sub New(aout As AOut, fs As FileSystem)
         MyBase.New(&H10000)
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.tsize + aout.dsize)
         Me.UseOct = aout.UseOct
         Me.aout = aout
+        Me.fs = fs
         PC = aout.entry
         SetArgs(New String() {aout.Path})
     End Sub
@@ -112,6 +114,7 @@ Partial Public Class VM
                 RunStep()
             End If
         End While
+        fs.CloseAll()
     End Sub
 
     Private Function GetSrcDst(size As UShort) As Operand()

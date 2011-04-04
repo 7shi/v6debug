@@ -13,6 +13,6 @@ Public Class SLFileSystem
     Protected Overrides Function GetStream(p$) As Stream
         Dim uri = New Uri(root + "/" + p, UriKind.Relative)
         Dim rs = Application.GetResourceStream(uri)
-        Return If(rs.Stream IsNot Nothing, rs.Stream, Nothing)
+        Return If(rs IsNot Nothing, rs.Stream, Nothing)
     End Function
 End Class

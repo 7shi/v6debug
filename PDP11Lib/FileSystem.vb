@@ -10,7 +10,7 @@ Public MustInherit Class FileSystem
     Public Class FSStream
         Implements IDisposable
 
-        Private Shared handleCount% = 64
+        Friend Shared handleCount% = 64
         Private _Handle%
         Private parent As FileSystem
         Private target As FSObject
@@ -73,5 +73,13 @@ Public MustInherit Class FileSystem
     Friend Sub Close(fso As FSObject)
         fso.Stream.Dispose()
         fsobjs.Remove(fso.Path)
+    End Sub
+
+    Public Sub CloseAll()
+        Dim streams = fshnds.Values.ToArray
+        For Each fss In streams
+            fss.Dispose()
+        Next
+        FSStream.handleCount = 64
     End Sub
 End Class
