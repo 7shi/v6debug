@@ -64,19 +64,19 @@ Partial Public Class VM
         Abort("invalid sys")
     End Sub
 
-    Private Sub _indir(args As UShort())
+    Private Sub _indir(args As UShort()) ' 0
         Dim bak = PC
         PC = args(0)
         ExecSys()
         PC = bak
     End Sub
 
-    Private Sub _exit(args As UShort())
+    Private Sub _exit(args As UShort()) ' 1
         HasExited = True
     End Sub
 
-    Private Sub _read(args As UShort())
-        swt.WriteLine("sys read: r0={0}, {1}, len={2}", Enc0(Regs(0)), Enc0(args(0)), args(1))
+    Private Sub _read(args As UShort()) ' 3
+        swt.WriteLine("sys read: fd(r0)={0}, buf={1}, len={2}", Enc0(Regs(0)), Enc0(args(0)), args(1))
         Try
             Dim fss = fs.GetStream(Regs(0))
             Regs(0) = CUShort(fss.Stream.Read(Data, args(0), args(1)))
@@ -87,9 +87,9 @@ Partial Public Class VM
         End Try
     End Sub
 
-    Private Sub _write(args As UShort())
+    Private Sub _write(args As UShort()) ' 4
         Dim t = ReadString(Data, args(0), args(1))
-        swt.WriteLine("sys write: r0={0}, {1}""{2}"", {3}",
+        swt.WriteLine("sys write: fd(r0)={0}, buf={1}""{2}"", len={3}",
                       Enc0(Regs(0)), Enc0(args(0)), Escape(t), args(1))
         Dim f = Regs(0)
         If f = 1 Then
@@ -102,9 +102,9 @@ Partial Public Class VM
         End If
     End Sub
 
-    Private Sub _open(args As UShort())
+    Private Sub _open(args As UShort()) ' 5
         Dim p = ReadString(Data, args(0))
-        swt.WriteLine("sys open: {0}""{1}"", {2}", Enc0(args(0)), Escape(p), args(1))
+        swt.WriteLine("sys open: path={0}""{1}"", mode={2}", Enc0(args(0)), Escape(p), args(1))
         Dim fss = fs.Open(p)
         If fss IsNot Nothing Then
             Regs(0) = CUShort(fss.Handle And &HFFFF)
