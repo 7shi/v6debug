@@ -103,6 +103,7 @@ Partial Public Class VM
             End If
             C = False
         Catch
+            Regs(0) = 0
             C = True
         End Try
     End Sub
@@ -127,6 +128,7 @@ Partial Public Class VM
             fss.Dispose()
             C = False
         Catch
+            Regs(0) = 0
             C = True
         End Try
     End Sub
@@ -135,6 +137,7 @@ Partial Public Class VM
         Dim nd = args(0)
         swt.WriteLine("sys break: nd={0}", Enc(nd))
         If nd < aout.BreakPoint OrElse nd >= Regs(6) Then
+            Regs(0) = 0
             C = True
         Else
             breakpt = nd
@@ -162,6 +165,7 @@ Partial Public Class VM
             Regs(0) = CUShort(fss2.Handle)
             C = False
         Catch
+            Regs(0) = 0
             C = True
         End Try
     End Sub
