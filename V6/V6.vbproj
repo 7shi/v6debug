@@ -138,8 +138,10 @@
     <Content Include="Tests\hello3" />
     <Content Include="Tests\hello4" />
     <Content Include="Tests\nm" />
+    <Content Include="Tests\printo.c" />
     <Content Include="Tests\README" />
     <Content Include="Tests\args" />
+    <Content Include="Tests\printo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">

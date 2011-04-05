@@ -21,6 +21,7 @@ Partial Public Class MainPage
         addTest(True, "hello3")
         addTest(True, "hello4")
         addTest(True, "args", "test", "arg")
+        addTest(True, "printo")
         addTest(False, "nm", "args")
     End Sub
 
