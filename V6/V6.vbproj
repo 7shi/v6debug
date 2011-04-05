@@ -127,6 +127,24 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests\args.c" />
+    <Content Include="Tests\as\as11.s" />
+    <Content Include="Tests\as\as12.s" />
+    <Content Include="Tests\as\as13.s" />
+    <Content Include="Tests\as\as14.s" />
+    <Content Include="Tests\as\as15.s" />
+    <Content Include="Tests\as\as16.s" />
+    <Content Include="Tests\as\as17.s" />
+    <Content Include="Tests\as\as18.s" />
+    <Content Include="Tests\as\as19.s" />
+    <Content Include="Tests\as\as21.s" />
+    <Content Include="Tests\as\as22.s" />
+    <Content Include="Tests\as\as23.s" />
+    <Content Include="Tests\as\as24.s" />
+    <Content Include="Tests\as\as25.s" />
+    <Content Include="Tests\as\as26.s" />
+    <Content Include="Tests\as\as27.s" />
+    <Content Include="Tests\as\as28.s" />
+    <Content Include="Tests\as\as29.s" />
     <Content Include="Tests\hello2.c" />
     <Content Include="Tests\hello3.c" />
     <Content Include="Tests\hello4.c" />
@@ -221,6 +239,7 @@
     <Content Include="Tests\printo" />
     <Content Include="Tests\s4\run" />
     <Content Include="Tests\s5\run" />
+    <Content Include="Tests\as\run" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">
