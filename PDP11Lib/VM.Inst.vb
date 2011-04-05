@@ -158,7 +158,7 @@ Partial Public Class VM
                                 Dim f = (v And 16) <> 0
                                 If (v And 8) <> 0 Then Me.N = f
                                 If (v And 4) <> 0 Then Me.Z = f
-                                If (v And 2) <> 9 Then Me.V = f
+                                If (v And 2) <> 0 Then Me.V = f
                                 If (v And 1) <> 0 Then Me.C = f
                                 PC += 2US
                                 Return
