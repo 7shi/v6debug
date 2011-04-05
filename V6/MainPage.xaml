@@ -9,8 +9,8 @@
 
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="24" />
@@ -19,10 +19,10 @@
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="2">
             <StackPanel Name="menuStack" HorizontalAlignment="Left" Orientation="Horizontal">
-                <Button Content="Open" Name="btnOpen" Click="btnOpen_Click" />
-                <Button Content="Save" Name="btnSave" Click="btnSave_Click" IsEnabled="False" />
+                <Button Content="Open" Name="btnOpen" />
+                <Button Content="Save" Name="btnSave" IsEnabled="False" />
                 <Grid Width="4" />
-                <ComboBox Name="comboBox1" SelectedIndex="0" SelectionChanged="comboBox1_SelectionChanged">
+                <ComboBox Name="comboBox1" SelectedIndex="0">
                     <ComboBoxItem Content="hex" />
                     <ComboBoxItem Content="oct" />
                 </ComboBox>
@@ -48,7 +48,13 @@
         <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
             <sdk:TabItem Header="Source">
                 <Grid>
-                    <TextBox Name="txtSrc" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="64" />
+                        <ColumnDefinition Width="1*" />
+                    </Grid.ColumnDefinitions>
+                    <ListBox Name="ListBox1" Margin="0,0,6,0" />
+                    <sdk:GridSplitter Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
+                    <TextBox Name="txtSrc" Grid.Column="2" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
                 </Grid>
             </sdk:TabItem>
             <sdk:TabItem Header="Binary">
