@@ -51,12 +51,6 @@ Partial Public Class MainPage
         Using s = fs.Open(path)
             ReadStream(s.Stream, GetFileName(path), parg)
         End Using
-        ignore = True
-        For Each src In parg.Srcs
-            ListBox1.Items.Add(src)
-        Next
-        ignore = False
-        ListBox1.SelectedIndex = 0
         txtSym.Text = VM.System(fs, "nm", path).Output
     End Sub
 
@@ -64,10 +58,44 @@ Partial Public Class MainPage
         Dim data(CInt(s.Length - 1)) As Byte
         s.Read(data, 0, data.Length)
         aout = New AOut(data, path)
+
+        ignore = True
+        For Each src In parg.Srcs
+            ListBox1.Items.Add(src)
+        Next
+        Dim objs = From sym In aout.GetSymbols
+                   Where sym.ObjSym IsNot Nothing
+                   Select sym.ObjSym
+        Dim list = New List(Of String)
+        For Each obj In objs
+            Dim src = checkLib(obj.Name)
+            If src IsNot Nothing Then list.Add(src)
+        Next
+        list.Sort()
+        For Each src In list
+            ListBox1.Items.Add(src)
+        Next
+        ignore = False
+        ListBox1.SelectedIndex = 0
+
         Me.parg = parg
         Run()
         btnSave.IsEnabled = True
     End Sub
+
+    Private Function checkLib$(obj$)
+        Dim p = obj.LastIndexOf(".")
+        If p < 0 Then Return Nothing
+        Dim fn = obj.Substring(0, p)
+        For Each dir In New String() {"s4", "s5"}
+            For Each ext In New String() {".s", ".c"}
+                If fs.Exists(dir + "/" + fn + ext) Then
+                    Return dir + "/" + fn + ext
+                End If
+            Next
+        Next
+        Return Nothing
+    End Function
 
     Private Sub btnOpen_Click(sender As Object, e As RoutedEventArgs) Handles btnOpen.Click
         Dim ofd = New OpenFileDialog

@@ -10,6 +10,10 @@ Public Class AOut
 
     Private symlist As New List(Of Symbol)
 
+    Public Function GetSymbols() As Symbol()
+        Return symlist.ToArray
+    End Function
+
     Public Sub New(image As Byte(), p$)
         MyBase.New(image)
         Offset = 16
