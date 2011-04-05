@@ -17,7 +17,6 @@ Partial Public Class VM
             End If
             Select Case t
                 'Case 2 : _fork(args) : Return
-                'Case 6 : _close(args) : Return
                 'Case 7 : _wait(args) : Return
                 'Case 8 : _creat(args) : Return
                 'Case 9 : _link(args) : Return
@@ -57,6 +56,7 @@ Partial Public Class VM
                 Case 3 : _read(args) : Return
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
+                Case 6 : _close(args) : Return
                 Case 17 : _break(args) : Return
                 Case 19 : _seek(args) : Return
                 Case 41 : _dup(args) : Return
@@ -118,6 +118,17 @@ Partial Public Class VM
             Regs(0) = 0
             C = True
         End If
+    End Sub
+
+    Private Sub _close(args As UShort()) ' 6
+        swt.WriteLine("sys close: fd(r0)={0}", Enc(Regs(0)))
+        Try
+            Dim fss = fs.GetStream(Regs(0))
+            fss.Dispose()
+            C = False
+        Catch
+            C = True
+        End Try
     End Sub
 
     Private Sub _break(args As UShort()) ' 17
