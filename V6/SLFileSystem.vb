@@ -10,17 +10,20 @@ Public Class SLFileSystem
         Me.root = root
     End Sub
 
-    Protected Overrides Function GetStream(p$) As Stream
-        Dim uri = New Uri(root + "/" + p, UriKind.Relative)
-        Dim rs = Application.GetResourceStream(uri)
+    Private Function GetResourceStream(p$) As Stream
+        Dim pp = root + "/" + If(p.StartsWith("/"), p.Substring(1), p)
+        Dim rs = Application.GetResourceStream(New Uri(pp, UriKind.Relative))
         Return If(rs IsNot Nothing, rs.Stream, Nothing)
     End Function
 
+    Protected Overrides Function GetStream(p$) As Stream
+        Return GetResourceStream(p)
+    End Function
+
     Public Function Exists(p$) As Boolean
-        Dim uri = New Uri(root + "/" + p, UriKind.Relative)
-        Dim rs = Application.GetResourceStream(uri)
-        If rs Is Nothing Then Return False
-        rs.Stream.Dispose()
+        Dim s = GetResourceStream(p)
+        If s Is Nothing Then Return False
+        s.Dispose()
         Return True
     End Function
 End Class
