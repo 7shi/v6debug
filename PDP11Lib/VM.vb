@@ -45,6 +45,7 @@ Partial Public Class VM
     Private verbose As Boolean
     Private prevState As VMState
     Private callStack As New Stack(Of VMState)
+    Private args$()
 
     Public Sub New(aout As AOut, fs As FileSystem, verbose As Boolean)
         MyBase.New(&H10000)
@@ -59,6 +60,7 @@ Partial Public Class VM
     End Sub
 
     Public Sub SetArgs(args$())
+        Me.args = args
         Dim p = &H10000
         Dim list = New List(Of Integer)
         For i = args.Length - 1 To 0 Step -1
@@ -94,6 +96,9 @@ Partial Public Class VM
         HasExited = False
         swt = New StringWriter
         swo = New StringWriter
+        Dim cmdl = GetCommandLine()
+        swt.WriteLine(cmdl)
+        swo.WriteLine(cmdl)
         Dim cur As Symbol = Nothing
         Dim prevStack = callStack.Count
         While Not HasExited
@@ -116,6 +121,18 @@ Partial Public Class VM
         End While
         fs.CloseAll()
     End Sub
+
+    Public Function GetCommandLine$()
+        Dim sb = New StringBuilder("#")
+        For Each arg In args
+            sb.Append(" ")
+            Dim quo = arg.Contains(" ")
+            If quo Then sb.Append("""")
+            sb.Append(Escape(arg))
+            If quo Then sb.Append("""")
+        Next
+        Return sb.ToString
+    End Function
 
     Private Function GetSrcDst(size As UShort) As Operand()
         Dim v = ReadUInt16(PC)
