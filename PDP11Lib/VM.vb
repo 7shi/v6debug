@@ -131,7 +131,10 @@ Partial Public Class VM
     End Function
 
     Public Sub Abort(msg$)
-        If Not verbose Then WriteState(prevState, True)
+        If Not verbose Then
+            swt.WriteLine()
+            WriteState(prevState, True)
+        End If
         swt.WriteLine(msg)
         swt.WriteLine()
         swt.WriteLine("==== backtrace ====")

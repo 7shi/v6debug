@@ -174,8 +174,8 @@ Partial Public Class VM
                         Return
                 End Select
             Case 4 ' jsr: Jump to SubRoutine
-                callStack.Push(New VMState(Me))
                 Dim r = (v >> 6) And 7
+                If r = 7 Then callStack.Push(New VMState(Me))
                 Dim dst = GetDst(2).GetAddress(Me)
                 Write(GetDec(6, 2), Regs(r))
                 Regs(r) = PC

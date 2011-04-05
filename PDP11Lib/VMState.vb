@@ -3,7 +3,7 @@
 Public Class VMState
     Private vm As VM
     Public Regs(7) As UShort
-    Public Stack(7) As Byte
+    Public Stack() As UShort
     Public Z As Boolean
     Public N As Boolean
     Public C As Boolean
@@ -12,8 +12,10 @@ Public Class VMState
     Public Sub New(vm As VM)
         Me.vm = vm
         Array.Copy(vm.Regs, Regs, Regs.Length)
-        Dim stlen = Math.Min(8, &H10000 - Regs(6))
-        Array.Copy(vm.Data, Regs(6), Stack, 0, stlen)
+        ReDim Stack(Math.Min(4, (&H10000 - Regs(6)) \ 2) - 1)
+        For i = 0 To Stack.Length - 1
+            Stack(i) = vm.ReadUInt16(Regs(6) + i * 2)
+        Next
         Z = vm.Z
         N = vm.N
         C = vm.C
@@ -22,8 +24,9 @@ Public Class VMState
 
     Public Sub Restore()
         Array.Copy(Regs, vm.Regs, Regs.Length)
-        Dim stlen = Math.Min(8, &H10000 - Regs(6))
-        Array.Copy(Stack, 0, vm.Data, Regs(6), stlen)
+        For j = 0 To Stack.Length - 1
+            vm.Write(Regs(6) + j * 2, Stack(j))
+        Next
         vm.SetFlags(Z, N, C, V)
     End Sub
 
@@ -37,20 +40,19 @@ Public Class VMState
     End Function
 
     Public Overrides Function ToString() As String
-        Return String.Format(
-            "{0} r0={1} r1={2} r2={3} r3={4} r4={5} r5={6} sp={7}{{{8} {9} {10} {11}}} pc={12}",
-            GetFlags,
-            vm.Enc0(Regs(0)),
-            vm.Enc0(Regs(1)),
-            vm.Enc0(Regs(2)),
-            vm.Enc0(Regs(3)),
-            vm.Enc0(Regs(4)),
-            vm.Enc0(Regs(5)),
-            vm.Enc0(Regs(6)),
-            vm.Enc0(BitConverter.ToUInt16(Stack, 0)),
-            vm.Enc0(BitConverter.ToUInt16(Stack, 2)),
-            vm.Enc0(BitConverter.ToUInt16(Stack, 4)),
-            vm.Enc0(BitConverter.ToUInt16(Stack, 6)),
-            vm.Enc0(Regs(7)))
+        Dim sb = New StringBuilder
+        sb.Append(GetFlags)
+        For i = 0 To Regs.Length - 1
+            sb.AppendFormat(" {0}={1}", RegNames(i), vm.Enc0(Regs(i)))
+            If i = 6 Then
+                sb.Append("{")
+                For j = 0 To Stack.Length - 1
+                    If j > 0 Then sb.Append(" ")
+                    sb.Append(vm.Enc0(Stack(j)))
+                Next
+                sb.Append("}")
+            End If
+        Next
+        Return sb.ToString
     End Function
 End Class
