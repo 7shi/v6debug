@@ -28,8 +28,10 @@
                 Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, Size, 0, 0)
                 Case 2 : Return "$" + bd.Enc(bd.ReadUInt16(PC))
                 Case 3 : Return "*$" + bd.EncAddr(bd.ReadUInt16(PC))
-                Case 6 : Return bd.EncAddr(CUShort(PC + Dist))
-                Case 7 : Return "*" + bd.Enc(CUShort(PC + Dist))
+                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, Size, -Size, -Size)
+                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, Size, -Size, -Size)
+                Case 6 : Return bd.EncAddr(CUShort((PC + Dist) And &HFFFF))
+                Case 7 : Return "*" + bd.Enc(CUShort((PC + Dist) And &HFFFF))
             End Select
         Else
             Select Case Type
