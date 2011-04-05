@@ -54,8 +54,8 @@
 
     Public Overrides Function ToString() As String
         Dim pre = If(IsGlobal, ".globl ", "")
-        Dim n = If(IsObject, "(" + Name + ")", Name + ":")
-        Dim obj = If(ObjSym Is Nothing, "", " " + ObjSym.ToString)
+        Dim n = If(Name Is Nothing, "", If(IsObject, "(" + Name + ")", Name + ":"))
+        Dim obj = If(ObjSym Is Nothing, "", If(pre + n = "", "", " ") + ObjSym.ToString)
         Return pre + n + obj
     End Function
 
