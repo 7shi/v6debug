@@ -117,15 +117,12 @@ Partial Public Class VM
     End Sub
 
     Private Sub _break(args As UShort()) ' 17
-        Dim incr = ConvShort(args(0))
-        swt.WriteLine("sys break: incr={0}", incr)
-        Dim newbrk = breakpt + incr
-        If newbrk < aout.BreakPoint OrElse newbrk >= &HF000 Then
-            Regs(0) = 0
+        Dim nd = args(0)
+        swt.WriteLine("sys break: nd={0}", Enc(nd))
+        If nd < aout.BreakPoint OrElse nd >= Regs(6) Then
             C = True
         Else
-            Regs(0) = breakpt
-            breakpt = CUShort(newbrk)
+            breakpt = nd
             C = False
         End If
     End Sub
