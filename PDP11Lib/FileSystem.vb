@@ -10,7 +10,6 @@ Public MustInherit Class FileSystem
     Public Class FSStream
         Implements IDisposable
 
-        Friend Shared handleCount% = 64
         Private _Handle%
         Private parent As FileSystem
         Private target As FSObject
@@ -27,12 +26,11 @@ Public MustInherit Class FileSystem
             End Get
         End Property
 
-        Friend Sub New(fs As FileSystem, fso As FSObject)
+        Friend Sub New(fs As FileSystem, fso As FSObject, hnd%)
             parent = fs
             target = fso
             fso.Count += 1
-            _Handle = handleCount
-            handleCount += 1
+            _Handle = hnd
         End Sub
 
         Public Sub Dispose() Implements IDisposable.Dispose
@@ -46,8 +44,13 @@ Public MustInherit Class FileSystem
         End Sub
     End Class
 
+    Private nextHandle%
     Private fsobjs As New Dictionary(Of String, FSObject)
     Private fshnds As New Dictionary(Of Integer, FSStream)
+
+    Public Sub New()
+        CloseAll()
+    End Sub
 
     Protected MustOverride Function GetStream(p$) As Stream
 
@@ -61,7 +64,8 @@ Public MustInherit Class FileSystem
             fso = New FSObject With {.Path = p, .Stream = s}
             fsobjs.Add(p, fso)
         End If
-        Dim ret = New FSStream(Me, fso)
+        Dim ret = New FSStream(Me, fso, nextHandle)
+        nextHandle += 1
         fshnds.Add(ret.Handle, ret)
         Return ret
     End Function
@@ -71,7 +75,10 @@ Public MustInherit Class FileSystem
     End Sub
 
     Friend Sub Close(fso As FSObject)
-        fso.Stream.Dispose()
+        If fso.Stream IsNot Nothing Then
+            fso.Stream.Dispose()
+            fso.Stream = Nothing
+        End If
         fsobjs.Remove(fso.Path)
     End Sub
 
@@ -80,7 +87,11 @@ Public MustInherit Class FileSystem
         For Each fss In streams
             fss.Dispose()
         Next
-        FSStream.handleCount = 64
+        nextHandle = 64
+        Dim stdout = New FSObject With {.Path = "stdout:"}
+        fsobjs.Add(stdout.Path, stdout)
+        Dim sstdout = New FSStream(Me, stdout, 1)
+        fshnds.Add(sstdout.Handle, sstdout)
     End Sub
 
     Public Function GetStream(handle%) As FSStream

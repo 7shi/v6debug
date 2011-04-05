@@ -92,15 +92,19 @@ Partial Public Class VM
         Dim t = ReadString(Data, args(0), args(1))
         swt.WriteLine("sys write: fd(r0)={0}, buf={1}""{2}"", len={3}",
                       Enc(Regs(0)), Enc(args(0)), Escape(t), args(1))
-        Dim f = Regs(0)
-        If f = 1 Then
-            t = t.Replace(vbLf, vbCrLf)
-            swt.Write(t)
-            swo.Write(t)
+        Dim fss = fs.GetStream(Regs(0))
+        Try
+            If fss.Stream Is Nothing Then
+                t = t.Replace(vbLf, vbCrLf)
+                swt.Write(t)
+                swo.Write(t)
+            Else
+                fss.Stream.Write(Data, args(0), args(1))
+            End If
             C = False
-        Else
+        Catch
             C = True
-        End If
+        End Try
     End Sub
 
     Private Sub _open(args As UShort()) ' 5
