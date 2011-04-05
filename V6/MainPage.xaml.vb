@@ -80,12 +80,12 @@ Partial Public Class MainPage
         Dim dn As TreeViewItem = Nothing
         For Each src In list
             Dim sp = src.Split(CChar("/"))
-            If dn Is Nothing OrElse sp(0) <> dn.Header.ToString Then
+            If dn Is Nothing OrElse sp(1) <> dn.Header.ToString Then
                 dn = New TreeViewItem With
-                     {.Header = sp(0), .Tag = "README", .IsExpanded = True}
+                     {.Header = sp(1), .Tag = "README", .IsExpanded = True}
                 TreeView1.Items.Add(dn)
             End If
-            Dim n = New TreeViewItem With {.Header = sp(1), .Tag = src}
+            Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
             dn.Items.Add(n)
         Next
         ignore = False
@@ -104,7 +104,7 @@ Partial Public Class MainPage
         Dim fn = If(p < 0, obj, obj.Substring(0, p))
         For Each dir In New String() {"s4", "s5", "as"}
             For Each ext In New String() {".s", ".c"}
-                Dim pp = dir + "/" + fn + ext
+                Dim pp = "source/" + dir + "/" + fn + ext
                 If fs.Exists(pp) Then
                     srcdic.Add(obj, pp)
                     Return pp
