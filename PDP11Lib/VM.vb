@@ -235,10 +235,12 @@ Partial Public Class VM
 
     Public Shared Function System(fs As FileSystem, cmd$, ParamArray args$()) As VM
         Dim data As Byte()
-        Using s = fs.Open(cmd)
-            ReDim data(CInt(s.Stream.Length - 1))
-            s.Stream.Read(data, 0, data.Length)
-        End Using
+        Dim s = fs.Open(cmd)
+        If s Is Nothing Then s = fs.Open("bin/" + cmd)
+        ReDim data(CInt(s.Stream.Length - 1))
+        s.Stream.Read(data, 0, data.Length)
+        s.Dispose()
+
         Dim aout = New AOut(data, cmd)
         Dim vm = New VM(aout, fs, False)
         vm.Run(args)

@@ -9,6 +9,7 @@ Partial Public Class MainPage
     Private fs As New SLFileSystem("Tests")
 
     Private Class ProcArg
+        Public Cmd$
         Public Srcs As String()
         Public Args As String()
         Public Verbose As Boolean
@@ -22,7 +23,7 @@ Partial Public Class MainPage
         addTest(True, New String() {"hello4.c"}, "hello4")
         addTest(True, New String() {"args.c"}, "args", "test", "arg")
         addTest(True, New String() {"printo.c"}, "printo")
-        addTest(False, New String() {"nm.c"}, "nm", "args")
+        addTest(False, Nothing, "/bin/nm", "args")
         btnTest_Click(b, Nothing)
     End Sub
 
@@ -38,36 +39,39 @@ Partial Public Class MainPage
         ignore = False
     End Sub
 
-    Private Function addTest(verbose As Boolean, srcs$(), t$, ParamArray args$()) As Button
-        Dim parg = New ProcArg With {.Srcs = srcs, .Args = args, .Verbose = verbose}
-        Dim button = New Button With {.Content = t, .Tag = parg}
+    Private Function addTest(verbose As Boolean, srcs$(), cmd$, ParamArray args$()) As Button
+        Dim parg = New ProcArg With
+                   {.Cmd = cmd, .Srcs = srcs, .Args = args, .Verbose = verbose}
+        Dim p = cmd.LastIndexOf("/")
+        Dim fn = If(p < 0, cmd, cmd.Substring(p + 1))
+        Dim button = New Button With {.Content = fn, .Tag = parg}
         AddHandler button.Click, AddressOf btnTest_Click
         menuStack.Children.Add(button)
         Return button
     End Function
 
-    Private Sub ReadFile(path$, parg As ProcArg)
+    Private Sub ReadFile(parg As ProcArg)
         Clear()
-        Using s = fs.Open(path)
-            ReadStream(s.Stream, GetFileName(path), parg)
+        Using s = fs.Open(parg.Cmd)
+            ReadStream(s.Stream, parg)
         End Using
-        txtSym.Text = VM.System(fs, "nm", path).Output
+        txtSym.Text = VM.System(fs, "nm", parg.Cmd).Output
     End Sub
 
-    Private Sub ReadStream(s As Stream, path$, parg As ProcArg)
+    Private Sub ReadStream(s As Stream, parg As ProcArg)
         Dim data(CInt(s.Length - 1)) As Byte
         s.Read(data, 0, data.Length)
-        aout = New AOut(data, path)
+        aout = New AOut(data, GetFileName(parg.Cmd))
 
         ignore = True
-        For Each src In parg.Srcs
-            Dim n = New TreeViewItem With {.Header = src, .Tag = src}
-            TreeView1.Items.Add(n)
-            If TreeView1.Items.Count = 1 Then
-                n.IsSelected = True
-                showSource(n)
-            End If
-        Next
+        If parg.Srcs IsNot Nothing Then
+            For Each src In parg.Srcs
+                Dim p = src.LastIndexOf("/")
+                Dim fn = If(p < 0, src, src.Substring(p + 1))
+                Dim n = New TreeViewItem With {.Header = fn, .Tag = src}
+                TreeView1.Items.Add(n)
+            Next
+        End If
         Dim objs = From sym In aout.GetSymbols
                    Where sym.ObjSym IsNot Nothing
                    Select sym.ObjSym
@@ -88,6 +92,12 @@ Partial Public Class MainPage
             Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
             dn.Items.Add(n)
         Next
+        Dim first = CType(TreeView1.Items(0), TreeViewItem)
+        If first.Items.Count > 0 Then
+            first = CType(first.Items(0), TreeViewItem)
+        End If
+        first.IsSelected = True
+        showSource(first)
         ignore = False
 
         Me.parg = parg
@@ -102,7 +112,7 @@ Partial Public Class MainPage
 
         Dim p = obj.LastIndexOf(".")
         Dim fn = If(p < 0, obj, obj.Substring(0, p))
-        For Each dir In New String() {"s4", "s5", "as"}
+        For Each dir In New String() {"s4", "s5", "s2", "as"}
             For Each ext In New String() {".s", ".c"}
                 Dim pp = "source/" + dir + "/" + fn + ext
                 If fs.Exists(pp) Then
@@ -126,7 +136,7 @@ Partial Public Class MainPage
                 Throw New Exception("ファイルが大き過ぎます。上限は64KBです。")
             End If
             Using fs = ofd.File.OpenRead
-                ReadStream(fs, ofd.File.Name, Nothing)
+                ReadStream(fs, New ProcArg With {.Cmd = ofd.File.Name})
             End Using
         Catch ex As Exception
             txtDis.Text = ex.Message + Environment.NewLine +
@@ -149,7 +159,7 @@ Partial Public Class MainPage
 
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        ReadFile(button.Content.ToString, CType(button.Tag, ProcArg))
+        ReadFile(CType(button.Tag, ProcArg))
         Cursor = cur
     End Sub
 

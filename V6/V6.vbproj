@@ -148,7 +148,7 @@
     <Content Include="Tests\hello2.c" />
     <Content Include="Tests\hello3.c" />
     <Content Include="Tests\hello4.c" />
-    <Content Include="Tests\nm.c" />
+    <Content Include="Tests\source\s2\nm.c" />
     <Content Include="Tests\source\s4\abort.s" />
     <Content Include="Tests\source\s4\abs.s" />
     <Content Include="Tests\source\s4\alloc.s" />
@@ -232,7 +232,7 @@
     <Content Include="Tests\hello2" />
     <Content Include="Tests\hello3" />
     <Content Include="Tests\hello4" />
-    <Content Include="Tests\nm" />
+    <Content Include="Tests\bin\nm" />
     <Content Include="Tests\printo.c" />
     <Content Include="Tests\README" />
     <Content Include="Tests\args" />
