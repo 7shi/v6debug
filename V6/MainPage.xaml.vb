@@ -34,7 +34,7 @@ Partial Public Class MainPage
         txtTrace.Text = ""
         txtOut.Text = ""
         ignore = True
-        ListBox1.Items.Clear()
+        TreeView1.Items.Clear()
         ignore = False
     End Sub
 
@@ -61,7 +61,12 @@ Partial Public Class MainPage
 
         ignore = True
         For Each src In parg.Srcs
-            ListBox1.Items.Add(src)
+            Dim n = New TreeViewItem With {.Header = src, .Tag = src}
+            TreeView1.Items.Add(n)
+            If TreeView1.Items.Count = 1 Then
+                n.IsSelected = True
+                showSource(n)
+            End If
         Next
         Dim objs = From sym In aout.GetSymbols
                    Where sym.ObjSym IsNot Nothing
@@ -72,11 +77,18 @@ Partial Public Class MainPage
             If src IsNot Nothing Then list.Add(src)
         Next
         list.Sort()
+        Dim dn As TreeViewItem = Nothing
         For Each src In list
-            ListBox1.Items.Add(src)
+            Dim sp = src.Split(CChar("/"))
+            If dn Is Nothing OrElse sp(0) <> dn.Header.ToString Then
+                dn = New TreeViewItem With
+                     {.Header = sp(0), .Tag = "README", .IsExpanded = True}
+                TreeView1.Items.Add(dn)
+            End If
+            Dim n = New TreeViewItem With {.Header = sp(1), .Tag = src}
+            dn.Items.Add(n)
         Next
         ignore = False
-        ListBox1.SelectedIndex = 0
 
         Me.parg = parg
         Run()
@@ -163,15 +175,18 @@ Partial Public Class MainPage
 
     Private ignore As Boolean
 
-    Private Sub ListBox1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles ListBox1.SelectionChanged
+    Private Sub TreeView1_SelectedItemChanged(sender As Object, e As RoutedPropertyChangedEventArgs(Of Object)) Handles TreeView1.SelectedItemChanged
         If ignore Then Return
-        Dim sel = ListBox1.SelectedItem
-        If sel IsNot Nothing Then
-            Using s = fs.Open(sel.ToString)
+        showSource(TryCast(e.NewValue, TreeViewItem))
+    End Sub
+
+    Private Sub showSource(n As TreeViewItem)
+        If n Is Nothing OrElse n.Tag Is Nothing Then
+            txtSrc.Text = ""
+        Else
+            Using s = fs.Open(n.Tag.ToString)
                 txtSrc.Text = ReadText(s.Stream)
             End Using
-        Else
-            txtSrc.Text = ""
         End If
     End Sub
 End Class
