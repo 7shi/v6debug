@@ -321,42 +321,40 @@ Partial Public Class VM
                 End If
                 Return
             Case 2 ' ash: Arithmetic SHift
-                Dim src = ConvShort(GetDst(2).GetValue(Me)) And &O77
-                Dim nn = src And &O37
+                Dim src = GetDst(2).GetValue(Me) And &O77
                 Dim r = (v >> 6) And 7
                 Dim val0 = ConvShort(Regs(r))
-                If nn = 0 Then
+                If src = 0 Then
                     SetFlags(val0 = 0, val0 < 0, C, False)
                 Else
                     If (src And &O40) = 0 Then
-                        Dim val1 = val0 >> (nn - 1)
-                        Dim val2 = val1 >> 1
+                        Dim val1 = val0 << (src - 1)
+                        Dim val2 = val1 << 1
                         Regs(r) = CUShort(val2 And &HFFFF)
                         SetFlags(val2 = 0, val2 < 0, (val1 And 1) <> 0, val0 <> val2)
                     Else
-                        Dim val1 = val0 << (nn - 1)
-                        Dim val2 = val1 << 1
+                        Dim val1 = val0 >> (63 - src)
+                        Dim val2 = val1 >> 1
                         Regs(r) = CUShort(val2 And &HFFFF)
                         SetFlags(val2 = 0, val2 < 0, val1 < 0, val0 <> val2)
                     End If
                 End If
                 Return
             Case 3 ' ashc: Arithmetic SHift Combined
-                Dim src = ConvShort(GetDst(2).GetValue(Me)) And &O77
-                Dim nn = src And &O37
+                Dim src = GetDst(2).GetValue(Me) And &O77
                 Dim r = (v >> 6) And 7
                 Dim val0 = GetReg32(r)
-                If nn = 0 Then
+                If src = 0 Then
                     SetFlags(val0 = 0, val0 < 0, C, False)
                 Else
                     If (src And &O40) = 0 Then
-                        Dim val1 = val0 >> (nn - 1)
-                        Dim val2 = val1 >> 1
+                        Dim val1 = val0 << (src - 1)
+                        Dim val2 = val1 << 1
                         SetReg32(r, val2)
                         SetFlags(val2 = 0, val2 < 0, (val1 And 1) <> 0, val0 <> val2)
                     Else
-                        Dim val1 = val0 << (nn - 1)
-                        Dim val2 = val1 << 1
+                        Dim val1 = val0 >> (63 - src)
+                        Dim val2 = val1 >> 1
                         SetReg32(r, val2)
                         SetFlags(val2 = 0, val2 < 0, val1 < 0, val0 <> val2)
                     End If
