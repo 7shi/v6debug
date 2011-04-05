@@ -240,6 +240,8 @@
     <Content Include="Tests\source\s4\run" />
     <Content Include="Tests\source\s5\run" />
     <Content Include="Tests\source\as\run" />
+    <Content Include="Tests\bin\as" />
+    <Content Include="Tests\lib\as2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">

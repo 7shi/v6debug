@@ -24,6 +24,8 @@ Partial Public Class MainPage
         addTest(True, New String() {"args.c"}, "args", "test", "arg")
         addTest(True, New String() {"printo.c"}, "printo")
         addTest(False, Nothing, "/bin/nm", "args")
+        addTest(False, Nothing, "/bin/as")
+        addTest(False, Nothing, "/lib/as2")
         btnTest_Click(b, Nothing)
     End Sub
 
@@ -66,9 +68,7 @@ Partial Public Class MainPage
         ignore = True
         If parg.Srcs IsNot Nothing Then
             For Each src In parg.Srcs
-                Dim p = src.LastIndexOf("/")
-                Dim fn = If(p < 0, src, src.Substring(p + 1))
-                Dim n = New TreeViewItem With {.Header = fn, .Tag = src}
+                Dim n = New TreeViewItem With {.Header = GetFileName(src), .Tag = src}
                 TreeView1.Items.Add(n)
             Next
         End If
