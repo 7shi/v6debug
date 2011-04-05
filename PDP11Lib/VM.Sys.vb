@@ -45,7 +45,6 @@ Partial Public Class VM
                 'Case 36 : _sync(args) : Return
                 'Case 37 : _kill(args) : Return
                 'Case 38 : _switch(args) : Return
-                'Case 41 : _dup(args) : Return
                 'Case 42 : _pipe(args) : Return
                 'Case 43 : _times(args) : Return
                 'Case 44 : _prof(args) : Return
@@ -60,6 +59,7 @@ Partial Public Class VM
                 Case 5 : _open(args) : Return
                 Case 17 : _break(args) : Return
                 Case 19 : _seek(args) : Return
+                Case 41 : _dup(args) : Return
             End Select
         End If
         Abort("invalid sys")
@@ -112,7 +112,7 @@ Partial Public Class VM
         swt.WriteLine("sys open: path={0}""{1}"", mode={2}", Enc(args(0)), Escape(p), args(1))
         Dim fss = fs.Open(p)
         If fss IsNot Nothing Then
-            Regs(0) = CUShort(fss.Handle And &HFFFF)
+            Regs(0) = CUShort(fss.Handle)
             C = False
         Else
             Regs(0) = 0
@@ -139,6 +139,18 @@ Partial Public Class VM
             C = False
         Catch
             Regs(0) = 0
+            C = True
+        End Try
+    End Sub
+
+    Private Sub _dup(args As UShort()) ' 41
+        swt.WriteLine("sys dup: fd(r0)={0}", Enc(Regs(0)))
+        Try
+            Dim fss1 = fs.GetStream(Regs(0))
+            Dim fss2 = fs.Duplicate(fss1)
+            Regs(0) = CUShort(fss2.Handle)
+            C = False
+        Catch
             C = True
         End Try
     End Sub

@@ -12,7 +12,7 @@ Public MustInherit Class FileSystem
 
         Private _Handle%
         Private parent As FileSystem
-        Private target As FSObject
+        Friend target As FSObject
 
         Public ReadOnly Property Stream As Stream
             Get
@@ -96,5 +96,12 @@ Public MustInherit Class FileSystem
 
     Public Function GetStream(handle%) As FSStream
         Return If(fshnds.ContainsKey(handle), fshnds(handle), Nothing)
+    End Function
+
+    Public Function Duplicate(fss As FSStream) As FSStream
+        Dim ret = New FSStream(Me, fss.target, nextHandle)
+        nextHandle += 1
+        fshnds.Add(ret.Handle, ret)
+        Return ret
     End Function
 End Class
