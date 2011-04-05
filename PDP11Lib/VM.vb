@@ -215,4 +215,16 @@ Partial Public Class VM
     Public Overrides Function GetRelative$(r%, d%, ad%)
         Return aout.GetRelative(r, d, ad)
     End Function
+
+    Public Shared Function System(fs As FileSystem, cmd$, ParamArray args$()) As VM
+        Dim data As Byte()
+        Using s = fs.Open(cmd)
+            ReDim data(CInt(s.Stream.Length - 1))
+            s.Stream.Read(data, 0, data.Length)
+        End Using
+        Dim aout = New AOut(data, cmd)
+        Dim vm = New VM(aout, fs, False)
+        vm.Run(args)
+        Return vm
+    End Function
 End Class

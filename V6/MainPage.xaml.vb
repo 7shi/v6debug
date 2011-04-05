@@ -26,6 +26,7 @@ Partial Public Class MainPage
 
     Public Sub Clear()
         txtDis.Text = ""
+        txtSym.Text = ""
         txtSrc.Text = ""
         txtBin.Text = ""
         txtTrace.Text = ""
@@ -46,6 +47,7 @@ Partial Public Class MainPage
         Using s = fs.Open(path + ".c")
             txtSrc.Text = ReadText(s.Stream)
         End Using
+        txtSym.Text = VM.System(fs, "nm", path).Output
     End Sub
 
     Private Sub ReadStream(s As Stream, path$, parg As ProcArg)
