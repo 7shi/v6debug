@@ -95,17 +95,23 @@ Partial Public Class MainPage
         btnSave.IsEnabled = True
     End Sub
 
+    Private srcdic As New Dictionary(Of String, String)
+
     Private Function checkLib$(obj$)
+        If srcdic.ContainsKey(obj) Then Return srcdic(obj)
+
         Dim p = obj.LastIndexOf(".")
-        If p < 0 Then Return Nothing
-        Dim fn = obj.Substring(0, p)
-        For Each dir In New String() {"s4", "s5"}
+        Dim fn = If(p < 0, obj, obj.Substring(0, p))
+        For Each dir In New String() {"s4", "s5", "as"}
             For Each ext In New String() {".s", ".c"}
-                If fs.Exists(dir + "/" + fn + ext) Then
-                    Return dir + "/" + fn + ext
+                Dim pp = dir + "/" + fn + ext
+                If fs.Exists(pp) Then
+                    srcdic.Add(obj, pp)
+                    Return pp
                 End If
             Next
         Next
+        srcdic.Add(obj, Nothing)
         Return Nothing
     End Function
 
