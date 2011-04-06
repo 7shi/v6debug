@@ -67,18 +67,20 @@ Public Class AOut
         Dim hasSym = en.MoveNext()
         Dim thunks = New Dictionary(Of Integer, Symbol)
         For i = 0 To tsize - 1
-            If hasSym AndAlso en.Current.Address = i Then
+            While hasSym AndAlso i >= en.Current.Address
+                i = en.Current.Address
                 tw.WriteLine("{0}{1}", Space(7), en.Current)
                 For Each local In en.Current.GetLocals
                     tw.WriteLine("{0}{1} = {2}", Space(11), local.Name, local.Address)
                 Next
                 hasSym = en.MoveNext()
-            End If
+            End While
             If ReadUInt16(i) = &H8900 Then
                 Dim ad = ReadUInt16(i + 2)
                 If Not thunks.ContainsKey(ad) Then thunks.Add(ad, New Symbol(ad))
             End If
-            i += Disassemble(tw, i) - 1
+            Dim maxlen = If(hasSym, en.Current.Address - i, 0)
+            i += Disassemble(tw, i, maxlen) - 1
         Next
 
         Dim baddr = tsize + dsize
@@ -110,11 +112,18 @@ Public Class AOut
         End If
     End Sub
 
-    Private Function Disassemble%(tw As TextWriter, i%)
+    Private Function Disassemble%(tw As TextWriter, i%, Optional maxlen% = 0)
         Dim spclen = Enc0(0US).Length
         Dim op = Disassembler.Disassemble(Me, i)
         Dim len = 2
-        If op IsNot Nothing Then len = op.Length
+        If op IsNot Nothing Then
+            If maxlen > 0 AndAlso op.Length > maxlen Then
+                op = Nothing
+                len = maxlen
+            Else
+                len = op.Length
+            End If
+        End If
         Dim s = ReadUInt16(i)
         tw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc0(CUShort(i)), Enc0(s))
         For j = 2 To 4 Step 2
@@ -128,7 +137,10 @@ Public Class AOut
         If op IsNot Nothing Then
             tw.Write(op.Mnemonic)
         Else
-            tw.Write(Enc(s))
+            For j = 0 To len - 1 Step 2
+                If j > 0 Then tw.Write("; ")
+                tw.Write(Enc(ReadUInt16(i + j)))
+            Next
         End If
         If len > 6 Then
             Dim indent = Space(9 + spclen * 2)
