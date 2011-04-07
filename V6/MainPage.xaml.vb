@@ -25,7 +25,7 @@ Partial Public Class MainPage
         addTest(True, New String() {"printo.c"}, "printo")
         addTest(False, Nothing, "/bin/nm", "args")
         addTest(False, Nothing, "/bin/as", "source/as/as18.s")
-        addTest(False, Nothing, "/lib/as2")
+        addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
         btnTest_Click(b, Nothing)
     End Sub
 
