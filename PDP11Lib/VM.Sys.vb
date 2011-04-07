@@ -27,7 +27,6 @@ Partial Public Class VM
                 'Case 14 : _mknod(args) : Return
                 'Case 15 : _chmod(args) : Return
                 'Case 16 : _chown(args) : Return
-                'Case 18 : _stat(args) : Return
                 'Case 20 : _getpid(args) : Return
                 'Case 21 : _mount(args) : Return
                 'Case 22 : _umount(args) : Return
@@ -57,6 +56,7 @@ Partial Public Class VM
                 Case 5 : _open(args) : Return
                 Case 6 : _close(args) : Return
                 Case 17 : _break(args) : Return
+                Case 18 : _stat(args) : Return
                 Case 19 : _seek(args) : Return
                 Case 41 : _dup(args) : Return
                 Case 48 : _signal(args) : Return
@@ -143,6 +143,12 @@ Partial Public Class VM
             breakpt = nd
             C = False
         End If
+    End Sub
+
+    Private Sub _stat(args As UShort()) ' 18
+        Dim p = ReadString(Data, args(0))
+        swt.WriteLine("sys stat: path={0}""{1}"", stat={2}", Enc(args(0)), Escape(p), EncAddr(args(1)))
+        C = Not fs.Exists(p)
     End Sub
 
     Private Sub _seek(args As UShort()) ' 19
