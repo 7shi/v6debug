@@ -146,7 +146,7 @@
     Public Sub SetByte(vm As VM, b As Byte)
         If Reg = 7 Then
             Select Case Type
-                Case 0 : vm.Regs(Reg) = b : Return
+                Case 0 : PC = If(b < &H80, b, CUShort((b - &H100) And &HFFFF)) : Return
                 Case 1, 2 : vm(PC) = b : Return
                 Case 3 : vm(vm.ReadUInt16(PC)) = b : Return
                 Case 6 : vm(CUShort(PC + Dist)) = b : Return
@@ -154,7 +154,7 @@
             End Select
         Else
             Select Case Type
-                Case 0 : vm.Regs(Reg) = b : Return
+                Case 0 : vm.Regs(Reg) = If(b < &H80, b, CUShort((b - &H100) And &HFFFF)) : Return
                 Case 1 : vm(vm.Regs(Reg)) = b : Return
                 Case 2 : vm(vm.GetInc(Reg, Size)) = b : Return
                 Case 3 : vm(vm.ReadUInt16(vm.GetInc(Reg, Size))) = b : Return
