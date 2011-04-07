@@ -62,14 +62,6 @@ Public Class BinData
         End Using
     End Function
 
-    Public Shared Function Oct$(o As UInteger, c%)
-        Dim ret = Convert.ToString(o, 8)
-        If ret.Length < c Then
-            ret = New String(CChar("0"), c - ret.Length) + ret
-        End If
-        Return ret
-    End Function
-
     Public Function Enc0$(v As UShort)
         Return If(UseOct, Oct(v, 6), v.ToString("x4"))
     End Function

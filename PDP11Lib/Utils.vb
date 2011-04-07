@@ -57,4 +57,12 @@ Public Module Utils
         Next
         Return sb.ToString
     End Function
+
+    Public Function Oct$(o As UInteger, c%)
+        Dim ret = Convert.ToString(o, 8)
+        If ret.Length < c Then
+            ret = New String(CChar("0"), c - ret.Length) + ret
+        End If
+        Return ret
+    End Function
 End Module
