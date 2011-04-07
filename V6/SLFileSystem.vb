@@ -15,11 +15,4 @@ Public Class SLFileSystem
         Dim rs = Application.GetResourceStream(New Uri(pp, UriKind.Relative))
         Return If(rs IsNot Nothing, rs.Stream, Nothing)
     End Function
-
-    Public Function Exists(p$) As Boolean
-        Dim s = GetStream(p)
-        If s Is Nothing Then Return False
-        s.Dispose()
-        Return True
-    End Function
 End Class

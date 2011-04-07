@@ -104,4 +104,11 @@ Public MustInherit Class FileSystem
         fshnds.Add(ret.Handle, ret)
         Return ret
     End Function
+
+    Public Function Exists(p$) As Boolean
+        Dim s = GetStream(p)
+        If s Is Nothing Then Return False
+        s.Dispose()
+        Return True
+    End Function
 End Class
