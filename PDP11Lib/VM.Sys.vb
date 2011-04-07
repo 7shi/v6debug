@@ -50,7 +50,6 @@ Partial Public Class VM
                 'Case 45 : _tiu(args) : Return
                 'Case 46 : _setgid(args) : Return
                 'Case 47 : _getgid(args) : Return
-                'Case 48 : _signal(args) : Return
                 Case 0 : _indir(args) : Return
                 Case 1 : _exit(args) : Return
                 Case 3 : _read(args) : Return
@@ -60,6 +59,7 @@ Partial Public Class VM
                 Case 17 : _break(args) : Return
                 Case 19 : _seek(args) : Return
                 Case 41 : _dup(args) : Return
+                Case 48 : _signal(args) : Return
             End Select
         End If
         Abort("invalid sys")
@@ -168,5 +168,15 @@ Partial Public Class VM
             Regs(0) = 0
             C = True
         End Try
+    End Sub
+
+    Private Sub _signal(args As UShort()) ' 48
+        Dim sig = args(0)
+        Dim sn = "" & sig
+        If sig < SigNames.Length AndAlso SigNames(sig) IsNot Nothing Then
+            sn = SigNames(sig)
+        End If
+        swt.WriteLine("sys seek: sig={0}, cb={1}", sn, EncAddr(args(1)))
+        Regs(0) = 1 ' always ignore
     End Sub
 End Class
