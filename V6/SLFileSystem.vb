@@ -10,9 +10,20 @@ Public Class SLFileSystem
         Me.root = root
     End Sub
 
+    Private files As New Dictionary(Of String, Byte())
+
     Protected Overrides Function GetStream(p$) As Stream
-        Dim pp = root + "/" + If(p.StartsWith("/"), p.Substring(1), p)
-        Dim rs = Application.GetResourceStream(New Uri(pp, UriKind.Relative))
-        Return If(rs IsNot Nothing, rs.Stream, Nothing)
+        If files.ContainsKey(p) Then
+            Dim data = files(p)
+            Return If(data Is Nothing, Nothing, New MemoryStream(data))
+        Else
+            Dim pp = root + "/" + If(p.StartsWith("/"), p.Substring(1), p)
+            Dim rs = Application.GetResourceStream(New Uri(pp, UriKind.Relative))
+            Return If(rs IsNot Nothing, rs.Stream, Nothing)
+        End If
     End Function
+
+    Protected Overrides Sub Create(p As String)
+        files.Add(p, New Byte() {})
+    End Sub
 End Class
