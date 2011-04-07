@@ -178,6 +178,9 @@ Public Module Disassembler
                             If p > 0 Then argad = argad.Substring(0, p)
                             Dim op = Disassemble(bd, ad)
                             sb.Append("; " + argad + "{" + op.Mnemonic + "}")
+                        ElseIf arg = 8 Then ' creat
+                            sb.Append("; " + bd.EncAddr(bd.ReadUInt16(pos + 4)))
+                            sb.Append("; " + "0" + Convert.ToString(bd.ReadUInt16(pos + 4), 8))
                         ElseIf arg = 48 Then ' signal
                             Dim sig = bd.ReadUInt16(pos + 2)
                             If sig < SigNames.Length AndAlso SigNames(sig) IsNot Nothing Then
