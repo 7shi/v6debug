@@ -178,17 +178,17 @@ Public Module Disassembler
                             If p > 0 Then argad = argad.Substring(0, p)
                             Dim op = Disassemble(bd, ad)
                             sb.Append("; " + argad + "{" + op.Mnemonic + "}")
-                        Else
-                            Dim first = 1
-                            If arg = 48 Then ' signal
-                                Dim sig = bd.ReadUInt16(pos + 2)
-                                If sig < SigNames.Length AndAlso SigNames(sig) IsNot Nothing Then
-                                    sb.Append("; " + SigNames(sig))
-                                    first = 2
-                                End If
+                        ElseIf arg = 48 Then ' signal
+                            Dim sig = bd.ReadUInt16(pos + 2)
+                            If sig < SigNames.Length AndAlso SigNames(sig) IsNot Nothing Then
+                                sb.Append("; " + SigNames(sig))
+                            Else
+                                sb.Append("; " & sig)
                             End If
+                            sb.Append("; " + bd.EncAddr(bd.ReadUInt16(pos + 4)))
+                        Else
                             Dim argc = SysArgs(arg)
-                            For i = first To argc
+                            For i = 1 To argc
                                 sb.Append("; " + bd.Enc(bd.ReadUInt16(pos + i * 2)))
                             Next
                         End If
