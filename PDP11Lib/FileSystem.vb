@@ -53,7 +53,7 @@ Public MustInherit Class FileSystem
     End Sub
 
     Protected MustOverride Function GetStream(p$) As Stream
-    Protected MustOverride Sub Create(p$)
+    Public MustOverride Sub Create(p$)
 
     Public Function Open(p$) As FSStream
         Dim fso As FSObject

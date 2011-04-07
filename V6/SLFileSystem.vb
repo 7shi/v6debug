@@ -23,7 +23,7 @@ Public Class SLFileSystem
         End If
     End Function
 
-    Protected Overrides Sub Create(p As String)
-        files.Add(p, New Byte() {})
+    Public Overrides Sub Create(p As String)
+        files(p) = New Byte() {}
     End Sub
 End Class
