@@ -22,7 +22,6 @@ Partial Public Class VM
                 'Case 12 : _chdir(args) : Return
                 'Case 13 : _time(args) : Return
                 'Case 14 : _mknod(args) : Return
-                'Case 15 : _chmod(args) : Return
                 'Case 16 : _chown(args) : Return
                 'Case 20 : _getpid(args) : Return
                 'Case 21 : _mount(args) : Return
@@ -55,6 +54,7 @@ Partial Public Class VM
                 Case 8 : _creat(args) : Return
                 Case 10 : _unlink(args) : Return
                 Case 11 : _exec(args) : Return
+                Case 15 : _chmod(args) : Return
                 Case 17 : _break(args) : Return
                 Case 18 : _stat(args) : Return
                 Case 19 : _seek(args) : Return
@@ -166,6 +166,13 @@ Partial Public Class VM
         swt.WriteLine("sys exec: path={0}""{1}"", arg={2}{{{3}}}",
                       Enc(args(0)), Escape(p), Enc(args(1)), sb.ToString)
         Abort("not implemented")
+    End Sub
+
+    Private Sub _chmod(args As UShort()) ' 15
+        Dim p = ReadString(Data, args(0))
+        swt.WriteLine("sys chmod: path={0}""{1}"", mode=0{2}",
+                      Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
+        C = False
     End Sub
 
     Private Sub _break(args As UShort()) ' 17
