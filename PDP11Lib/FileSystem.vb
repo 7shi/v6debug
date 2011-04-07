@@ -89,8 +89,6 @@ Public MustInherit Class FileSystem
             fss.Dispose()
         Next
 
-        nextHandle = 64
-
         Dim stdout = New FSObject With {.Path = "stdout:"}
         fsobjs.Add(stdout.Path, stdout)
         Dim sstdout = New FSStream(Me, stdout, 1)
@@ -100,6 +98,8 @@ Public MustInherit Class FileSystem
         fsobjs.Add(stderr.Path, stderr)
         Dim sstderr = New FSStream(Me, stderr, 2)
         fshnds.Add(sstderr.Handle, sstderr)
+
+        nextHandle = 3
     End Sub
 
     Public Function GetStream(handle%) As FSStream
