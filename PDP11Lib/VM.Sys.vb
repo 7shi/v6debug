@@ -20,7 +20,6 @@ Partial Public Class VM
                 'Case 7 : _wait(args) : Return
                 'Case 9 : _link(args) : Return
                 'Case 10 : _unlink(args) : Return
-                'Case 11 : _exec(args) : Return
                 'Case 12 : _chdir(args) : Return
                 'Case 13 : _time(args) : Return
                 'Case 14 : _mknod(args) : Return
@@ -55,6 +54,7 @@ Partial Public Class VM
                 Case 5 : _open(args) : Return
                 Case 6 : _close(args) : Return
                 Case 8 : _creat(args) : Return
+                Case 11 : _exec(args) : Return
                 Case 17 : _break(args) : Return
                 Case 18 : _stat(args) : Return
                 Case 19 : _seek(args) : Return
@@ -139,6 +139,22 @@ Partial Public Class VM
                       Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
         fs.Create(p)
         C = False
+    End Sub
+
+    Private Sub _exec(args As UShort()) ' 11
+        Dim p = ReadString(Data, args(0))
+        Dim argp = args(1)
+        Dim sb = New StringBuilder
+        Do
+            Dim a = ReadUInt16(argp)
+            If a = 0 Then Exit Do
+            If sb.Length > 0 Then sb.Append(", ")
+            sb.Append("""" + Escape(ReadString(Data, a)) + """")
+            argp += 2US
+        Loop
+        swt.WriteLine("sys exec: path={0}""{1}"", arg={2}{{{3}}}",
+                      Enc(args(0)), Escape(p), Enc(args(1)), sb.ToString)
+        Abort("not implemented")
     End Sub
 
     Private Sub _break(args As UShort()) ' 17
