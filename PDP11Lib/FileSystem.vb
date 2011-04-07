@@ -88,11 +88,18 @@ Public MustInherit Class FileSystem
         For Each fss In streams
             fss.Dispose()
         Next
+
         nextHandle = 64
+
         Dim stdout = New FSObject With {.Path = "stdout:"}
         fsobjs.Add(stdout.Path, stdout)
         Dim sstdout = New FSStream(Me, stdout, 1)
         fshnds.Add(sstdout.Handle, sstdout)
+
+        Dim stderr = New FSObject With {.Path = "stderr:"}
+        fsobjs.Add(stderr.Path, stderr)
+        Dim sstderr = New FSStream(Me, stderr, 2)
+        fshnds.Add(sstderr.Handle, sstderr)
     End Sub
 
     Public Function GetStream(handle%) As FSStream
