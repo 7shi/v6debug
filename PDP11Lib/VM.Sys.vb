@@ -50,7 +50,7 @@ Partial Public Class VM
                 'Case 45 : _tiu(args) : Return
                 'Case 46 : _setgid(args) : Return
                 'Case 47 : _getgid(args) : Return
-                'Case 48 : _sig(args) : Return
+                'Case 48 : _signal(args) : Return
                 Case 0 : _indir(args) : Return
                 Case 1 : _exit(args) : Return
                 Case 3 : _read(args) : Return

@@ -12,7 +12,7 @@ Public Module Disassembler
          "chown", "break", "stat", "seek", "getpid", "mount", "umount", "setuid",
          "getuid", "stime", "ptrace", Nothing, "fstat", Nothing, "smdate", "stty",
          "gtty", Nothing, "nice", "sleep", "sync", "kill", "switch", Nothing,
-         Nothing, "dup", "pipe", "times", "prof", "tiu", "setgid", "getgid", "sig"}
+         Nothing, "dup", "pipe", "times", "prof", "tiu", "setgid", "getgid", "signal"}
 
     Public ReadOnly SysArgs As Integer() =
         {1, 0, 0, 2, 2, 2, 0, 0, 2, 2, 1, 2, 1, 0, 3, 2,
