@@ -137,8 +137,7 @@ Partial Public Class VM
         Dim p = ReadString(Data, args(0))
         swt.WriteLine("sys creat: path={0}""{1}"", mode=0{2}",
                       Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
-        fs.Create(p)
-        Regs(0) = CUShort(fs.Open(p).Handle)
+        Regs(0) = CUShort(fs.Open(p, True).Handle)
         C = False
     End Sub
 

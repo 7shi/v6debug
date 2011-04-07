@@ -53,14 +53,15 @@ Public MustInherit Class FileSystem
     End Sub
 
     Protected MustOverride Function GetStream(p$) As Stream
-    Public MustOverride Sub Create(p$)
+    Protected MustOverride Function CreateStream(p$) As Stream
+    Protected MustOverride Sub CloseStream(p$, s As Stream)
 
-    Public Function Open(p$) As FSStream
+    Public Function Open(p$, Optional create As Boolean = False) As FSStream
         Dim fso As FSObject
         If fsobjs.ContainsKey(p) Then
             fso = fsobjs(p)
         Else
-            Dim s = GetStream(p)
+            Dim s = If(create, CreateStream(p), GetStream(p))
             If s Is Nothing Then Return Nothing
             fso = New FSObject With {.Path = p, .Stream = s}
             fsobjs.Add(p, fso)
@@ -77,6 +78,7 @@ Public MustInherit Class FileSystem
 
     Friend Sub Close(fso As FSObject)
         If fso.Stream IsNot Nothing Then
+            CloseStream(fso.Path, fso.Stream)
             fso.Stream.Dispose()
             fso.Stream = Nothing
         End If

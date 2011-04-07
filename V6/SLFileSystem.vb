@@ -23,7 +23,15 @@ Public Class SLFileSystem
         End If
     End Function
 
-    Public Overrides Sub Create(p As String)
+    Protected Overrides Function CreateStream(p$) As Stream
         files(p) = New Byte() {}
+        Return New MemoryStream()
+    End Function
+
+    Protected Overrides Sub CloseStream(p$, s As Stream)
+        Dim ms = TryCast(s, MemoryStream)
+        If ms IsNot Nothing Then
+            files(p) = ms.ToArray
+        End If
     End Sub
 End Class
