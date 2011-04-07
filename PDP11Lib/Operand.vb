@@ -31,7 +31,7 @@
                 Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, Size, -Size, -Size)
                 Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, Size, -Size, -Size)
                 Case 6 : Return bd.EncAddr(CUShort((PC + Dist) And &HFFFF))
-                Case 7 : Return "*" + bd.Enc(CUShort((PC + Dist) And &HFFFF))
+                Case 7 : Return "*" + bd.EncAddr(CUShort((PC + Dist) And &HFFFF))
             End Select
         Else
             Select Case Type
@@ -64,8 +64,8 @@
                 Case 3 : Return vm.ReadUInt16(vm.GetInc(Reg, Size))
                 Case 4 : Return vm.GetDec(Reg, Size)
                 Case 5 : Return vm.ReadUInt16(vm.GetDec(Reg, Size))
-                Case 6 : Return CUShort(vm.Regs(Reg) + Dist)
-                Case 7 : Return vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))
+                Case 6 : Return CUShort((vm.Regs(Reg) + Dist) And &HFFFF)
+                Case 7 : Return vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
             End Select
         End If
         Throw New Exception("invalid operand")
@@ -88,8 +88,8 @@
                 Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetInc(Reg, Size)))
                 Case 4 : Return vm.ReadUInt16(vm.GetDec(Reg, Size))
                 Case 5 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetDec(Reg, Size)))
-                Case 6 : Return vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))
-                Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)))
+                Case 6 : Return vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
             End Select
         End If
         Throw New Exception("invalid operand")
@@ -98,7 +98,7 @@
     Public Sub SetValue(vm As VM, v As UShort)
         If Reg = 7 Then
             Select Case Type
-                Case 0 : vm.Regs(Reg) = v : Return
+                Case 0 : PC = v : Return
                 Case 1, 2 : vm.Write(PC, v) : Return
                 Case 3 : vm.Write(vm.ReadUInt16(PC), v) : Return
                 Case 6 : vm.Write(CUShort(PC + Dist), v) : Return
@@ -112,8 +112,8 @@
                 Case 3 : vm.Write(vm.ReadUInt16(vm.GetInc(Reg, Size)), v) : Return
                 Case 4 : vm.Write(vm.GetDec(Reg, Size), v) : Return
                 Case 5 : vm.Write(vm.ReadUInt16(vm.GetDec(Reg, Size)), v) : Return
-                Case 6 : vm.Write(CUShort(vm.Regs(Reg) + Dist), v) : Return
-                Case 7 : vm.Write(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)), v) : Return
+                Case 6 : vm.Write(CUShort((vm.Regs(Reg) + Dist) And &HFFFF), v) : Return
+                Case 7 : vm.Write(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)), v) : Return
             End Select
         End If
         Throw New Exception("invalid operand")
@@ -136,8 +136,8 @@
                 Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(Reg, Size)))
                 Case 4 : Return vm(vm.GetDec(Reg, Size))
                 Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(Reg, Size)))
-                Case 6 : Return vm(CUShort(vm.Regs(Reg) + Dist))
-                Case 7 : Return vm(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist)))
+                Case 6 : Return vm(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return vm(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
             End Select
         End If
         Throw New Exception("invalid operand")
@@ -160,8 +160,8 @@
                 Case 3 : vm(vm.ReadUInt16(vm.GetInc(Reg, Size))) = b : Return
                 Case 4 : vm(vm.GetDec(Reg, Size)) = b : Return
                 Case 5 : vm(vm.ReadUInt16(vm.GetDec(Reg, Size))) = b : Return
-                Case 6 : vm(CUShort(vm.Regs(Reg) + Dist)) = b : Return
-                Case 7 : vm(vm.ReadUInt16(CUShort(vm.Regs(Reg) + Dist))) = b : Return
+                Case 6 : vm(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)) = b : Return
+                Case 7 : vm(vm.ReadUInt16((CUShort(vm.Regs(Reg) + Dist) And &HFFFF))) = b : Return
             End Select
         End If
         Throw New Exception("invalid operand")
