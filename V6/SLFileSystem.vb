@@ -10,18 +10,14 @@ Public Class SLFileSystem
         Me.root = root
     End Sub
 
-    Private Function GetResourceStream(p$) As Stream
+    Protected Overrides Function GetStream(p$) As Stream
         Dim pp = root + "/" + If(p.StartsWith("/"), p.Substring(1), p)
         Dim rs = Application.GetResourceStream(New Uri(pp, UriKind.Relative))
         Return If(rs IsNot Nothing, rs.Stream, Nothing)
     End Function
 
-    Protected Overrides Function GetStream(p$) As Stream
-        Return GetResourceStream(p)
-    End Function
-
     Public Function Exists(p$) As Boolean
-        Dim s = GetResourceStream(p)
+        Dim s = GetStream(p)
         If s Is Nothing Then Return False
         s.Dispose()
         Return True
