@@ -30,8 +30,12 @@ Public Class SLFileSystem
 
     Protected Overrides Sub CloseStream(p$, s As Stream)
         Dim ms = TryCast(s, MemoryStream)
-        If ms IsNot Nothing Then
+        If ms IsNot Nothing AndAlso files(p) IsNot Nothing Then
             files(p) = ms.ToArray
         End If
+    End Sub
+
+    Public Overrides Sub Delete(p$)
+        files(p) = Nothing
     End Sub
 End Class

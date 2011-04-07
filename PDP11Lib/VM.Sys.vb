@@ -19,7 +19,6 @@ Partial Public Class VM
                 'Case 2 : _fork(args) : Return
                 'Case 7 : _wait(args) : Return
                 'Case 9 : _link(args) : Return
-                'Case 10 : _unlink(args) : Return
                 'Case 12 : _chdir(args) : Return
                 'Case 13 : _time(args) : Return
                 'Case 14 : _mknod(args) : Return
@@ -54,6 +53,7 @@ Partial Public Class VM
                 Case 5 : _open(args) : Return
                 Case 6 : _close(args) : Return
                 Case 8 : _creat(args) : Return
+                Case 10 : _unlink(args) : Return
                 Case 11 : _exec(args) : Return
                 Case 17 : _break(args) : Return
                 Case 18 : _stat(args) : Return
@@ -139,6 +139,17 @@ Partial Public Class VM
                       Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
         Regs(0) = CUShort(fs.Open(p, True).Handle)
         C = False
+    End Sub
+
+    Private Sub _unlink(args As UShort()) ' 10
+        Dim p = ReadString(Data, args(0))
+        swt.WriteLine("sys unlink: path={0}""{1}""", Enc(args(0)), Escape(p))
+        If fs.Exists(p) Then
+            fs.Delete(p)
+            C = False
+        Else
+            C = True
+        End If
     End Sub
 
     Private Sub _exec(args As UShort()) ' 11
