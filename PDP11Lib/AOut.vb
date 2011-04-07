@@ -182,7 +182,7 @@ Public Class AOut
     Public Overrides Function EncAddr(addr As UShort) As String
         Dim ad = MyBase.EncAddr(addr)
         Dim sym = GetSymbol(addr)
-        If sym Is Nothing Then Return ad
+        If sym Is Nothing OrElse sym.Name Is Nothing Then Return ad
         Dim d = addr - sym.Address
         Dim ad2 = sym.Name
         If d > 0 Then ad2 += "+" + Enc(CUShort(d))
