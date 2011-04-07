@@ -176,7 +176,7 @@ Partial Public Class VM
         If sig < SigNames.Length AndAlso SigNames(sig) IsNot Nothing Then
             sn = SigNames(sig)
         End If
-        swt.WriteLine("sys seek: sig={0}, cb={1}", sn, EncAddr(args(1)))
+        swt.WriteLine("sys signal: sig={0}, cb={1}", sn, EncAddr(args(1)))
         Regs(0) = 1 ' always ignore
     End Sub
 End Class
