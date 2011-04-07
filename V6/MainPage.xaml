@@ -21,6 +21,7 @@
             <StackPanel Name="menuStack" HorizontalAlignment="Left" Orientation="Horizontal">
                 <Button Content="Open" Name="btnOpen" />
                 <Button Content="Save" Name="btnSave" IsEnabled="False" />
+                <Button Content="Save a.out" Name="btnSaveAOut" IsEnabled="False" />
                 <Grid Width="4" />
                 <ComboBox Name="comboBox1" SelectedIndex="0">
                     <ComboBoxItem Content="hex" />

@@ -24,7 +24,9 @@ Partial Public Class MainPage
         addTest(True, New String() {"args.c"}, "args", "test", "arg")
         addTest(True, New String() {"printo.c"}, "printo")
         addTest(False, Nothing, "/bin/nm", "args")
-        addTest(False, Nothing, "/bin/as", "source/as/as18.s")
+        addTest(False, Nothing, "/bin/as",
+                "source/as/as11.s", "source/as/as12.s", "source/as/as13.s", "source/as/as14.s", "source/as/as15.s",
+                "source/as/as16.s", "source/as/as17.s", "source/as/as18.s", "source/as/as19.s")
         addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
         btnTest_Click(b, Nothing)
     End Sub
@@ -181,6 +183,7 @@ Partial Public Class MainPage
         txtTrace.SelectionStart = txtTrace.Text.Length
         txtOut.Text = vm.Output
         txtOut.SelectionStart = txtOut.Text.Length
+        btnSaveAOut.IsEnabled = fs.Exists("a.out")
         Cursor = cur
     End Sub
 
@@ -204,5 +207,16 @@ Partial Public Class MainPage
                 txtSrc.Text = ReadText(s.Stream)
             End Using
         End If
+    End Sub
+
+    Private Sub btnSaveAOut_Click(sender As Object, e As RoutedEventArgs) Handles btnSaveAOut.Click
+        Dim sfd = New SaveFileDialog
+        If sfd.ShowDialog() <> True Then Return
+
+        Using fs1 = sfd.OpenFile, fs2 = fs.Open("a.out")
+            Dim data(CInt(fs2.Stream.Length - 1)) As Byte
+            fs2.Stream.Read(data, 0, data.Length)
+            fs1.Write(data, 0, data.Length)
+        End Using
     End Sub
 End Class
