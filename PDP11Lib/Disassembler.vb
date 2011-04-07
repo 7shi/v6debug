@@ -14,6 +14,10 @@ Public Module Disassembler
          "gtty", Nothing, "nice", "sleep", "sync", "kill", "switch", Nothing,
          Nothing, "dup", "pipe", "times", "prof", "tiu", "setgid", "getgid", "signal"}
 
+    Public ReadOnly SigNames As String() =
+        {Nothing, "SIGHUP", "SIGINT", "SIGQIT", "SIGINS", "SIGTRC", "SIGIOT", "SIGEMT",
+         "SIGFPT", "SIGKIL", "SIGBUS", "SIGSEG", "SIGSYS", "SIGPIPE"}
+
     Public ReadOnly SysArgs As Integer() =
         {1, 0, 0, 2, 2, 2, 0, 0, 2, 2, 1, 2, 1, 0, 3, 2,
          2, 1, 2, 2, 0, 3, 1, 0, 0, 0, 3, 0, 1, 0, 1, 1,
@@ -175,8 +179,16 @@ Public Module Disassembler
                             Dim op = Disassemble(bd, ad)
                             sb.Append("; " + argad + "{" + op.Mnemonic + "}")
                         Else
+                            Dim first = 1
+                            If arg = 48 Then ' signal
+                                Dim sig = bd.ReadUInt16(pos + 2)
+                                If sig < SigNames.Length AndAlso SigNames(sig) IsNot Nothing Then
+                                    sb.Append("; " + SigNames(sig))
+                                    first = 2
+                                End If
+                            End If
                             Dim argc = SysArgs(arg)
-                            For i = 1 To argc
+                            For i = first To argc
                                 sb.Append("; " + bd.Enc(bd.ReadUInt16(pos + i * 2)))
                             Next
                         End If
