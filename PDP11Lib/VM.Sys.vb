@@ -18,7 +18,6 @@ Partial Public Class VM
             Select Case t
                 'Case 2 : _fork(args) : Return
                 'Case 7 : _wait(args) : Return
-                'Case 8 : _creat(args) : Return
                 'Case 9 : _link(args) : Return
                 'Case 10 : _unlink(args) : Return
                 'Case 11 : _exec(args) : Return
@@ -55,6 +54,7 @@ Partial Public Class VM
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
                 Case 6 : _close(args) : Return
+                Case 8 : _creat(args) : Return
                 Case 17 : _break(args) : Return
                 Case 18 : _stat(args) : Return
                 Case 19 : _seek(args) : Return
@@ -131,6 +131,14 @@ Partial Public Class VM
             Regs(0) = 0
             C = True
         End Try
+    End Sub
+
+    Private Sub _creat(args As UShort()) ' 8
+        Dim p = ReadString(Data, args(0))
+        swt.WriteLine("sys creat: path={0}""{1}"", mode=0{2}",
+                      Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
+        fs.Create(p)
+        C = False
     End Sub
 
     Private Sub _break(args As UShort()) ' 17
