@@ -89,7 +89,7 @@ Public Module Disassembler
                         Select Case (v >> 3) And 7
                             Case 0 : Return ReadReg("rts", bd, pos)
                             Case 3 : Return New OpCode("spl " + (v & 7), 2)
-                            Case 4 - 7 ' 00 02 4x - 00 02 7x
+                            Case 4 To 7 ' 00 02 4x - 00 02 7x
                                 Dim mne As String
                                 Select Case v
                                     'Case &O260 : mne = "nop"

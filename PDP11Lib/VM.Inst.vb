@@ -154,7 +154,7 @@ Partial Public Class VM
                                 PC = Regs(r)
                                 Regs(r) = ReadUInt16(GetInc(6, 2))
                                 Return
-                            Case 4 - 7 ' cl*/se*/ccc/scc: CLear/SEt (Condition Codes)
+                            Case 4 To 7 ' cl*/se*/ccc/scc: CLear/SEt (Condition Codes)
                                 Dim f = (v And 16) <> 0
                                 If (v And 8) <> 0 Then Me.N = f
                                 If (v And 4) <> 0 Then Me.Z = f
