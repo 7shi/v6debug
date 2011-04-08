@@ -16,7 +16,6 @@ Partial Public Class VM
                 Next
             End If
             Select Case t
-                'Case 2 : _fork(args) : Return
                 'Case 7 : _wait(args) : Return
                 'Case 12 : _chdir(args) : Return
                 'Case 13 : _time(args) : Return
@@ -45,6 +44,7 @@ Partial Public Class VM
                 'Case 47 : _getgid(args) : Return
                 Case 0 : _indir(args) : Return
                 Case 1 : _exit(args) : Return
+                Case 2 : _fork(args) : Return
                 Case 3 : _read(args) : Return
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
@@ -75,6 +75,12 @@ Partial Public Class VM
     Private Sub _exit(args As UShort()) ' 1
         swt.WriteLine("sys exit: r0={0}", Enc(Regs(0)))
         HasExited = True
+    End Sub
+
+    Private Sub _fork(args As UShort()) ' 1
+        swt.WriteLine("sys fork")
+        Regs(0) = 0
+        C = False
     End Sub
 
     Private Sub _read(args As UShort()) ' 3
