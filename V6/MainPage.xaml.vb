@@ -32,6 +32,7 @@ Partial Public Class MainPage
         addTest(False, Nothing, "/bin/cc", "-S", "args.c")
         addTest(False, New String() {"source/c/c0h.c", "source/c/c0t.s"},
                 "/lib/c0", "args.c", "/tmp/ctm1a", "/tmp/ctm2a")
+        addTest(False, Nothing, "source/c/cvopt", "source/c/table.s", "source/c/table.i")
         btnTest_Click(b, Nothing)
     End Sub
 
@@ -93,14 +94,16 @@ Partial Public Class MainPage
         list.Sort()
         Dim dn As TreeViewItem = Nothing
         For Each src In list
-            Dim sp = src.Split(CChar("/"))
-            If dn Is Nothing OrElse sp(1) <> dn.Header.ToString Then
-                dn = New TreeViewItem With
-                     {.Header = sp(1), .Tag = "README", .IsExpanded = True}
-                TreeView1.Items.Add(dn)
+            If fs.Exists(src) Then
+                Dim sp = src.Split(CChar("/"))
+                If dn Is Nothing OrElse sp(1) <> dn.Header.ToString Then
+                    dn = New TreeViewItem With
+                         {.Header = sp(1), .Tag = "README", .IsExpanded = True}
+                    TreeView1.Items.Add(dn)
+                End If
+                Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
+                dn.Items.Add(n)
             End If
-            Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
-            dn.Items.Add(n)
         Next
         Dim first = CType(TreeView1.Items(0), TreeViewItem)
         If first.Items.Count > 0 Then
