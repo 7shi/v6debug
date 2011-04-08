@@ -15,7 +15,11 @@ Public Class SLFileSystem
     Protected Overrides Function GetStream(p$) As Stream
         If files.ContainsKey(p) Then
             Dim data = files(p)
-            Return If(data Is Nothing, Nothing, New MemoryStream(data))
+            If data Is Nothing Then Return Nothing
+            Dim ms = New MemoryStream
+            ms.Write(data, 0, data.Length)
+            ms.Position = 0
+            Return ms
         Else
             Dim pp = root + "/" + If(p.StartsWith("/"), p.Substring(1), p)
             Dim rs = Application.GetResourceStream(New Uri(pp, UriKind.Relative))
