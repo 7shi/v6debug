@@ -14,6 +14,12 @@ Public MustInherit Class FileSystem
         Private parent As FileSystem
         Friend target As FSObject
 
+        Public ReadOnly Property Path$
+            Get
+                Return target.Path
+            End Get
+        End Property
+
         Public ReadOnly Property Stream As Stream
             Get
                 Return target.Stream
