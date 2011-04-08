@@ -79,7 +79,12 @@ Partial Public Class VM
 
     Private Sub _fork(args As UShort()) ' 1
         swt.WriteLine("sys fork")
+#If False Then
         Regs(0) = 0
+#Else
+        Regs(0) = 1
+        PC += 2US
+#End If
         C = False
     End Sub
 
