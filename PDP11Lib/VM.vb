@@ -123,6 +123,7 @@ Partial Public Class VM
                 End If
             End If
             RunStep()
+            If (PC And 1) <> 0 Then Abort("invalid pc=" + Enc0(PC))
         End While
         fs.CloseAll()
     End Sub
