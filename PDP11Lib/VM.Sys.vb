@@ -16,7 +16,6 @@ Partial Public Class VM
                 Next
             End If
             Select Case t
-                'Case 7 : _wait(args) : Return
                 'Case 12 : _chdir(args) : Return
                 'Case 13 : _time(args) : Return
                 'Case 14 : _mknod(args) : Return
@@ -49,6 +48,7 @@ Partial Public Class VM
                 Case 4 : _write(args) : Return
                 Case 5 : _open(args) : Return
                 Case 6 : _close(args) : Return
+                Case 7 : _wait(args) : Return
                 Case 8 : _creat(args) : Return
                 Case 9 : _link(args) : Return
                 Case 10 : _unlink(args) : Return
@@ -150,6 +150,14 @@ Partial Public Class VM
             Regs(0) = 0
             C = True
         End Try
+    End Sub
+
+    Private Sub _wait(args As UShort()) ' 7
+        Dim nargs = Regs(0)
+        swt.WriteLine("sys wait: nargs(r0)={0}", Enc(nargs))
+        Regs(1) = 14 ' status
+        Regs(0) = 1
+        C = False
     End Sub
 
     Private Sub _creat(args As UShort()) ' 8
