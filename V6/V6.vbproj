@@ -131,7 +131,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Tests\args.c" />
-    <Content Include="Tests\exit.s" />
     <Content Include="Tests\source\as\as11.s" />
     <Content Include="Tests\source\as\as12.s" />
     <Content Include="Tests\source\as\as13.s" />

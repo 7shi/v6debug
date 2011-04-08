@@ -24,13 +24,9 @@ Partial Public Class MainPage
         addTest(True, New String() {"args.c"}, "args", "test", "arg")
         addTest(True, New String() {"printo.c"}, "printo")
         addTest(False, Nothing, "/bin/nm", "args")
-#If False Then
         addTest(False, Nothing, "/bin/as",
                 "source/as/as11.s", "source/as/as12.s", "source/as/as13.s", "source/as/as14.s", "source/as/as15.s",
                 "source/as/as16.s", "source/as/as17.s", "source/as/as18.s", "source/as/as19.s")
-#Else
-        addTest(False, Nothing, "/bin/as", "exit.s")
-#End If
         addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
         btnTest_Click(b, Nothing)
     End Sub
