@@ -30,6 +30,8 @@ Partial Public Class MainPage
         addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
         addTest(False, Nothing, "/bin/ld", "-s", "-n", "a.out")
         addTest(False, Nothing, "/bin/cc", "-S", "args.c")
+        addTest(False, New String() {"source/c/c0h.c", "source/c/c0t.s"},
+                "/lib/c0", "args.c", "/tmp/ctm1a", "/tmp/ctm2a")
         btnTest_Click(b, Nothing)
     End Sub
 
@@ -70,19 +72,23 @@ Partial Public Class MainPage
         aout = New AOut(data, GetFileName(parg.Cmd))
 
         ignore = True
+        Dim list = New List(Of String)
         If parg.Srcs IsNot Nothing Then
             For Each src In parg.Srcs
-                Dim n = New TreeViewItem With {.Header = GetFileName(src), .Tag = src}
-                TreeView1.Items.Add(n)
+                If src.Contains("/") Then
+                    list.Add(src)
+                Else
+                    Dim n = New TreeViewItem With {.Header = GetFileName(src), .Tag = src}
+                    TreeView1.Items.Add(n)
+                End If
             Next
         End If
         Dim objs = From sym In aout.GetSymbols
                    Where sym.ObjSym IsNot Nothing
                    Select sym.ObjSym
-        Dim list = New List(Of String)
         For Each obj In objs
             Dim src = checkLib(obj.Name)
-            If src IsNot Nothing Then list.Add(src)
+            If src IsNot Nothing Then List.Add(src)
         Next
         list.Sort()
         Dim dn As TreeViewItem = Nothing
@@ -116,7 +122,7 @@ Partial Public Class MainPage
 
         Dim p = obj.LastIndexOf(".")
         Dim fn = If(p < 0, obj, obj.Substring(0, p))
-        For Each dir In New String() {"s4", "s5", "s1", "s2", "as"}
+        For Each dir In New String() {"s4", "s5", "s1", "s2", "as", "c"}
             For Each ext In New String() {".s", ".c"}
                 Dim pp = "source/" + dir + "/" + fn + ext
                 If fs.Exists(pp) Then
