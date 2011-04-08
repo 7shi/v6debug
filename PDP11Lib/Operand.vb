@@ -4,10 +4,12 @@
     Public Property Dist%
     Public Property Length As UShort
     Public Property PC As UShort
+    Public Property Size As UShort
 
-    Public Sub New(t%, r%, bd As BinData, ad%)
+    Public Sub New(t%, r%, bd As BinData, ad%, sz As UShort)
         Type = t
         Reg = r
+        Size = sz
         PC = CUShort(ad)
         If t >= 6 Then
             Dist = bd.ReadInt16(ad)
@@ -23,7 +25,7 @@
         If Reg = 7 Then
             Select Case Type
                 Case 0 : Return r + bd.GetReg(Reg, PC)
-                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, 2, 0, 0)
+                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, Size, 0, 0)
                 Case 2 : Return "$" + bd.Enc(bd.ReadUInt16(PC))
                 Case 3 : Return "*$" + bd.EncAddr(bd.ReadUInt16(PC))
                 Case 6 : Return bd.EncAddr(CUShort((PC + Dist) And &HFFFF))
@@ -32,13 +34,13 @@
         Else
             Select Case Type
                 Case 0 : Return r + bd.GetReg(Reg, PC)
-                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, 2, 0, 0)
-                Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, 2, 0, 2)
-                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, 2, 0, 2)
-                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, 2, -2, -2)
-                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, 2, -2, -2)
-                Case 6 : Return bd.GetRelative(Reg, Dist, PC - 2US) + bd.GetValue(Reg, 2, Dist, 0)
-                Case 7 : Return "*" + bd.GetRelative(Reg, Dist, PC - 2US) + bd.GetPtr(Reg, 2, Dist, 0)
+                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, Size, 0, 0)
+                Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, Size, 0, Size)
+                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, Size, 0, 2)
+                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, Size, -Size, -Size)
+                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, Size, -2, -2)
+                Case 6 : Return bd.GetRelative(Reg, Dist, PC - 2US) + bd.GetValue(Reg, Size, Dist, 0)
+                Case 7 : Return "*" + bd.GetRelative(Reg, Dist, PC - 2US) + bd.GetPtr(Reg, Size, Dist, 0)
             End Select
         End If
         Throw New Exception("invalid operand")
