@@ -190,25 +190,33 @@ Partial Public Class VM
         Dim p = ReadString(Data, args(0))
         Dim argp = args(1)
         Dim sb = New StringBuilder
+        Dim args2 = New List(Of String)
         Do
             Dim a = ReadUInt16(argp)
             If a = 0 Then Exit Do
-            If sb.Length > 0 Then sb.Append(", ")
-            sb.Append("""" + Escape(ReadString(Data, a)) + """")
+            Dim arg = ReadString(Data, a)
+            If sb.Length > 0 Then
+                sb.Append(", ")
+                args2.Add(arg)
+            End If
+            sb.Append("""" + Escape(arg) + """")
             argp += 2US
         Loop
         swt.WriteLine("sys exec: path={0}""{1}"", arg={2}{{{3}}}",
                       Enc(args(0)), Escape(p), Enc(args(1)), sb.ToString)
+        Dim vm = System(fs, p, args2.ToArray)
+        swt.Write(vm.Trace)
+        swo.Write(vm.Output)
         If forks.Count > 0 Then
             swt.WriteLine("return to fork")
             Dim st = forks.Pop
             st.Restore()
             Regs(0) = 1
             PC += 2US
-            C = False
         Else
-            Abort("not implemented")
+            HasExited = True
         End If
+        C = False
     End Sub
 
     Private Sub _chmod(args As UShort()) ' 15
