@@ -37,6 +37,7 @@ Partial Public Class MainPage
                 "/lib/c1", "/tmp/ctm1a", "/tmp/ctm2a", "/tmp/ctm5a")
         addTest(False, New String() {"source/c/c2h.c"},
                 "/lib/c2", "/tmp/ctm5a", "/tmp/ctm3a")
+        addTest(False, Nothing, "/bin/ar")
         btnTest_Click(b, Nothing)
     End Sub
 
