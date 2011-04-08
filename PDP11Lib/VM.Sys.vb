@@ -18,7 +18,6 @@ Partial Public Class VM
             Select Case t
                 'Case 2 : _fork(args) : Return
                 'Case 7 : _wait(args) : Return
-                'Case 9 : _link(args) : Return
                 'Case 12 : _chdir(args) : Return
                 'Case 13 : _time(args) : Return
                 'Case 14 : _mknod(args) : Return
@@ -51,6 +50,7 @@ Partial Public Class VM
                 Case 5 : _open(args) : Return
                 Case 6 : _close(args) : Return
                 Case 8 : _creat(args) : Return
+                Case 9 : _link(args) : Return
                 Case 10 : _unlink(args) : Return
                 Case 11 : _exec(args) : Return
                 Case 15 : _chmod(args) : Return
@@ -147,6 +147,14 @@ Partial Public Class VM
         swt.WriteLine("sys creat: path={0}""{1}"", mode=0{2} => fd={3}",
                       Enc(args(0)), Escape(p), Oct(args(1), 3), Enc(Regs(0)))
         C = False
+    End Sub
+
+    Private Sub _link(args As UShort()) ' 9
+        Dim src = ReadString(Data, args(0))
+        Dim dst = ReadString(Data, args(1))
+        swt.WriteLine("sys link: src={0}""{1}"" dst={2}""{3}""",
+                      Enc(args(0)), Escape(src), Enc(args(1)), Escape(dst))
+        C = Not fs.Link(src, dst)
     End Sub
 
     Private Sub _unlink(args As UShort()) ' 10

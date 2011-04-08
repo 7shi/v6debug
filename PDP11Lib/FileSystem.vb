@@ -70,6 +70,7 @@ Public MustInherit Class FileSystem
     Protected MustOverride Sub CloseStream(p$, s As Stream)
 
     Public MustOverride Function Delete(p$) As Boolean
+    Public MustOverride Function Link(src$, dst$) As Boolean
 
     Public Function Open(p$, Optional create As Boolean = False) As FSStream
         Dim fso As FSObject

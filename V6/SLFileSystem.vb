@@ -47,6 +47,16 @@ Public Class SLFileSystem
         Return True
     End Function
 
+    Public Overrides Function Link(src$, dst$) As Boolean
+        If Not files.ContainsKey(src) Then
+            Dim data = GetAllBytes(src)
+            If data Is Nothing Then Return False
+            files.Add(src, data)
+        End If
+        files(dst) = files(src)
+        Return True
+    End Function
+
     Public Function GetFiles() As String()
         Dim keys = (From f In files.Keys Where files(f) IsNot Nothing Select f).ToArray
         Array.Sort(keys)
