@@ -38,7 +38,6 @@ Partial Public Class MainPage
         txtSrc.Text = ""
         txtBin.Text = ""
         txtTrace.Text = ""
-        txtOut.Text = ""
         ignore = True
         TreeView1.Items.Clear()
         DataGrid1.ItemsSource = Nothing
@@ -190,7 +189,7 @@ Partial Public Class MainPage
         txtDis.Text = aout.GetDisassemble
         txtTrace.Text = vm.Trace
         txtTrace.SelectionStart = txtTrace.Text.Length
-        txtOut.Text = vm.Output
+        txtOut.Text += vm.Output
         txtOut.SelectionStart = txtOut.Text.Length
         Dim fsrc = New List(Of FileEntry)
         fsrc.Add(New FileEntry With {.Path = parg.Cmd, .Length = aout.Data.Length})
