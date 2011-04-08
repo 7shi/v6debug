@@ -140,15 +140,15 @@ Partial Public Class VM
         Return sb.ToString
     End Function
 
-    Private Function GetSrcDst(size As UShort) As Operand()
+    Private Function GetSrcDst() As Operand()
         Dim v = ReadUInt16(PC)
-        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + 2, size)
-        Return New Operand() {src, GetDst(size, src.Length + 2US)}
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, Me, PC + 2)
+        Return New Operand() {src, GetDst(src.Length + 2US)}
     End Function
 
-    Private Function GetDst(size As UShort, Optional len As UShort = 2) As Operand
+    Private Function GetDst(Optional len As UShort = 2) As Operand
         Dim v = ReadUInt16(PC)
-        Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len, size)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, Me, PC + len)
         PC += len + dst.Length
         Return dst
     End Function
