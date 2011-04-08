@@ -273,6 +273,9 @@
     <Content Include="Tests\source\c\cvopt" />
     <Content Include="Tests\lib\c1" />
     <Content Include="Tests\lib\c2" />
+    <Content Include="Tests\lib\crt0.o" />
+    <Content Include="Tests\lib\libc.a" />
+    <Content Include="Tests\lib\liba.a" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">
