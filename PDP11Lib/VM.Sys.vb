@@ -142,9 +142,9 @@ Partial Public Class VM
 
     Private Sub _creat(args As UShort()) ' 8
         Dim p = ReadString(Data, args(0))
-        swt.WriteLine("sys creat: path={0}""{1}"", mode=0{2}",
-                      Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
         Regs(0) = CUShort(fs.Open(p, True).Handle)
+        swt.WriteLine("sys creat: path={0}""{1}"", mode=0{2} => fd={3}",
+                      Enc(args(0)), Escape(p), Oct(args(1), 3), Enc(Regs(0)))
         C = False
     End Sub
 
@@ -178,7 +178,7 @@ Partial Public Class VM
     Private Sub _chmod(args As UShort()) ' 15
         Dim p = ReadString(Data, args(0))
         swt.WriteLine("sys chmod: path={0}""{1}"", mode=0{2}",
-                      Enc(args(0)), Escape(p), Convert.ToString(args(1), 8))
+                      Enc(args(0)), Escape(p), Oct(args(1), 3))
         C = False
     End Sub
 
