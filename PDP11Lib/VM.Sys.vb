@@ -153,8 +153,7 @@ Partial Public Class VM
         Dim p = ReadString(Data, args(0))
         swt.WriteLine("sys unlink: path={0}""{1}""", Enc(args(0)), Escape(p))
         If fs.Exists(p) Then
-            fs.Delete(p)
-            C = False
+            C = Not fs.Delete(p)
         Else
             C = True
         End If

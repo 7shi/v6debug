@@ -39,9 +39,13 @@ Public Class SLFileSystem
         End If
     End Sub
 
-    Public Overrides Sub Delete(p$)
+    Public Overrides Function Delete(p$) As Boolean
+        Dim s = GetStream(p)
+        If s Is Nothing Then Return False
+        s.Dispose()
         files(p) = Nothing
-    End Sub
+        Return True
+    End Function
 
     Public Function GetFiles() As String()
         Dim keys = (From f In files.Keys Where files(f) IsNot Nothing Select f).ToArray
