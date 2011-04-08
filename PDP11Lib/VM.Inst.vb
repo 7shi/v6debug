@@ -33,20 +33,20 @@ Partial Public Class VM
                 Return
             Case 4 ' bic: BIt Clear
                 Dim oprs = GetSrcDst(2)
-                Dim val = (Not oprs(0).GetValue(Me)) And oprs(1).GetValue(Me)
+                Dim val = (Not oprs(0).GetValue(Me)) And oprs(1).GetValue(Me, True)
                 oprs(1).SetValue(Me, val)
                 SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 5 ' bis: BIt Set
                 Dim oprs = GetSrcDst(2)
-                Dim val = oprs(0).GetValue(Me) Or oprs(1).GetValue(Me)
+                Dim val = oprs(0).GetValue(Me) Or oprs(1).GetValue(Me, True)
                 oprs(1).SetValue(Me, val)
                 SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 6 ' add: ADD
                 Dim oprs = GetSrcDst(2)
                 Dim src = oprs(0).GetValue(Me)
-                Dim dst = oprs(1).GetValue(Me)
+                Dim dst = oprs(1).GetValue(Me, True)
                 Dim val = CInt(ConvShort(src)) + CInt(ConvShort(dst))
                 oprs(1).SetValue(Me, CUShort(val And &HFFFF))
                 SetFlags(val = 0, val < 0, CInt(src) + CInt(dst) >= &H10000, val >= &H8000)
@@ -77,20 +77,20 @@ Partial Public Class VM
                 Return
             Case &O14 ' bicb: BIt Clear Byte
                 Dim oprs = GetSrcDst(1)
-                Dim val = (Not oprs(0).GetByte(Me)) And oprs(1).GetByte(Me)
+                Dim val = (Not oprs(0).GetByte(Me)) And oprs(1).GetByte(Me, True)
                 oprs(1).SetByte(Me, val)
                 SetFlags(val = 0, (val And &H80) <> 0, C, False)
                 Return
             Case &O15 ' bisb: BIt Set Byte
                 Dim oprs = GetSrcDst(1)
-                Dim val = oprs(0).GetByte(Me) Or oprs(1).GetByte(Me)
+                Dim val = oprs(0).GetByte(Me) Or oprs(1).GetByte(Me, True)
                 oprs(1).SetByte(Me, val)
                 SetFlags(val = 0, (val And &H80) <> 0, C, False)
                 Return
             Case &O16 ' sub: SUBtract
                 Dim oprs = GetSrcDst(2)
                 Dim src = oprs(0).GetValue(Me)
-                Dim dst = oprs(1).GetValue(Me)
+                Dim dst = oprs(1).GetValue(Me, True)
                 Dim val = CInt(ConvShort(dst)) - CInt(ConvShort(src))
                 oprs(1).SetValue(Me, CUShort(val And &HFFFF))
                 SetFlags(val = 0, val < 0, dst < src, val < -&H8000)

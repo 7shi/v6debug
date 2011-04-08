@@ -71,7 +71,7 @@
         Throw New Exception("invalid operand")
     End Function
 
-    Public Function GetValue(vm As VM) As UShort
+    Public Function GetValue(vm As VM, Optional nomove As Boolean = False) As UShort
         If Reg = 7 Then
             Select Case Type
                 Case 0 : Return PC
@@ -79,6 +79,16 @@
                 Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(PC))
                 Case 6 : Return vm.ReadUInt16(CUShort(PC + Dist))
                 Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort(PC + Dist)))
+            End Select
+        ElseIf nomove Then
+            Select Case Type
+                Case 0 : Return vm.Regs(Reg)
+                Case 1, 2 : Return vm.ReadUInt16(vm.Regs(Reg))
+                Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(vm.Regs(Reg)))
+                Case 4 : Return vm.ReadUInt16(vm.Regs(Reg) - Size)
+                Case 5 : Return vm.ReadUInt16(vm.ReadUInt16(vm.Regs(Reg) - Size))
+                Case 6 : Return vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
             End Select
         Else
             Select Case Type
@@ -119,7 +129,7 @@
         Throw New Exception("invalid operand")
     End Sub
 
-    Public Function GetByte(vm As VM) As Byte
+    Public Function GetByte(vm As VM, Optional nomove As Boolean = False) As Byte
         If Reg = 7 Then
             Select Case Type
                 Case 0 : Return CByte(PC And &HFF)
@@ -127,6 +137,16 @@
                 Case 3 : Return vm(vm.ReadUInt16(PC))
                 Case 6 : Return vm(CUShort(PC + Dist))
                 Case 7 : Return vm(vm.ReadUInt16(CUShort(PC + Dist)))
+            End Select
+        ElseIf nomove Then
+            Select Case Type
+                Case 0 : Return CByte(vm.Regs(Reg) And &HFF)
+                Case 1, 2 : Return vm(vm.Regs(Reg))
+                Case 3 : Return vm(vm.ReadUInt16(vm.Regs(Reg)))
+                Case 4 : Return vm(vm.Regs(Reg) - Size)
+                Case 5 : Return vm(vm.ReadUInt16(vm.Regs(Reg) - Size))
+                Case 6 : Return vm(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return vm(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
             End Select
         Else
             Select Case Type
