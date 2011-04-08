@@ -65,11 +65,14 @@ Partial Public Class VM
         Abort("invalid sys")
     End Sub
 
+    Private forks As New Stack(Of VMState)
+
     Private Sub _indir(args As UShort()) ' 0
+        Dim stc = forks.Count
         Dim bak = PC
         PC = args(0)
         ExecSys()
-        PC = bak
+        If stc <= forks.Count Then PC = bak
     End Sub
 
     Private Sub _exit(args As UShort()) ' 1
@@ -79,12 +82,9 @@ Partial Public Class VM
 
     Private Sub _fork(args As UShort()) ' 1
         swt.WriteLine("sys fork")
-#If False Then
+        Dim st = New VMState(Me)
+        forks.Push(st)
         Regs(0) = 0
-#Else
-        Regs(0) = 1
-        PC += 2US
-#End If
         C = False
     End Sub
 
@@ -191,7 +191,16 @@ Partial Public Class VM
         Loop
         swt.WriteLine("sys exec: path={0}""{1}"", arg={2}{{{3}}}",
                       Enc(args(0)), Escape(p), Enc(args(1)), sb.ToString)
-        Abort("not implemented")
+        If forks.Count > 0 Then
+            swt.WriteLine("return to fork")
+            Dim st = forks.Pop
+            st.Restore()
+            Regs(0) = 1
+            PC += 2US
+            C = False
+        Else
+            Abort("not implemented")
+        End If
     End Sub
 
     Private Sub _chmod(args As UShort()) ' 15
