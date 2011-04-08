@@ -33,6 +33,8 @@ Partial Public Class MainPage
         addTest(False, New String() {"source/c/c0h.c", "source/c/c0t.s"},
                 "/lib/c0", "args.c", "/tmp/ctm1a", "/tmp/ctm2a")
         addTest(False, Nothing, "source/c/cvopt", "source/c/table.s", "source/c/table.i")
+        addTest(False, New String() {"source/c/c1h.c", "source/c/c1t.s", "source/c/table.i"},
+                "/lib/c1", "/tmp/ctm1a", "/tmp/ctm2a", "args.s")
         btnTest_Click(b, Nothing)
     End Sub
 
@@ -94,16 +96,14 @@ Partial Public Class MainPage
         list.Sort()
         Dim dn As TreeViewItem = Nothing
         For Each src In list
-            If fs.Exists(src) Then
-                Dim sp = src.Split(CChar("/"))
-                If dn Is Nothing OrElse sp(1) <> dn.Header.ToString Then
-                    dn = New TreeViewItem With
-                         {.Header = sp(1), .Tag = "README", .IsExpanded = True}
-                    TreeView1.Items.Add(dn)
-                End If
-                Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
-                dn.Items.Add(n)
+            Dim sp = src.Split(CChar("/"))
+            If dn Is Nothing OrElse sp(1) <> dn.Header.ToString Then
+                dn = New TreeViewItem With
+                     {.Header = sp(1), .Tag = "README", .IsExpanded = True}
+                TreeView1.Items.Add(dn)
             End If
+            Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
+            dn.Items.Add(n)
         Next
         Dim first = CType(TreeView1.Items(0), TreeViewItem)
         If first.Items.Count > 0 Then
@@ -227,14 +227,16 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub showSource(n As TreeViewItem)
-        If n Is Nothing OrElse n.Tag Is Nothing Then
-            txtSrc.Text = ""
-        Else
-            Using s = fs.Open(n.Tag.ToString)
+        If n IsNot Nothing AndAlso n.Tag IsNot Nothing Then
+            Dim s = fs.Open(n.Tag.ToString)
+            If s IsNot Nothing Then
                 txtSrc.Text = ReadText(s.Stream)
                 txtSrc.SelectionStart = 0
-            End Using
+                s.Dispose()
+                Return
+            End If
         End If
+        txtSrc.Text = ""
     End Sub
 
     Public Class FileEntry

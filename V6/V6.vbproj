@@ -160,6 +160,12 @@
     <Content Include="Tests\source\c\c05.c" />
     <Content Include="Tests\source\c\c0h.c" />
     <Content Include="Tests\source\c\c0t.s" />
+    <Content Include="Tests\source\c\c10.c" />
+    <Content Include="Tests\source\c\c11.c" />
+    <Content Include="Tests\source\c\c12.c" />
+    <Content Include="Tests\source\c\c13.c" />
+    <Content Include="Tests\source\c\c1h.c" />
+    <Content Include="Tests\source\c\c1t.s" />
     <Content Include="Tests\source\c\cvopt.c" />
     <Content Include="Tests\source\c\table.s" />
     <Content Include="Tests\source\s1\cc.c" />
@@ -262,6 +268,7 @@
     <Content Include="Tests\bin\cc" />
     <Content Include="Tests\lib\c0" />
     <Content Include="Tests\source\c\cvopt" />
+    <Content Include="Tests\lib\c1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">
