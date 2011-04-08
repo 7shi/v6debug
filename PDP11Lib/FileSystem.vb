@@ -50,13 +50,20 @@ Public MustInherit Class FileSystem
         End Sub
     End Class
 
-    Private nextHandle%
     Private fsobjs As New Dictionary(Of String, FSObject)
     Private fshnds As New Dictionary(Of Integer, FSStream)
 
     Public Sub New()
         CloseAll()
     End Sub
+
+    Private Function nextHandle%()
+        Dim ret = 3
+        While fshnds.ContainsKey(ret)
+            ret += 1
+        End While
+        Return ret
+    End Function
 
     Protected MustOverride Function GetStream(p$) As Stream
     Protected MustOverride Function CreateStream(p$) As Stream
@@ -75,7 +82,6 @@ Public MustInherit Class FileSystem
             fsobjs.Add(p, fso)
         End If
         Dim ret = New FSStream(Me, fso, nextHandle)
-        nextHandle += 1
         fshnds.Add(ret.Handle, ret)
         Return ret
     End Function
@@ -108,8 +114,6 @@ Public MustInherit Class FileSystem
         fsobjs.Add(stderr.Path, stderr)
         Dim sstderr = New FSStream(Me, stderr, 2)
         fshnds.Add(sstderr.Handle, sstderr)
-
-        nextHandle = 3
     End Sub
 
     Public Function GetStream(handle%) As FSStream
@@ -118,7 +122,6 @@ Public MustInherit Class FileSystem
 
     Public Function Duplicate(fss As FSStream) As FSStream
         Dim ret = New FSStream(Me, fss.target, nextHandle)
-        nextHandle += 1
         fshnds.Add(ret.Handle, ret)
         Return ret
     End Function
