@@ -204,13 +204,20 @@ Partial Public Class VM
     Private Sub _seek(args As UShort()) ' 19
         Dim fss = fs.GetStream(Regs(0))
         Dim p = If(fss Is Nothing, "", """" + Escape(fss.Path) + """")
+        Dim offset = args(0), origin = args(1)
         swt.WriteLine("sys seek: fd(r0)={0}{1}, offset={2}, origin={3}",
-                      Enc(Regs(0)), p, Enc(args(0)), args(1))
+                      Enc(Regs(0)), p, Enc(offset), origin)
         Try
-            Regs(0) = CUShort(fss.Stream.Seek(args(0), CType(args(1), SeekOrigin)))
+            Select Case origin
+                Case 0 : fss.Stream.Seek(offset, SeekOrigin.Begin)
+                Case 1 : fss.Stream.Seek(ConvShort(offset), SeekOrigin.Current)
+                Case 2 : fss.Stream.Seek(ConvShort(offset), SeekOrigin.End)
+                Case 3 : fss.Stream.Seek(offset * 512, SeekOrigin.Begin)
+                Case 4 : fss.Stream.Seek(ConvShort(offset) * 512, SeekOrigin.Current)
+                Case 5 : fss.Stream.Seek(ConvShort(offset) * 512, SeekOrigin.End)
+            End Select
             C = False
         Catch
-            Regs(0) = 0
             C = True
         End Try
     End Sub
