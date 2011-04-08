@@ -152,6 +152,7 @@
     <Content Include="Tests\hello2.c" />
     <Content Include="Tests\hello3.c" />
     <Content Include="Tests\hello4.c" />
+    <Content Include="Tests\source\s1\ld.c" />
     <Content Include="Tests\source\s2\nm.c" />
     <Content Include="Tests\source\s4\abort.s" />
     <Content Include="Tests\source\s4\abs.s" />
@@ -246,6 +247,7 @@
     <Content Include="Tests\source\as\run" />
     <Content Include="Tests\bin\as" />
     <Content Include="Tests\lib\as2" />
+    <Content Include="Tests\bin\ld" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\PDP11Lib\PDP11Lib.vbproj">

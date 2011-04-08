@@ -54,7 +54,7 @@
             <sdk:TabItem Header="Source">
                 <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="112" />
+                        <ColumnDefinition Width="128" />
                         <ColumnDefinition Width="1*" />
                     </Grid.ColumnDefinitions>
                     <sdk:TreeView Name="TreeView1" Margin="0,0,6,0" />

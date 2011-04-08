@@ -28,6 +28,7 @@ Partial Public Class MainPage
                 "source/as/as11.s", "source/as/as12.s", "source/as/as13.s", "source/as/as14.s", "source/as/as15.s",
                 "source/as/as16.s", "source/as/as17.s", "source/as/as18.s", "source/as/as19.s")
         addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
+        addTest(False, Nothing, "/bin/ld", "-s", "-n", "a.out")
         btnTest_Click(b, Nothing)
     End Sub
 
@@ -115,7 +116,7 @@ Partial Public Class MainPage
 
         Dim p = obj.LastIndexOf(".")
         Dim fn = If(p < 0, obj, obj.Substring(0, p))
-        For Each dir In New String() {"s4", "s5", "s2", "as"}
+        For Each dir In New String() {"s4", "s5", "s1", "s2", "as"}
             For Each ext In New String() {".s", ".c"}
                 Dim pp = "source/" + dir + "/" + fn + ext
                 If fs.Exists(pp) Then
