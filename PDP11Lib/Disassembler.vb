@@ -32,7 +32,12 @@ Public Module Disassembler
     Public Function Disassemble(bd As BinData, pos%) As OpCode
         Dim vm = TryCast(bd, VM)
         Dim st = If(vm IsNot Nothing, New VMState(vm), Nothing)
-        Dim ret = _Disassemble(bd, pos)
+        Dim ret As OpCode
+        Try
+            ret = _Disassemble(bd, pos)
+        Catch
+            ret = Nothing
+        End Try
         If st IsNot Nothing Then st.Restore()
         Return ret
     End Function
@@ -246,13 +251,13 @@ Public Module Disassembler
 
     Private Function ReadRegDst(op$, bd As BinData, pos%, size As UShort) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim r = GetRegString(bd, (v >> 6) And 7)
+        Dim r = GetRegString(bd, (v >> 6) And 7, pos + 2)
         Return ReadDst(op + " " + r + ",", bd, pos, size)
     End Function
 
     Private Function ReadSrcReg(op$, bd As BinData, pos%, size As UShort) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim r = GetRegString(bd, (v >> 6) And 7)
+        Dim r = GetRegString(bd, (v >> 6) And 7, pos + 2)
         Dim src = New Operand((v >> 3) And 7, v And 7, bd, pos + 2, size)
         Return New OpCode(op + " " + src.ToString(bd) + ", " + r, 2 + src.Length)
     End Function
@@ -263,7 +268,7 @@ Public Module Disassembler
 
     Private Function ReadRegOffset(op$, bd As BinData, pos%) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim r = GetRegString(bd, (v >> 6) And 7)
+        Dim r = GetRegString(bd, (v >> 6) And 7, pos + 2)
         Return New OpCode(op + " " + r + ", " + bd.Enc(CUShort(pos + 2 - (v And &O77) * 2)), 2)
     End Function
 
@@ -272,7 +277,7 @@ Public Module Disassembler
     End Function
 
     Private Function ReadReg(op$, bd As BinData, pos%) As OpCode
-        Dim r = GetRegString(bd, bd(pos) And 7)
+        Dim r = GetRegString(bd, bd(pos) And 7, pos + 2)
         Return New OpCode(op + " " + r, 2)
     End Function
 
@@ -284,7 +289,7 @@ Public Module Disassembler
         Return CSByte(If(v < &H80, v, v - &H100))
     End Function
 
-    Public Function GetRegString$(bd As BinData, r%)
-        Return RegNames(r) + bd.GetReg(r)
+    Public Function GetRegString$(bd As BinData, r%, pc%)
+        Return RegNames(r) + bd.GetReg(r, CUShort(pc And &HFFFF))
     End Function
 End Module

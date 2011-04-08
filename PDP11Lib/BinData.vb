@@ -88,7 +88,7 @@ Public Class BinData
         Return Enc(addr)
     End Function
 
-    Public Overridable Function GetReg$(r%)
+    Public Overridable Function GetReg$(r%, pc As UShort)
         Return ""
     End Function
 

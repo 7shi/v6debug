@@ -210,8 +210,8 @@ Partial Public Class VM
         Return aout.EncAddr(addr) + "{" + Enc0(ReadUInt16(addr)) + "}"
     End Function
 
-    Public Overrides Function GetReg$(r%)
-        Return "{" + Enc0(Regs(r)) + "}"
+    Public Overrides Function GetReg$(r%, pc As UShort)
+        Return "{" + Enc0(If(r < 7, Regs(r), pc)) + "}"
     End Function
 
     Public Overrides Function GetValue$(r%, size%, d1%, d2%)
