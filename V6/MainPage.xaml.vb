@@ -44,6 +44,7 @@ Partial Public Class MainPage
         txtOut.Text = ""
         ignore = True
         TreeView1.Items.Clear()
+        DataGrid1.ItemsSource = Nothing
         ignore = False
     End Sub
 
@@ -141,9 +142,12 @@ Partial Public Class MainPage
             If fi.Length >= 64 * 1024 Then
                 Throw New Exception("ファイルが大き過ぎます。上限は64KBです。")
             End If
-            Using fs = ofd.File.OpenRead
-                ReadStream(fs, New ProcArg With {.Cmd = ofd.File.Name})
+            Using fs1 = ofd.File.OpenRead, fs2 = fs.Open(ofd.File.Name, True)
+                Dim buf(CInt(fs1.Length - 1)) As Byte
+                fs1.Read(buf, 0, buf.Length)
+                fs2.Stream.Write(buf, 0, buf.Length)
             End Using
+            ReadFile(New ProcArg With {.Cmd = ofd.File.Name})
         Catch ex As Exception
             txtDis.Text = ex.Message + Environment.NewLine +
                 "読み込みに失敗しました。" + Environment.NewLine
@@ -151,11 +155,16 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
+        Dim fe = TryCast(DataGrid1.SelectedItem, FileEntry)
+        If fe Is Nothing Then Return
+
         Dim sfd = New SaveFileDialog
         If sfd.ShowDialog() <> True Then Return
 
-        Using fs = sfd.OpenFile
-            fs.Write(aout.Data, 0, aout.Data.Length)
+        Using fs1 = fs.Open(fe.Path), fs2 = sfd.OpenFile
+            Dim buf(CInt(fs1.Stream.Length - 1)) As Byte
+            fs1.Stream.Read(buf, 0, buf.Length)
+            fs2.Write(buf, 0, buf.Length)
         End Using
     End Sub
 
@@ -182,12 +191,20 @@ Partial Public Class MainPage
         Dim vm = New VM(aout, fs, parg.Verbose)
         vm.Run(parg.Args)
         txtDis.Text = aout.GetDisassemble
-        txtBin.Text = aout.GetDump
         txtTrace.Text = vm.Trace
         txtTrace.SelectionStart = txtTrace.Text.Length
         txtOut.Text = vm.Output
         txtOut.SelectionStart = txtOut.Text.Length
-        btnSaveAOut.IsEnabled = fs.Exists("a.out")
+        Dim fsrc = New List(Of FileEntry)
+        fsrc.Add(New FileEntry With {.Path = parg.Cmd, .Length = aout.Data.Length})
+        For Each f In fs.GetFiles
+            fsrc.Add(New FileEntry With {.Path = f, .Length = fs.GetLength(f)})
+        Next
+        Dim ign = ignore
+        ignore = True
+        DataGrid1.ItemsSource = fsrc
+        ignore = ign
+        DataGrid1.SelectedIndex = 0
         Cursor = cur
     End Sub
 
@@ -209,18 +226,28 @@ Partial Public Class MainPage
         Else
             Using s = fs.Open(n.Tag.ToString)
                 txtSrc.Text = ReadText(s.Stream)
+                txtSrc.SelectionStart = 0
             End Using
         End If
     End Sub
 
-    Private Sub btnSaveAOut_Click(sender As Object, e As RoutedEventArgs) Handles btnSaveAOut.Click
-        Dim sfd = New SaveFileDialog
-        If sfd.ShowDialog() <> True Then Return
+    Public Class FileEntry
+        Public Property Path$
+        Public Property Length%
+    End Class
 
-        Using fs1 = sfd.OpenFile, fs2 = fs.Open("a.out")
-            Dim data(CInt(fs2.Stream.Length - 1)) As Byte
-            fs2.Stream.Read(data, 0, data.Length)
-            fs1.Write(data, 0, data.Length)
-        End Using
+    Private Sub DataGrid1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles DataGrid1.SelectionChanged
+        showBinary(TryCast(DataGrid1.SelectedItem, FileEntry))
+    End Sub
+
+    Private Sub showBinary(fe As FileEntry)
+        If ignore Then Return
+
+        If fe Is Nothing Then
+            txtBin.Text = ""
+        Else
+            Dim bd = New BinData(fs.GetAllBytes(fe.Path))
+            txtBin.Text = bd.GetDump
+        End If
     End Sub
 End Class

@@ -42,4 +42,29 @@ Public Class SLFileSystem
     Public Overrides Sub Delete(p$)
         files(p) = Nothing
     End Sub
+
+    Public Function GetFiles() As String()
+        Dim keys = (From f In files.Keys Where files(f) IsNot Nothing Select f).ToArray
+        Array.Sort(keys)
+        Return keys
+    End Function
+
+    Public Function GetLength%(p$)
+        If files.ContainsKey(p) Then Return files(p).Length
+        Dim s = GetStream(p)
+        If s Is Nothing Then Return -1
+        Dim ret = CInt(s.Length)
+        s.Dispose()
+        Return ret
+    End Function
+
+    Public Function GetAllBytes(p$) As Byte()
+        If files.ContainsKey(p) Then Return files(p)
+        Dim s = GetStream(p)
+        If s Is Nothing Then Return Nothing
+        Dim ret(CInt(s.Length - 1)) As Byte
+        s.Read(ret, 0, ret.Length)
+        s.Dispose()
+        Return ret
+    End Function
 End Class

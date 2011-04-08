@@ -7,6 +7,11 @@
     mc:Ignorable="d"
     d:DesignHeight="400" d:DesignWidth="400">
 
+    <UserControl.Resources>
+        <Style x:Key="AlignRight" TargetType="sdk:DataGridCell">
+            <Setter Property="HorizontalContentAlignment" Value="Right" />
+        </Style>
+    </UserControl.Resources>
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*" />
@@ -21,7 +26,6 @@
             <StackPanel Name="menuStack" HorizontalAlignment="Left" Orientation="Horizontal">
                 <Button Content="Open" Name="btnOpen" />
                 <Button Content="Save" Name="btnSave" IsEnabled="False" />
-                <Button Content="Save a.out" Name="btnSaveAOut" IsEnabled="False" />
                 <Grid Width="4" />
                 <ComboBox Name="comboBox1" SelectedIndex="0">
                     <ComboBoxItem Content="hex" />
@@ -58,9 +62,20 @@
                     <TextBox Name="txtSrc" Grid.Column="2" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
                 </Grid>
             </sdk:TabItem>
-            <sdk:TabItem Header="Binary">
+            <sdk:TabItem Header="Files">
                 <Grid>
-                    <TextBox Name="txtBin" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="128" />
+                        <RowDefinition Height="1*" />
+                    </Grid.RowDefinitions>
+                    <sdk:DataGrid Name="DataGrid1" Margin="0,0,0,6" IsReadOnly="True" AutoGenerateColumns="False">
+                        <sdk:DataGrid.Columns>
+                            <sdk:DataGridTextColumn Header="Path" Binding="{Binding Path}" CanUserReorder="True" CanUserResize="True" CanUserSort="True" Width="Auto" />
+                            <sdk:DataGridTextColumn Header="Length" Binding="{Binding Length}" CanUserReorder="True" CanUserResize="True" CanUserSort="True" Width="Auto" CellStyle="{StaticResource AlignRight}" />
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
+                    <sdk:GridSplitter Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+                    <TextBox Name="txtBin" Grid.Row="2" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
                 </Grid>
             </sdk:TabItem>
         </sdk:TabControl>
