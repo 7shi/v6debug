@@ -23,7 +23,6 @@ Partial Public Class VM
                 'Case 13 : _time(args) : Return
                 'Case 14 : _mknod(args) : Return
                 'Case 16 : _chown(args) : Return
-                'Case 20 : _getpid(args) : Return
                 'Case 21 : _mount(args) : Return
                 'Case 22 : _umount(args) : Return
                 'Case 23 : _setuid(args) : Return
@@ -58,6 +57,7 @@ Partial Public Class VM
                 Case 17 : _break(args) : Return
                 Case 18 : _stat(args) : Return
                 Case 19 : _seek(args) : Return
+                Case 20 : _getpid(args) : Return
                 Case 41 : _dup(args) : Return
                 Case 48 : _signal(args) : Return
             End Select
@@ -73,6 +73,7 @@ Partial Public Class VM
     End Sub
 
     Private Sub _exit(args As UShort()) ' 1
+        swt.WriteLine("sys exit: r0={0}", Enc(Regs(0)))
         HasExited = True
     End Sub
 
@@ -212,6 +213,12 @@ Partial Public Class VM
             Regs(0) = 0
             C = True
         End Try
+    End Sub
+
+    Private Sub _getpid(args As UShort()) ' 20
+        Regs(0) = CUShort(pid And &HFFFF)
+        swt.WriteLine("sys getpid => {0}", Enc(Regs(0)))
+        C = False
     End Sub
 
     Private Sub _dup(args As UShort()) ' 41

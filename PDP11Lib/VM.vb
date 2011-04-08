@@ -4,6 +4,9 @@ Imports System.Text
 Partial Public Class VM
     Inherits BinData
 
+    Private Shared nextPid% = 1
+    Private pid%
+
     Public Regs(7) As UShort
     Private breakpt As UShort
 
@@ -49,6 +52,8 @@ Partial Public Class VM
 
     Public Sub New(aout As AOut, fs As FileSystem, verbose As Boolean)
         MyBase.New(&H10000)
+        pid = nextPid
+        nextPid += 1
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.tsize + aout.dsize)
         Me.UseOct = aout.UseOct
         Me.aout = aout
