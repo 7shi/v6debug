@@ -29,6 +29,7 @@ Partial Public Class MainPage
                 "source/as/as16.s", "source/as/as17.s", "source/as/as18.s", "source/as/as19.s")
         addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
         addTest(False, Nothing, "/bin/ld", "-s", "-n", "a.out")
+        addTest(False, Nothing, "/bin/cc", "-S", "args.c")
         btnTest_Click(b, Nothing)
     End Sub
 
