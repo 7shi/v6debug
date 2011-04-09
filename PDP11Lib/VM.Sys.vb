@@ -241,7 +241,13 @@ Partial Public Class VM
     Private Sub _stat(args As UShort()) ' 18
         Dim p = ReadString(Data, args(0))
         swt.WriteLine("sys stat: path={0}""{1}"", stat={2}", Enc(args(0)), Escape(p), EncAddr(args(1)))
+        Array.Clear(Data, args(1), 36)
         C = Not fs.Exists(p)
+        If Not C Then
+            Dim flen = Math.Min(fs.GetLength(p), &HFFFFFF)
+            Me(args(1) + 9) = CByte(flen >> 16)
+            Write(args(1) + 10, CUShort(flen And &HFFFF))
+        End If
     End Sub
 
     Private Sub _seek(args As UShort()) ' 19

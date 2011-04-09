@@ -57,19 +57,19 @@ Public Class SLFileSystem
         Return True
     End Function
 
-    Public Function GetFiles() As String()
-        Dim keys = (From f In files.Keys Where files(f) IsNot Nothing Select f).ToArray
-        Array.Sort(keys)
-        Return keys
-    End Function
-
-    Public Function GetLength%(p$)
+    Public Overrides Function GetLength%(p$)
         If files.ContainsKey(p) Then Return files(p).Length
         Dim s = GetStream(p)
         If s Is Nothing Then Return -1
         Dim ret = CInt(s.Length)
         s.Dispose()
         Return ret
+    End Function
+
+    Public Function GetFiles() As String()
+        Dim keys = (From f In files.Keys Where files(f) IsNot Nothing Select f).ToArray
+        Array.Sort(keys)
+        Return keys
     End Function
 
     Public Function GetAllBytes(p$) As Byte()

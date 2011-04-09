@@ -71,6 +71,7 @@ Public MustInherit Class FileSystem
 
     Public MustOverride Function Delete(p$) As Boolean
     Public MustOverride Function Link(src$, dst$) As Boolean
+    Public MustOverride Function GetLength%(p$)
 
     Public Function Open(p$, Optional create As Boolean = False) As FSStream
         Dim fso As FSObject
