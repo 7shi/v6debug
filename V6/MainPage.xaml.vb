@@ -29,7 +29,7 @@ Partial Public Class MainPage
                 "source/as/as16.s", "source/as/as17.s", "source/as/as18.s", "source/as/as19.s")
         addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
         addTest(False, Nothing, "/bin/ld", "-s", "-n", "a.out")
-        addTest(False, Nothing, "/bin/cc", "-O", "args.c")
+        addTest(False, Nothing, "/bin/cc", "-c", "args.c", "hello1.c", "hello2.c")
         addTest(False, New String() {"source/c/c0h.c", "source/c/c0t.s"},
                 "/lib/c0", "args.c", "/tmp/ctm1a", "/tmp/ctm2a")
         addTest(False, Nothing, "source/c/cvopt", "source/c/table.s", "source/c/table.i")
@@ -37,7 +37,7 @@ Partial Public Class MainPage
                 "/lib/c1", "/tmp/ctm1a", "/tmp/ctm2a", "/tmp/ctm5a")
         addTest(False, New String() {"source/c/c2h.c"},
                 "/lib/c2", "/tmp/ctm5a", "/tmp/ctm3a")
-        addTest(False, Nothing, "/bin/ar")
+        addTest(False, Nothing, "/bin/ar", "r", "lib.a", "args.o", "hello1.o", "hello2.o")
         btnTest_Click(b, Nothing)
     End Sub
 
