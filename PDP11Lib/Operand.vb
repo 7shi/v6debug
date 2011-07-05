@@ -1,4 +1,5 @@
 ﻿Public Class Operand
+    Public Property VM As VM
     Public Property Type%
     Public Property Reg%
     Public Property Dist%
@@ -6,7 +7,8 @@
     Public Property PC As UShort
     Public Property Size As UShort
 
-    Public Sub New(t%, r%, bd As BinData, ad%, sz As UShort)
+    Public Sub New(vm As VM, t%, r%, bd As BinData, ad%, sz As UShort)
+        Me.VM = vm
         Type = t
         Reg = r
         Size = sz
@@ -46,142 +48,165 @@
         Throw New Exception("invalid operand")
     End Function
 
-    Public Function GetAddress(vm As VM) As UShort
+    Public Function GetAddress() As UShort
         If Reg = 7 Then
             Select Case Type
                 Case 1 : Return PC
                 Case 2 : Return CUShort(PC)
-                Case 3 : Return vm.ReadUInt16(PC)
+                Case 3 : Return VM.ReadUInt16(PC)
                 Case 6 : Return CUShort(PC + Dist)
-                Case 7 : Return vm.ReadUInt16(CUShort(PC + Dist))
+                Case 7 : Return VM.ReadUInt16(CUShort(PC + Dist))
             End Select
         Else
             Select Case Type
-                Case 1 : Return vm.Regs(Reg)
-                Case 2 : Return vm.GetInc(Reg, 2)
-                Case 3 : Return vm.ReadUInt16(vm.GetInc(Reg, 2))
-                Case 4 : Return vm.GetDec(Reg, 2)
-                Case 5 : Return vm.ReadUInt16(vm.GetDec(Reg, 2))
-                Case 6 : Return CUShort((vm.Regs(Reg) + Dist) And &HFFFF)
-                Case 7 : Return vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
+                Case 1 : Return VM.Regs(Reg)
+                Case 2 : Return VM.GetInc(Reg, 2)
+                Case 3 : Return VM.ReadUInt16(VM.GetInc(Reg, 2))
+                Case 4 : Return VM.GetDec(Reg, 2)
+                Case 5 : Return VM.ReadUInt16(VM.GetDec(Reg, 2))
+                Case 6 : Return CUShort((VM.Regs(Reg) + Dist) And &HFFFF)
+                Case 7 : Return VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF))
             End Select
         End If
         Throw New Exception("invalid operand")
     End Function
 
-    Public Function GetValue(vm As VM, Optional nomove As Boolean = False) As UShort
+    Public Overridable Function GetValue() As UShort
         If Reg = 7 Then
             Select Case Type
                 Case 0 : Return PC
-                Case 1, 2 : Return vm.ReadUInt16(PC)
-                Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(PC))
-                Case 6 : Return vm.ReadUInt16(CUShort(PC + Dist))
-                Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort(PC + Dist)))
-            End Select
-        ElseIf nomove Then
-            Select Case Type
-                Case 0 : Return vm.Regs(Reg)
-                Case 1, 2 : Return vm.ReadUInt16(vm.Regs(Reg))
-                Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(vm.Regs(Reg)))
-                Case 4 : Return vm.ReadUInt16(vm.Regs(Reg) - 2)
-                Case 5 : Return vm.ReadUInt16(vm.ReadUInt16(vm.Regs(Reg) - 2))
-                Case 6 : Return vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
-                Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
+                Case 1, 2 : Return VM.ReadUInt16(PC)
+                Case 3 : Return VM.ReadUInt16(VM.ReadUInt16(PC))
+                Case 6 : Return VM.ReadUInt16(CUShort(PC + Dist))
+                Case 7 : Return VM.ReadUInt16(VM.ReadUInt16(CUShort(PC + Dist)))
             End Select
         Else
             Select Case Type
-                Case 0 : Return vm.Regs(Reg)
-                Case 1 : Return vm.ReadUInt16(vm.Regs(Reg))
-                Case 2 : Return vm.ReadUInt16(vm.GetInc(Reg, 2))
-                Case 3 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetInc(Reg, 2)))
-                Case 4 : Return vm.ReadUInt16(vm.GetDec(Reg, 2))
-                Case 5 : Return vm.ReadUInt16(vm.ReadUInt16(vm.GetDec(Reg, 2)))
-                Case 6 : Return vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
-                Case 7 : Return vm.ReadUInt16(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
+                Case 0 : Return VM.Regs(Reg)
+                Case 1 : Return VM.ReadUInt16(VM.Regs(Reg))
+                Case 2 : Return VM.ReadUInt16(VM.GetInc(Reg, 2))
+                Case 3 : Return VM.ReadUInt16(VM.ReadUInt16(VM.GetInc(Reg, 2)))
+                Case 4 : Return VM.ReadUInt16(VM.GetDec(Reg, 2))
+                Case 5 : Return VM.ReadUInt16(VM.ReadUInt16(VM.GetDec(Reg, 2)))
+                Case 6 : Return VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return VM.ReadUInt16(VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF)))
             End Select
         End If
         Throw New Exception("invalid operand")
     End Function
 
-    Public Sub SetValue(vm As VM, v As UShort)
+    Public Overridable Function GetByte() As Byte
+        Dim size = If(Reg = 6, 2, 1)
         If Reg = 7 Then
             Select Case Type
-                Case 0 : PC = v : Return
-                Case 1, 2 : vm.Write(PC, v) : Return
-                Case 3 : vm.Write(vm.ReadUInt16(PC), v) : Return
-                Case 6 : vm.Write(CUShort(PC + Dist), v) : Return
-                Case 7 : vm.Write(vm.ReadUInt16(CUShort(PC + Dist)), v) : Return
+                Case 0 : Return CByte(PC And &HFF)
+                Case 1, 2 : Return VM(PC)
+                Case 3 : Return VM(VM.ReadUInt16(PC))
+                Case 6 : Return VM(CUShort(PC + Dist))
+                Case 7 : Return VM(VM.ReadUInt16(CUShort(PC + Dist)))
             End Select
         Else
             Select Case Type
-                Case 0 : vm.Regs(Reg) = v : Return
-                Case 1 : vm.Write(vm.Regs(Reg), v) : Return
-                Case 2 : vm.Write(vm.GetInc(Reg, 2), v) : Return
-                Case 3 : vm.Write(vm.ReadUInt16(vm.GetInc(Reg, 2)), v) : Return
-                Case 4 : vm.Write(vm.GetDec(Reg, 2), v) : Return
-                Case 5 : vm.Write(vm.ReadUInt16(vm.GetDec(Reg, 2)), v) : Return
-                Case 6 : vm.Write(CUShort((vm.Regs(Reg) + Dist) And &HFFFF), v) : Return
-                Case 7 : vm.Write(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)), v) : Return
+                Case 0 : Return CByte(VM.Regs(Reg) And &HFF)
+                Case 1 : Return VM(VM.Regs(Reg))
+                Case 2 : Return VM(VM.GetInc(Reg, size))
+                Case 3 : Return VM(VM.ReadUInt16(VM.GetInc(Reg, 2)))
+                Case 4 : Return VM(VM.GetDec(Reg, size))
+                Case 5 : Return VM(VM.ReadUInt16(VM.GetDec(Reg, 2)))
+                Case 6 : Return VM(CUShort((VM.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return VM(VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF)))
+            End Select
+        End If
+        Throw New Exception("invalid operand")
+    End Function
+End Class
+
+Public Class DestOperand
+    Inherits Operand
+
+    Public Sub New(vm As VM, t%, r%, bd As BinData, ad%, sz As UShort)
+        MyBase.New(vm, t, r, bd, ad, sz)
+    End Sub
+
+    Public Overrides Function GetValue() As UShort
+        If Reg = 7 Then
+            Return MyBase.GetValue()
+        Else
+            Select Case Type
+                Case 0 : Return VM.Regs(Reg)
+                Case 1, 2 : Return VM.ReadUInt16(VM.Regs(Reg))
+                Case 3 : Return VM.ReadUInt16(VM.ReadUInt16(VM.Regs(Reg)))
+                Case 4 : Return VM.ReadUInt16(VM.Regs(Reg) - 2)
+                Case 5 : Return VM.ReadUInt16(VM.ReadUInt16(VM.Regs(Reg) - 2))
+                Case 6 : Return VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return VM.ReadUInt16(VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF)))
+            End Select
+        End If
+        Throw New Exception("invalid operand")
+    End Function
+
+    Public Sub SetValue(v As UShort)
+        If Reg = 7 Then
+            Select Case Type
+                Case 0 : PC = v : Return
+                Case 1, 2 : VM.Write(PC, v) : Return
+                Case 3 : VM.Write(VM.ReadUInt16(PC), v) : Return
+                Case 6 : VM.Write(CUShort(PC + Dist), v) : Return
+                Case 7 : VM.Write(VM.ReadUInt16(CUShort(PC + Dist)), v) : Return
+            End Select
+        Else
+            Select Case Type
+                Case 0 : VM.Regs(Reg) = v : Return
+                Case 1 : VM.Write(VM.Regs(Reg), v) : Return
+                Case 2 : VM.Write(VM.GetInc(Reg, 2), v) : Return
+                Case 3 : VM.Write(VM.ReadUInt16(VM.GetInc(Reg, 2)), v) : Return
+                Case 4 : VM.Write(VM.GetDec(Reg, 2), v) : Return
+                Case 5 : VM.Write(VM.ReadUInt16(VM.GetDec(Reg, 2)), v) : Return
+                Case 6 : VM.Write(CUShort((VM.Regs(Reg) + Dist) And &HFFFF), v) : Return
+                Case 7 : VM.Write(VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF)), v) : Return
             End Select
         End If
         Throw New Exception("invalid operand")
     End Sub
 
-    Public Function GetByte(vm As VM, Optional nomove As Boolean = False) As Byte
+    Public Overrides Function GetByte() As Byte
         Dim size = If(Reg = 6, 2, 1)
         If Reg = 7 Then
-            Select Case Type
-                Case 0 : Return CByte(PC And &HFF)
-                Case 1, 2 : Return vm(PC)
-                Case 3 : Return vm(vm.ReadUInt16(PC))
-                Case 6 : Return vm(CUShort(PC + Dist))
-                Case 7 : Return vm(vm.ReadUInt16(CUShort(PC + Dist)))
-            End Select
-        ElseIf nomove Then
-            Select Case Type
-                Case 0 : Return CByte(vm.Regs(Reg) And &HFF)
-                Case 1, 2 : Return vm(vm.Regs(Reg))
-                Case 3 : Return vm(vm.ReadUInt16(vm.Regs(Reg)))
-                Case 4 : Return vm(vm.Regs(Reg) - size)
-                Case 5 : Return vm(vm.ReadUInt16(vm.Regs(Reg) - 2))
-                Case 6 : Return vm(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
-                Case 7 : Return vm(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
-            End Select
+            Return MyBase.GetByte()
         Else
             Select Case Type
-                Case 0 : Return CByte(vm.Regs(Reg) And &HFF)
-                Case 1 : Return vm(vm.Regs(Reg))
-                Case 2 : Return vm(vm.GetInc(Reg, size))
-                Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(Reg, 2)))
-                Case 4 : Return vm(vm.GetDec(Reg, size))
-                Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(Reg, 2)))
-                Case 6 : Return vm(CUShort((vm.Regs(Reg) + Dist) And &HFFFF))
-                Case 7 : Return vm(vm.ReadUInt16(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)))
+                Case 0 : Return CByte(VM.Regs(Reg) And &HFF)
+                Case 1, 2 : Return VM(VM.Regs(Reg))
+                Case 3 : Return VM(VM.ReadUInt16(VM.Regs(Reg)))
+                Case 4 : Return VM(VM.Regs(Reg) - size)
+                Case 5 : Return VM(VM.ReadUInt16(VM.Regs(Reg) - 2))
+                Case 6 : Return VM(CUShort((VM.Regs(Reg) + Dist) And &HFFFF))
+                Case 7 : Return VM(VM.ReadUInt16(CUShort((VM.Regs(Reg) + Dist) And &HFFFF)))
             End Select
         End If
         Throw New Exception("invalid operand")
     End Function
 
-    Public Sub SetByte(vm As VM, b As Byte)
+    Public Sub SetByte(b As Byte)
         Dim size = If(Reg = 6, 2, 1)
         If Reg = 7 Then
             Select Case Type
                 Case 0 : PC = If(b < &H80, b, CUShort((b - &H100) And &HFFFF)) : Return
-                Case 1, 2 : vm(PC) = b : Return
-                Case 3 : vm(vm.ReadUInt16(PC)) = b : Return
-                Case 6 : vm(CUShort(PC + Dist)) = b : Return
-                Case 7 : vm(vm.ReadUInt16(CUShort(PC + Dist))) = b : Return
+                Case 1, 2 : VM(PC) = b : Return
+                Case 3 : VM(VM.ReadUInt16(PC)) = b : Return
+                Case 6 : VM(CUShort(PC + Dist)) = b : Return
+                Case 7 : VM(VM.ReadUInt16(CUShort(PC + Dist))) = b : Return
             End Select
         Else
             Select Case Type
-                Case 0 : vm.Regs(Reg) = If(b < &H80, b, CUShort((b - &H100) And &HFFFF)) : Return
-                Case 1 : vm(vm.Regs(Reg)) = b : Return
-                Case 2 : vm(vm.GetInc(Reg, size)) = b : Return
-                Case 3 : vm(vm.ReadUInt16(vm.GetInc(Reg, 2))) = b : Return
-                Case 4 : vm(vm.GetDec(Reg, size)) = b : Return
-                Case 5 : vm(vm.ReadUInt16(vm.GetDec(Reg, 2))) = b : Return
-                Case 6 : vm(CUShort((vm.Regs(Reg) + Dist) And &HFFFF)) = b : Return
-                Case 7 : vm(vm.ReadUInt16((CUShort(vm.Regs(Reg) + Dist) And &HFFFF))) = b : Return
+                Case 0 : VM.Regs(Reg) = If(b < &H80, b, CUShort((b - &H100) And &HFFFF)) : Return
+                Case 1 : VM(VM.Regs(Reg)) = b : Return
+                Case 2 : VM(VM.GetInc(Reg, size)) = b : Return
+                Case 3 : VM(VM.ReadUInt16(VM.GetInc(Reg, 2))) = b : Return
+                Case 4 : VM(VM.GetDec(Reg, size)) = b : Return
+                Case 5 : VM(VM.ReadUInt16(VM.GetDec(Reg, 2))) = b : Return
+                Case 6 : VM(CUShort((VM.Regs(Reg) + Dist) And &HFFFF)) = b : Return
+                Case 7 : VM(VM.ReadUInt16((CUShort(VM.Regs(Reg) + Dist) And &HFFFF))) = b : Return
             End Select
         End If
         Throw New Exception("invalid operand")

@@ -15,40 +15,40 @@ Partial Public Class VM
                 Return
             Case 1 ' mov: MOVe
                 Dim oprs = GetSrcDst(2)
-                Dim src = oprs(0).GetValue(Me)
-                oprs(1).SetValue(Me, src)
+                Dim src = oprs.Item1.GetValue()
+                oprs.Item2.SetValue(src)
                 SetFlags(src = 0, ConvShort(src) < 0, C, False)
                 Return
             Case 2 ' cmp: CoMPare
-                Dim oprs = GetSrcDst(2)
-                Dim src = oprs(0).GetValue(Me)
-                Dim dst = oprs(1).GetValue(Me)
+                Dim oprs = GetSrcSrc(2)
+                Dim src = oprs.Item1.GetValue()
+                Dim dst = oprs.Item2.GetValue()
                 Dim val = CInt(ConvShort(src)) - CInt(ConvShort(dst))
                 SetFlags(val = 0, val < 0, src < dst, val < -&H8000)
                 Return
             Case 3 ' bit: BIt Test
-                Dim oprs = GetSrcDst(2)
-                Dim val = oprs(0).GetValue(Me) And oprs(1).GetValue(Me)
+                Dim oprs = GetSrcSrc(2)
+                Dim val = oprs.Item1.GetValue() And oprs.Item2.GetValue()
                 SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 4 ' bic: BIt Clear
                 Dim oprs = GetSrcDst(2)
-                Dim val = (Not oprs(0).GetValue(Me)) And oprs(1).GetValue(Me, True)
-                oprs(1).SetValue(Me, val)
+                Dim val = (Not oprs.Item1.GetValue()) And oprs.Item2.GetValue()
+                oprs.Item2.SetValue(val)
                 SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 5 ' bis: BIt Set
                 Dim oprs = GetSrcDst(2)
-                Dim val = oprs(0).GetValue(Me) Or oprs(1).GetValue(Me, True)
-                oprs(1).SetValue(Me, val)
+                Dim val = oprs.Item1.GetValue() Or oprs.Item2.GetValue()
+                oprs.Item2.SetValue(val)
                 SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 6 ' add: ADD
                 Dim oprs = GetSrcDst(2)
-                Dim src = oprs(0).GetValue(Me)
-                Dim dst = oprs(1).GetValue(Me, True)
+                Dim src = oprs.Item1.GetValue()
+                Dim dst = oprs.Item2.GetValue()
                 Dim val = CInt(ConvShort(src)) + CInt(ConvShort(dst))
-                oprs(1).SetValue(Me, CUShort(val And &HFFFF))
+                oprs.Item2.SetValue(CUShort(val And &HFFFF))
                 SetFlags(val = 0, val < 0, CInt(src) + CInt(dst) >= &H10000, val >= &H8000)
                 Return
             Case 7
@@ -59,40 +59,40 @@ Partial Public Class VM
                 Return
             Case &O11 ' movb: MOVe Byte
                 Dim oprs = GetSrcDst(1)
-                Dim src = oprs(0).GetByte(Me)
-                oprs(1).SetByte(Me, src)
+                Dim src = oprs.Item1.GetByte()
+                oprs.Item2.SetByte(src)
                 SetFlags(src = 0, ConvSByte(src) < 0, C, False)
                 Return
             Case &O12 ' cmpb: CoMPare Byte
-                Dim oprs = GetSrcDst(1)
-                Dim src = oprs(0).GetByte(Me)
-                Dim dst = oprs(1).GetByte(Me)
+                Dim oprs = GetSrcSrc(1)
+                Dim src = oprs.Item1.GetByte()
+                Dim dst = oprs.Item2.GetByte()
                 Dim val = CInt(ConvSByte(src)) - CInt(ConvSByte(dst))
                 SetFlags(val = 0, val < 0, src < dst, val < -&H80)
                 Return
             Case &O13 ' bitb: BIt Test Byte
-                Dim oprs = GetSrcDst(1)
-                Dim val = oprs(0).GetByte(Me) And oprs(1).GetByte(Me)
+                Dim oprs = GetSrcSrc(1)
+                Dim val = oprs.Item1.GetByte() And oprs.Item2.GetByte()
                 SetFlags(val = 0, (val And &H80) <> 0, C, False)
                 Return
             Case &O14 ' bicb: BIt Clear Byte
                 Dim oprs = GetSrcDst(1)
-                Dim val = (Not oprs(0).GetByte(Me)) And oprs(1).GetByte(Me, True)
-                oprs(1).SetByte(Me, val)
+                Dim val = (Not oprs.Item1.GetByte()) And oprs.Item2.GetByte()
+                oprs.Item2.SetByte(val)
                 SetFlags(val = 0, (val And &H80) <> 0, C, False)
                 Return
             Case &O15 ' bisb: BIt Set Byte
                 Dim oprs = GetSrcDst(1)
-                Dim val = oprs(0).GetByte(Me) Or oprs(1).GetByte(Me, True)
-                oprs(1).SetByte(Me, val)
+                Dim val = oprs.Item1.GetByte() Or oprs.Item2.GetByte()
+                oprs.Item2.SetByte(val)
                 SetFlags(val = 0, (val And &H80) <> 0, C, False)
                 Return
             Case &O16 ' sub: SUBtract
                 Dim oprs = GetSrcDst(2)
-                Dim src = oprs(0).GetValue(Me)
-                Dim dst = oprs(1).GetValue(Me, True)
+                Dim src = oprs.Item1.GetValue()
+                Dim dst = oprs.Item2.GetValue()
                 Dim val = CInt(ConvShort(dst)) - CInt(ConvShort(src))
-                oprs(1).SetValue(Me, CUShort(val And &HFFFF))
+                oprs.Item2.SetValue(CUShort(val And &HFFFF))
                 SetFlags(val = 0, val < 0, dst < src, val < -&H8000)
                 Return
             Case &O17
@@ -144,7 +144,7 @@ Partial Public Class VM
                     '        Case 6 : Return New OpCode("rtt", 2)
                     '    End Select
                     Case 1 ' jmp: JuMP
-                        PC = GetDst(2).GetAddress(Me)
+                        PC = GetSrc(2).GetAddress()
                         Return
                     Case 2 ' 00 02 xx
                         Select Case (v >> 3) And 7
@@ -165,18 +165,18 @@ Partial Public Class VM
                         End Select
                     Case 3 ' swab: SWAp Bytes
                         Dim dst = GetDst(2)
-                        Dim val0 = dst.GetValue(Me)
+                        Dim val0 = dst.GetValue()
                         Dim bh = (val0 >> 8) And &HFF
                         Dim bl = val0 And &HFF
                         Dim val1 = CUShort(((bl << 8) Or bh) And &HFFFF)
-                        dst.SetValue(Me, val1)
+                        dst.SetValue(val1)
                         SetFlags(val1 = 0, (val1 And &H8000) <> 0, False, False)
                         Return
                 End Select
             Case 4 ' jsr: Jump to SubRoutine
                 Dim r = (v >> 6) And 7
                 If r = 7 Then callStack.Push(New VMState(Me))
-                Dim dst = GetDst(2).GetAddress(Me)
+                Dim dst = GetSrc(2).GetAddress()
                 Write(GetDec(6, 2), Regs(r))
                 Regs(r) = PC
                 PC = dst
@@ -184,49 +184,49 @@ Partial Public Class VM
             Case 5
                 Select Case v2
                     Case 0 ' clr: CLeaR
-                        GetDst(2).SetValue(Me, 0)
+                        GetDst(2).SetValue(0)
                         SetFlags(True, False, False, False)
                         Return
                     Case 1 ' com: COMplement
                         Dim dst = GetDst(2)
-                        Dim val = Not dst.GetValue(Me)
-                        dst.SetValue(Me, val)
+                        Dim val = Not dst.GetValue()
+                        dst.SetValue(val)
                         SetFlags(val = 0, (val And &H8000) <> 0, True, False)
                         Return
                     Case 2 ' inc: INCrement
                         Dim dst = GetDst(2)
-                        Dim val = CInt(ConvShort(dst.GetValue(Me))) + 1
-                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        Dim val = CInt(ConvShort(dst.GetValue())) + 1
+                        dst.SetValue(CUShort(val And &HFFFF))
                         SetFlags(val = 0, val < 0, C, val = &H8000)
                         Return
                     Case 3 ' dec: DECrement
                         Dim dst = GetDst(2)
-                        Dim val = CInt(ConvShort(dst.GetValue(Me))) - 1
-                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        Dim val = CInt(ConvShort(dst.GetValue())) - 1
+                        dst.SetValue(CUShort(val And &HFFFF))
                         SetFlags(val = 0, val < 0, C, val = -&H8001)
                         Return
                     Case 4 ' neg: NEGate
                         Dim dst = GetDst(2)
-                        Dim val0 = dst.GetValue(Me)
+                        Dim val0 = dst.GetValue()
                         Dim val1 = -ConvShort(val0)
                         Dim val2 = CUShort(val1 And &HFFFF)
-                        dst.SetValue(Me, val2)
+                        dst.SetValue(val2)
                         SetFlags(val1 = 0, val1 < 0, val1 <> 0, val1 = &H8000)
                         Return
                     Case 5 ' adc: ADd Carry
                         Dim dst = GetDst(2)
-                        Dim val = CInt(ConvShort(dst.GetValue(Me))) + If(C, 1, 0)
-                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        Dim val = CInt(ConvShort(dst.GetValue())) + If(C, 1, 0)
+                        dst.SetValue(CUShort(val And &HFFFF))
                         SetFlags(val = 0, val < 0, C AndAlso val = 0, val = &H8000)
                         Return
                     Case 6 ' sbc: SuBtract Carry
                         Dim dst = GetDst(2)
-                        Dim val = CInt(ConvShort(dst.GetValue(Me))) - If(C, 1, 0)
-                        dst.SetValue(Me, CUShort(val And &HFFFF))
+                        Dim val = CInt(ConvShort(dst.GetValue())) - If(C, 1, 0)
+                        dst.SetValue(CUShort(val And &HFFFF))
                         SetFlags(val = 0, val < 0, C AndAlso val = -1, val = -&H8001)
                         Return
                     Case 7 ' tst: TeST
-                        Dim dst = ConvShort(GetDst(2).GetValue(Me))
+                        Dim dst = ConvShort(GetSrc(2).GetValue())
                         SetFlags(dst = 0, dst < 0, False, False)
                         Return
                 End Select
@@ -236,36 +236,36 @@ Partial Public Class VM
                     'Case 6 : Return ReadDst("mtpi", bd, pos)
                     Case 0 ' ror: ROtate Right
                         Dim dst = GetDst(2)
-                        Dim val0 = dst.GetValue(Me)
+                        Dim val0 = dst.GetValue()
                         Dim val1 = (val0 >> 1) Or If(C, &H8000US, 0US)
-                        dst.SetValue(Me, val1)
+                        dst.SetValue(val1)
                         Dim lsb0 = (val0 And 1) <> 0
                         Dim msb1 = C
                         SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
                         Return
                     Case 1 ' rol: ROtate Left
                         Dim dst = GetDst(2)
-                        Dim val0 = dst.GetValue(Me)
+                        Dim val0 = dst.GetValue()
                         Dim val1 = CUShort((CUInt(val0) << 1) And &HFFFF) Or If(C, 1US, 0US)
-                        dst.SetValue(Me, val1)
+                        dst.SetValue(val1)
                         Dim msb0 = (val0 And &H8000) <> 0
                         Dim msb1 = (val1 And &H8000) <> 0
                         SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
                         Return
                     Case 2 ' asr: Arithmetic Shift Right
                         Dim dst = GetDst(2)
-                        Dim val0 = dst.GetValue(Me)
+                        Dim val0 = dst.GetValue()
                         Dim val1 = ConvShort(val0) >> 1
-                        dst.SetValue(Me, CUShort(val1 And &HFFFF))
+                        dst.SetValue(CUShort(val1 And &HFFFF))
                         Dim lsb0 = (val0 And 1) <> 0
                         Dim msb1 = val1 < 0
                         SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
                         Return
                     Case 3 ' asl: Arithmetic Shift Left
                         Dim dst = GetDst(2)
-                        Dim val0 = dst.GetValue(Me)
+                        Dim val0 = dst.GetValue()
                         Dim val1 = CUShort((CUInt(val0) << 1) And &HFFFF)
-                        dst.SetValue(Me, val1)
+                        dst.SetValue(val1)
                         Dim msb0 = (val0 And &H8000) <> 0
                         Dim msb1 = val1 < 0
                         SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
@@ -277,7 +277,7 @@ Partial Public Class VM
                         Regs(5) = ReadUInt16(GetInc(6, 2))
                         Return
                     Case 7 ' sxt: Sign eXTend
-                        GetDst(2).SetValue(Me, If(N, &HFFFFUS, 0US))
+                        GetDst(2).SetValue(If(N, &HFFFFUS, 0US))
                         SetFlags(Not N, N, C, Me.V)
                         Return
                 End Select
@@ -295,8 +295,8 @@ Partial Public Class VM
             '        Case 2 : Return ReadReg("fmul", bd, pos)
             '        Case 3 : Return ReadReg("fdiv", bd, pos)
             '    End Select
-            Case 0 ' mul:MULtiply
-                Dim src = ConvShort(GetDst(2).GetValue(Me))
+            Case 0 ' mul: MULtiply
+                Dim src = ConvShort(GetSrc(2).GetValue())
                 Dim r = (v >> 6) And 7
                 Dim val = CInt(Regs(r)) * src
                 If (r And 1) = 0 Then
@@ -307,7 +307,7 @@ Partial Public Class VM
                 SetFlags(val = 0, val < 0, val < -&H8000 OrElse val >= &H8000, False)
                 Return
             Case 1 ' div: DIVide
-                Dim src = ConvShort(GetDst(2).GetValue(Me))
+                Dim src = ConvShort(GetSrc(2).GetValue())
                 Dim r = (v >> 6) And 7
                 If src = 0 OrElse Math.Abs(ConvShort(Regs(r))) > Math.Abs(src) Then
                     SetFlags(False, False, src = 0, True)
@@ -321,7 +321,7 @@ Partial Public Class VM
                 End If
                 Return
             Case 2 ' ash: Arithmetic SHift
-                Dim src = GetDst(2).GetValue(Me) And &O77
+                Dim src = GetSrc(2).GetValue() And &O77
                 Dim r = (v >> 6) And 7
                 Dim val0 = ConvShort(Regs(r))
                 If src = 0 Then
@@ -341,7 +341,7 @@ Partial Public Class VM
                 End If
                 Return
             Case 3 ' ashc: Arithmetic SHift Combined
-                Dim src = GetDst(2).GetValue(Me) And &O77
+                Dim src = GetSrc(2).GetValue() And &O77
                 Dim r = (v >> 6) And 7
                 Dim val0 = GetReg32(r)
                 If src = 0 Then
@@ -362,8 +362,8 @@ Partial Public Class VM
                 Return
             Case 4 ' xor: eXclusive OR
                 Dim dst = GetDst(2)
-                Dim val = Regs((v >> 6) And 7) Xor dst.GetValue(Me)
-                dst.SetValue(Me, val)
+                Dim val = Regs((v >> 6) And 7) Xor dst.GetValue()
+                dst.SetValue(val)
                 SetFlags(val = 0, (val And &H8000) <> 0, C, False)
                 Return
             Case 7 ' sob: Subtract One from register, Branch if not zero
@@ -411,84 +411,84 @@ Partial Public Class VM
             'Case &O64 : Return ReadDst("mfpd", bd, pos)
             'Case &O65 : Return ReadDst("mtpd", bd, pos)
             Case &O50 ' clrb: CLeaR Byte
-                GetDst(1).SetByte(Me, 0)
+                GetDst(1).SetByte(0)
                 SetFlags(True, False, False, False)
                 Return
             Case &O51 ' comb: COMplement Byte
                 Dim dst = GetDst(1)
-                Dim val = Not dst.GetByte(Me)
-                dst.SetByte(Me, val)
+                Dim val = Not dst.GetByte()
+                dst.SetByte(val)
                 SetFlags(val = 0, (val And &H80) <> 0, True, False)
                 Return
             Case &O52 ' incb: INCrement Byte
                 Dim dst = GetDst(1)
-                Dim val = CInt(ConvSByte(dst.GetByte(Me))) + 1
-                dst.SetByte(Me, CByte(val And &HFF))
+                Dim val = CInt(ConvSByte(dst.GetByte())) + 1
+                dst.SetByte(CByte(val And &HFF))
                 SetFlags(val = 0, val < 0, C, val = &H80)
                 Return
             Case &O53 ' decb: DECrement Byte
                 Dim dst = GetDst(1)
-                Dim val = CInt(ConvSByte(dst.GetByte(Me))) - 1
-                dst.SetByte(Me, CByte(val And &HFF))
+                Dim val = CInt(ConvSByte(dst.GetByte())) - 1
+                dst.SetByte(CByte(val And &HFF))
                 SetFlags(val = 0, val < 0, C, val = -&H81)
                 Return
             Case &O54 ' negb: NEGate Byte
                 Dim dst = GetDst(1)
-                Dim val0 = dst.GetByte(Me)
+                Dim val0 = dst.GetByte()
                 Dim val1 = -ConvSByte(val0)
                 Dim val2 = CByte(val1 And &HFF)
-                dst.SetByte(Me, val2)
+                dst.SetByte(val2)
                 SetFlags(val1 = 0, val1 < 0, val1 <> 0, val1 = &H80)
                 Return
             Case &O55 ' adcb: ADd Carry Byte
                 Dim dst = GetDst(1)
-                Dim val = CInt(ConvSByte(dst.GetByte(Me))) + If(C, 1, 0)
-                dst.SetByte(Me, CByte(val And &HFF))
+                Dim val = CInt(ConvSByte(dst.GetByte())) + If(C, 1, 0)
+                dst.SetByte(CByte(val And &HFF))
                 SetFlags(val = 0, val < 0, C AndAlso val = 0, val = &H80)
                 Return
             Case &O56 ' sbcb: SuBtract Carry Byte
                 Dim dst = GetDst(1)
-                Dim val = CInt(ConvSByte(dst.GetByte(Me))) - If(C, 1, 0)
-                dst.SetByte(Me, CByte(val And &HFF))
+                Dim val = CInt(ConvSByte(dst.GetByte())) - If(C, 1, 0)
+                dst.SetByte(CByte(val And &HFF))
                 SetFlags(val = 0, val < 0, C AndAlso val = -1, val = -&H81)
                 Return
             Case &O57 ' tstb: TeST Byte
-                Dim dst = ConvSByte(GetDst(1).GetByte(Me))
+                Dim dst = ConvSByte(GetSrc(1).GetByte())
                 SetFlags(dst = 0, dst < 0, False, False)
                 Return
             Case &O60 ' rorb: ROtate Right Byte
                 Dim dst = GetDst(1)
-                Dim val0 = dst.GetByte(Me)
+                Dim val0 = dst.GetByte()
                 Dim val1 = val0 >> 1
                 If C Then val1 = CByte(val1 + &H80)
-                dst.SetByte(Me, val1)
+                dst.SetByte(val1)
                 Dim lsb0 = (val0 And 1) <> 0
                 Dim msb1 = C
                 SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
                 Return
             Case &O61 ' rolb: ROtate Left Byte
                 Dim dst = GetDst(1)
-                Dim val0 = dst.GetByte(Me)
+                Dim val0 = dst.GetByte()
                 Dim val1 = CByte(((CUInt(val0) << 1) + If(C, 1, 0)) And &HFF)
-                dst.SetByte(Me, val1)
+                dst.SetByte(val1)
                 Dim msb0 = (val0 And &H80) <> 0
                 Dim msb1 = (val1 And &H80) <> 0
                 SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
                 Return
             Case &O62 ' asrb: Arithmetic Shift Right Byte
                 Dim dst = GetDst(1)
-                Dim val0 = dst.GetByte(Me)
+                Dim val0 = dst.GetByte()
                 Dim val1 = ConvSByte(val0) >> 1
-                dst.SetByte(Me, CByte(val1 And &HFF))
+                dst.SetByte(CByte(val1 And &HFF))
                 Dim lsb0 = (val0 And 1) <> 0
                 Dim msb1 = val1 < 0
                 SetFlags(val1 = 0, msb1, lsb0, msb1 <> lsb0)
                 Return
             Case &O63 ' aslb: Arithmetic Shift Left Byte
                 Dim dst = GetDst(1)
-                Dim val0 = dst.GetByte(Me)
+                Dim val0 = dst.GetByte()
                 Dim val1 = CByte((CUInt(val0) << 1) And &HFF)
-                dst.SetByte(Me, val1)
+                dst.SetByte(val1)
                 Dim msb0 = (val0 And &H80) <> 0
                 Dim msb1 = val1 < 0
                 SetFlags(val1 = 0, msb1, msb0, msb1 <> msb0)
