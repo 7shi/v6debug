@@ -94,7 +94,7 @@ Partial Public Class VM
         swt.Write("sys read: fd(r0)={0}{1}, buf={2}, len={3} => ",
                   Enc(Regs(0)), p, Enc(args(0)), args(1))
         Try
-            Regs(0) = CUShort(fss.Stream.Read(Data, args(0), args(1)))
+            Regs(0) = CUShort(fss.Read(Data, args(0), args(1)))
             C = False
             swt.WriteLine("readlen={0}", Regs(0))
         Catch ex As Exception
@@ -111,12 +111,12 @@ Partial Public Class VM
         swt.WriteLine("sys write: fd(r0)={0}{1}, buf={2}""{3}"", len={4}",
                       Enc(Regs(0)), p, Enc(args(0)), Escape(t), args(1))
         Try
-            If fss.Stream Is Nothing Then
+            If fss.Handle = 1 OrElse fss.Handle = 2 Then
                 t = t.Replace(vbLf, vbCrLf)
                 swt.Write(t)
                 swo.Write(t)
             Else
-                fss.Stream.Write(Data, args(0), args(1))
+                fss.Write(Data, args(0), args(1))
             End If
             C = False
         Catch
@@ -258,12 +258,12 @@ Partial Public Class VM
                       Enc(Regs(0)), p, Enc(offset), origin)
         Try
             Select Case origin
-                Case 0 : fss.Stream.Seek(offset, SeekOrigin.Begin)
-                Case 1 : fss.Stream.Seek(ConvShort(offset), SeekOrigin.Current)
-                Case 2 : fss.Stream.Seek(ConvShort(offset), SeekOrigin.End)
-                Case 3 : fss.Stream.Seek(offset * 512, SeekOrigin.Begin)
-                Case 4 : fss.Stream.Seek(ConvShort(offset) * 512, SeekOrigin.Current)
-                Case 5 : fss.Stream.Seek(ConvShort(offset) * 512, SeekOrigin.End)
+                Case 0 : fss.Seek(offset, SeekOrigin.Begin)
+                Case 1 : fss.Seek(ConvShort(offset), SeekOrigin.Current)
+                Case 2 : fss.Seek(ConvShort(offset), SeekOrigin.End)
+                Case 3 : fss.Seek(offset * 512, SeekOrigin.Begin)
+                Case 4 : fss.Seek(ConvShort(offset) * 512, SeekOrigin.Current)
+                Case 5 : fss.Seek(ConvShort(offset) * 512, SeekOrigin.End)
             End Select
             C = False
         Catch

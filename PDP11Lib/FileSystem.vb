@@ -20,12 +20,6 @@ Public MustInherit Class FileSystem
             End Get
         End Property
 
-        Public ReadOnly Property Stream As Stream
-            Get
-                Return target.Stream
-            End Get
-        End Property
-
         Public ReadOnly Property Handle%
             Get
                 Return _Handle
@@ -47,6 +41,18 @@ Public MustInherit Class FileSystem
             If target.Count = 0 Then parent.Close(target)
             parent = Nothing
             target = Nothing
+        End Sub
+
+        Public Function Read%(data As Byte(), offset%, count%)
+            Return target.Stream.Read(data, offset, count)
+        End Function
+
+        Public Sub Write(data As Byte(), offset%, count%)
+            target.Stream.Write(data, offset, count)
+        End Sub
+
+        Public Sub Seek(offset%, origin As SeekOrigin)
+            target.Stream.Seek(offset, origin)
         End Sub
     End Class
 
@@ -72,6 +78,7 @@ Public MustInherit Class FileSystem
     Public MustOverride Function Delete(p$) As Boolean
     Public MustOverride Function Link(src$, dst$) As Boolean
     Public MustOverride Function GetLength%(p$)
+    Public MustOverride Function GetAllBytes(p$) As Byte()
 
     Public Function Open(p$, Optional create As Boolean = False) As FSStream
         Dim fso As FSObject

@@ -253,11 +253,9 @@ Partial Public Class VM
     End Function
 
     Public Shared Function System(fs As FileSystem, cmd$, ParamArray args$()) As VM
-        Dim data As Byte()
         Dim s = fs.Open(cmd)
         If s Is Nothing Then s = fs.Open("bin/" + cmd)
-        ReDim data(CInt(s.Stream.Length - 1))
-        s.Stream.Read(data, 0, data.Length)
+        Dim data = fs.GetAllBytes(s.Path)
         s.Dispose()
 
         Dim aout = New AOut(data, cmd)

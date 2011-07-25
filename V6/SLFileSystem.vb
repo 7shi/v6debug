@@ -72,7 +72,7 @@ Public Class SLFileSystem
         Return keys
     End Function
 
-    Public Function GetAllBytes(p$) As Byte()
+    Public Overrides Function GetAllBytes(p$) As Byte()
         If files.ContainsKey(p) Then Return files(p)
         Dim s = GetStream(p)
         If s Is Nothing Then Return Nothing

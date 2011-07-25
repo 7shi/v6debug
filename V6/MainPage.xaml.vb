@@ -66,15 +66,8 @@ Partial Public Class MainPage
 
     Private Sub ReadFile(parg As ProcArg)
         Clear()
-        Using s = fs.Open(parg.Cmd)
-            ReadStream(s.Stream, parg)
-        End Using
-        txtSym.Text = VM.System(fs, "nm", parg.Cmd).Output
-    End Sub
 
-    Private Sub ReadStream(s As Stream, parg As ProcArg)
-        Dim data(CInt(s.Length - 1)) As Byte
-        s.Read(data, 0, data.Length)
+        Dim data = fs.GetAllBytes(parg.Cmd)
         aout = New AOut(data, GetFileName(parg.Cmd))
 
         ignore = True
@@ -94,7 +87,7 @@ Partial Public Class MainPage
                    Select sym.ObjSym
         For Each obj In objs
             Dim src = checkLib(obj.Name)
-            If src IsNot Nothing Then List.Add(src)
+            If src IsNot Nothing Then list.Add(src)
         Next
         list.Sort()
         Dim dn As TreeViewItem = Nothing
@@ -119,6 +112,8 @@ Partial Public Class MainPage
         Me.parg = parg
         Run()
         btnSave.IsEnabled = True
+
+        txtSym.Text = VM.System(fs, "nm", parg.Cmd).Output
     End Sub
 
     Private srcdic As New Dictionary(Of String, String)
@@ -154,7 +149,7 @@ Partial Public Class MainPage
             Using fs1 = ofd.File.OpenRead, fs2 = fs.Open(ofd.File.Name, True)
                 Dim buf(CInt(fs1.Length - 1)) As Byte
                 fs1.Read(buf, 0, buf.Length)
-                fs2.Stream.Write(buf, 0, buf.Length)
+                fs2.Write(buf, 0, buf.Length)
             End Using
             ReadFile(New ProcArg With {.Cmd = ofd.File.Name})
         Catch ex As Exception
@@ -170,10 +165,9 @@ Partial Public Class MainPage
         Dim sfd = New SaveFileDialog
         If sfd.ShowDialog() <> True Then Return
 
-        Using fs1 = fs.Open(fe.Path), fs2 = sfd.OpenFile
-            Dim buf(CInt(fs1.Stream.Length - 1)) As Byte
-            fs1.Stream.Read(buf, 0, buf.Length)
-            fs2.Write(buf, 0, buf.Length)
+        Dim buf = fs.GetAllBytes(fe.Path)
+        Using fs = sfd.OpenFile
+            fs.Write(buf, 0, buf.Length)
         End Using
     End Sub
 
@@ -233,7 +227,7 @@ Partial Public Class MainPage
         If n IsNot Nothing AndAlso n.Tag IsNot Nothing Then
             Dim s = fs.Open(n.Tag.ToString)
             If s IsNot Nothing Then
-                txtSrc.Text = ReadText(s.Stream)
+                txtSrc.Text = ReadText(New MemoryStream(fs.GetAllBytes(s.Path)))
                 txtSrc.SelectionStart = 0
                 s.Dispose()
                 Return
