@@ -146,10 +146,11 @@ Partial Public Class MainPage
             If fi.Length >= 64 * 1024 Then
                 Throw New Exception("ファイルが大き過ぎます。上限は64KBです。")
             End If
-            Using fs1 = ofd.File.OpenRead, fs2 = fs.Open(ofd.File.Name, True)
+            Using fs1 = ofd.File.OpenRead
+                Dim h = fs.Create(ofd.File.Name)
                 Dim buf(CInt(fs1.Length - 1)) As Byte
                 fs1.Read(buf, 0, buf.Length)
-                fs2.Write(buf, 0, buf.Length)
+                fs.Write(h, buf, 0, buf.Length)
             End Using
             ReadFile(New ProcArg With {.Cmd = ofd.File.Name})
         Catch ex As Exception
@@ -225,11 +226,10 @@ Partial Public Class MainPage
 
     Private Sub showSource(n As TreeViewItem)
         If n IsNot Nothing AndAlso n.Tag IsNot Nothing Then
-            Dim s = fs.Open(n.Tag.ToString)
-            If s IsNot Nothing Then
-                txtSrc.Text = ReadText(New MemoryStream(fs.GetAllBytes(s.Path)))
+            Dim p = n.Tag.ToString
+            If fs.Exists(p) Then
+                txtSrc.Text = ReadText(New MemoryStream(fs.GetAllBytes(p)))
                 txtSrc.SelectionStart = 0
-                s.Dispose()
                 Return
             End If
         End If

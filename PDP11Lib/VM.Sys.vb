@@ -89,12 +89,13 @@ Partial Public Class VM
     End Sub
 
     Private Sub _read(args As UShort()) ' 3
-        Dim fss = fs.GetStream(Regs(0))
-        Dim p = If(fss Is Nothing, "", """" + Escape(fss.Path) + """")
+        Dim h = Regs(0)
+        Dim path = fs.GetPath(h)
+        Dim p = If(path Is Nothing, "", """" + Escape(path) + """")
         swt.Write("sys read: fd(r0)={0}{1}, buf={2}, len={3} => ",
                   Enc(Regs(0)), p, Enc(args(0)), args(1))
         Try
-            Regs(0) = CUShort(fss.Read(Data, args(0), args(1)))
+            Regs(0) = CUShort(fs.Read(h, Data, args(0), args(1)))
             C = False
             swt.WriteLine("readlen={0}", Regs(0))
         Catch ex As Exception
@@ -105,18 +106,19 @@ Partial Public Class VM
     End Sub
 
     Private Sub _write(args As UShort()) ' 4
-        Dim fss = fs.GetStream(Regs(0))
-        Dim p = If(fss Is Nothing, "", """" + Escape(fss.Path) + """")
+        Dim h = Regs(0)
+        Dim path = fs.GetPath(h)
+        Dim p = If(path Is Nothing, "", """" + Escape(path) + """")
         Dim t = ReadString(Data, args(0), args(1))
         swt.WriteLine("sys write: fd(r0)={0}{1}, buf={2}""{3}"", len={4}",
                       Enc(Regs(0)), p, Enc(args(0)), Escape(t), args(1))
         Try
-            If fss.Handle = 1 OrElse fss.Handle = 2 Then
+            If path = "stdout:" OrElse path = "stderr:" Then
                 t = t.Replace(vbLf, vbCrLf)
                 swt.Write(t)
                 swo.Write(t)
             Else
-                fss.Write(Data, args(0), args(1))
+                fs.Write(h, Data, args(0), args(1))
             End If
             C = False
         Catch
@@ -128,28 +130,28 @@ Partial Public Class VM
     Private Sub _open(args As UShort()) ' 5
         Dim p = ReadString(Data, args(0))
         swt.Write("sys open: path={0}""{1}"", mode={2} => ", Enc(args(0)), Escape(p), args(1))
-        Dim fss = fs.Open(p)
-        If fss IsNot Nothing Then
-            Regs(0) = CUShort(fss.Handle)
-            C = False
-        Else
+        Dim h = fs.Open(p)
+        If h < 0 Then
             Regs(0) = 0
             C = True
+        Else
+            Regs(0) = CUShort(h)
+            C = False
         End If
         swt.WriteLine("fd={0}", Enc(Regs(0)))
     End Sub
 
     Private Sub _close(args As UShort()) ' 6
-        Dim fss = fs.GetStream(Regs(0))
-        Dim p = If(fss Is Nothing, "", """" + Escape(fss.Path) + """")
+        Dim h = Regs(0)
+        Dim path = fs.GetPath(h)
+        Dim p = If(path Is Nothing, "", """" + Escape(path) + """")
         swt.WriteLine("sys close: fd(r0)={0}{1}", Enc(Regs(0)), p)
-        Try
-            fss.Dispose()
+        If fs.Close(h) Then
             C = False
-        Catch
+        Else
             Regs(0) = 0
             C = True
-        End Try
+        End If
     End Sub
 
     Private Sub _wait(args As UShort()) ' 7
@@ -162,7 +164,7 @@ Partial Public Class VM
 
     Private Sub _creat(args As UShort()) ' 8
         Dim p = ReadString(Data, args(0))
-        Regs(0) = CUShort(fs.Open(p, True).Handle)
+        Regs(0) = CUShort(fs.Create(p))
         swt.WriteLine("sys creat: path={0}""{1}"", mode=0{2} => fd={3}",
                       Enc(args(0)), Escape(p), Oct(args(1), 3), Enc(Regs(0)))
         C = False
@@ -251,19 +253,20 @@ Partial Public Class VM
     End Sub
 
     Private Sub _seek(args As UShort()) ' 19
-        Dim fss = fs.GetStream(Regs(0))
-        Dim p = If(fss Is Nothing, "", """" + Escape(fss.Path) + """")
+        Dim h = Regs(0)
+        Dim path = fs.GetPath(h)
+        Dim p = If(path Is Nothing, "", """" + Escape(path) + """")
         Dim offset = args(0), origin = args(1)
         swt.WriteLine("sys seek: fd(r0)={0}{1}, offset={2}, origin={3}",
                       Enc(Regs(0)), p, Enc(offset), origin)
         Try
             Select Case origin
-                Case 0 : fss.Seek(offset, SeekOrigin.Begin)
-                Case 1 : fss.Seek(ConvShort(offset), SeekOrigin.Current)
-                Case 2 : fss.Seek(ConvShort(offset), SeekOrigin.End)
-                Case 3 : fss.Seek(offset * 512, SeekOrigin.Begin)
-                Case 4 : fss.Seek(ConvShort(offset) * 512, SeekOrigin.Current)
-                Case 5 : fss.Seek(ConvShort(offset) * 512, SeekOrigin.End)
+                Case 0 : fs.Seek(h, offset, SeekOrigin.Begin)
+                Case 1 : fs.Seek(h, ConvShort(offset), SeekOrigin.Current)
+                Case 2 : fs.Seek(h, ConvShort(offset), SeekOrigin.End)
+                Case 3 : fs.Seek(h, offset * 512, SeekOrigin.Begin)
+                Case 4 : fs.Seek(h, ConvShort(offset) * 512, SeekOrigin.Current)
+                Case 5 : fs.Seek(h, ConvShort(offset) * 512, SeekOrigin.End)
             End Select
             C = False
         Catch
@@ -278,12 +281,12 @@ Partial Public Class VM
     End Sub
 
     Private Sub _dup(args As UShort()) ' 41
-        Dim fss = fs.GetStream(Regs(0))
-        Dim p = If(fss Is Nothing, "", """" + Escape(fss.Path) + """")
+        Dim h = Regs(0)
+        Dim path = fs.GetPath(h)
+        Dim p = If(path Is Nothing, "", """" + Escape(path) + """")
         swt.WriteLine("sys dup: fd(r0)={0}{1}", Enc(Regs(0)), p)
         Try
-            Dim fss2 = fs.Duplicate(fss)
-            Regs(0) = CUShort(fss2.Handle)
+            Regs(0) = CUShort(fs.Duplicate(h))
             C = False
         Catch
             Regs(0) = 0

@@ -253,11 +253,8 @@ Partial Public Class VM
     End Function
 
     Public Shared Function System(fs As FileSystem, cmd$, ParamArray args$()) As VM
-        Dim s = fs.Open(cmd)
-        If s Is Nothing Then s = fs.Open("bin/" + cmd)
-        Dim data = fs.GetAllBytes(s.Path)
-        s.Dispose()
-
+        Dim p = If(fs.Exists(cmd), cmd, "bin/" + cmd)
+        Dim data = fs.GetAllBytes(p)
         Dim aout = New AOut(data, cmd)
         Dim vm = New VM(aout, fs, False)
         vm.Run(args)
