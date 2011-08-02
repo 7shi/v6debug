@@ -65,31 +65,7 @@
         Throw New Exception("invalid operand")
     End Function
 
-    Public Overridable Function GetByte(vm As VM) As Byte
-        Dim dist = If(type < 6, 0, vm.ReadInt16(vm.GetInc(7, 2)))
-        Dim size = If(reg < 6, 1, 2)
-        Select Case type
-            Case 0 : Return CByte(vm.Regs(reg) And &HFF)
-            Case 1 : Return vm(vm.Regs(reg))
-            Case 2 : Return vm(vm.GetInc(reg, size))
-            Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(reg, 2)))
-            Case 4 : Return vm(vm.GetDec(reg, size))
-            Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(reg, 2)))
-            Case 6 : Return vm(CUShort((vm.Regs(reg) + dist) And &HFFFF))
-            Case 7 : Return vm(vm.ReadUInt16(CUShort((vm.Regs(reg) + dist) And &HFFFF)))
-        End Select
-        Throw New Exception("invalid operand")
-    End Function
-End Class
-
-Public Class DestOperand
-    Inherits Operand
-
-    Public Sub New(v%)
-        MyBase.New(v)
-    End Sub
-
-    Public Overrides Function GetValue(vm As VM) As UShort
+    Public Function PeekValue(vm As VM) As UShort
         Dim dist = If(type < 6, 0, If(reg = 7, 2, 0) + vm.ReadInt16(vm.PC))
         Select Case type
             Case 0 : Return vm.Regs(reg)
@@ -118,7 +94,23 @@ Public Class DestOperand
         Throw New Exception("invalid operand")
     End Sub
 
-    Public Overrides Function GetByte(vm As VM) As Byte
+    Public Overridable Function GetByte(vm As VM) As Byte
+        Dim dist = If(type < 6, 0, vm.ReadInt16(vm.GetInc(7, 2)))
+        Dim size = If(reg < 6, 1, 2)
+        Select Case type
+            Case 0 : Return CByte(vm.Regs(reg) And &HFF)
+            Case 1 : Return vm(vm.Regs(reg))
+            Case 2 : Return vm(vm.GetInc(reg, size))
+            Case 3 : Return vm(vm.ReadUInt16(vm.GetInc(reg, 2)))
+            Case 4 : Return vm(vm.GetDec(reg, size))
+            Case 5 : Return vm(vm.ReadUInt16(vm.GetDec(reg, 2)))
+            Case 6 : Return vm(CUShort((vm.Regs(reg) + dist) And &HFFFF))
+            Case 7 : Return vm(vm.ReadUInt16(CUShort((vm.Regs(reg) + dist) And &HFFFF)))
+        End Select
+        Throw New Exception("invalid operand")
+    End Function
+
+    Public Function PeekByte(vm As VM) As Byte
         Dim dist = If(type < 6, 0, If(reg = 7, 2, 0) + vm.ReadInt16(vm.PC))
         Dim size = If(reg < 6, 1, 2)
         Select Case type
