@@ -1,5 +1,15 @@
-﻿Public Class Operand
-    Protected type%, reg%
+﻿Public Module ModOperand
+    Public ReadOnly Operands(63) As Operand
+
+    Sub New()
+        For i = 0 To 63
+            Operands(i) = New Operand(i)
+        Next
+    End Sub
+End Module
+
+Public Class Operand
+    Private type%, reg%
     Public Property Length As UShort
 
     Public Sub New(v%)
