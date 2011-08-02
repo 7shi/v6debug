@@ -142,26 +142,26 @@ Partial Public Class VM
 
     Private Function GetSrcSrc(size As UShort) As Tuple(Of Operand, Operand)
         Dim v = ReadUInt16(PC)
-        Dim src = New Operand(Me, (v >> 9) And 7, (v >> 6) And 7, Me, PC + 2, size)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, size)
         Return Tuple.Create(src, GetSrc(size, src.Length + 2US))
     End Function
 
     Private Function GetSrcDst(size As UShort) As Tuple(Of Operand, DestOperand)
         Dim v = ReadUInt16(PC)
-        Dim src = New Operand(Me, (v >> 9) And 7, (v >> 6) And 7, Me, PC + 2, size)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, size)
         Return Tuple.Create(src, GetDst(size, src.Length + 2US))
     End Function
 
     Private Function GetSrc(size As UShort, Optional len As UShort = 2) As Operand
         Dim v = ReadUInt16(PC)
-        Dim dst = New Operand(Me, (v >> 3) And 7, v And 7, Me, PC + len, size)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, size)
         PC += len + dst.Length
         Return dst
     End Function
 
     Private Function GetDst(size As UShort, Optional len As UShort = 2) As DestOperand
         Dim v = ReadUInt16(PC)
-        Dim dst = New DestOperand(Me, (v >> 3) And 7, v And 7, Me, PC + len, size)
+        Dim dst = New DestOperand((v >> 3) And 7, v And 7, size)
         PC += len + dst.Length
         Return dst
     End Function

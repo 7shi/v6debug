@@ -237,16 +237,15 @@ Public Module Disassembler
     End Function
 
     Private Function ReadSrcDst(op$, bd As BinData, pos%, size As UShort) As OpCode
-        Dim len = 2
         Dim v = bd.ReadUInt16(pos)
-        Dim src = New Operand(Nothing, (v >> 9) And 7, (v >> 6) And 7, bd, pos + len, size)
-        Return ReadDst(op + " " + src.ToString(bd) + ",", bd, pos, size, len + src.Length)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, size)
+        Return ReadDst(op + " " + src.ToString(bd, pos + 2) + ",", bd, pos, size, 2 + src.Length)
     End Function
 
     Private Function ReadDst(op$, bd As BinData, pos%, size As UShort, Optional len% = 2) As OpCode
         Dim v = bd.ReadUInt16(pos)
-        Dim dst = New Operand(Nothing, (v >> 3) And 7, v And 7, bd, pos + len, size)
-        Return New OpCode(op + " " + dst.ToString(bd), len + dst.Length)
+        Dim dst = New Operand((v >> 3) And 7, v And 7, size)
+        Return New OpCode(op + " " + dst.ToString(bd, pos + len), len + dst.Length)
     End Function
 
     Private Function ReadRegDst(op$, bd As BinData, pos%, size As UShort) As OpCode
@@ -258,8 +257,8 @@ Public Module Disassembler
     Private Function ReadSrcReg(op$, bd As BinData, pos%, size As UShort) As OpCode
         Dim v = bd.ReadUInt16(pos)
         Dim r = GetRegString(bd, (v >> 6) And 7, pos + 2)
-        Dim src = New Operand(Nothing, (v >> 3) And 7, v And 7, bd, pos + 2, size)
-        Return New OpCode(op + " " + src.ToString(bd) + ", " + r, 2 + src.Length)
+        Dim src = New Operand((v >> 3) And 7, v And 7, size)
+        Return New OpCode(op + " " + src.ToString(bd, pos + 2) + ", " + r, 2 + src.Length)
     End Function
 
     Private Function ReadNum(op$, bd As BinData, pos%) As OpCode
