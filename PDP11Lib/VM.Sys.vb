@@ -2,9 +2,8 @@
 Imports System.Text
 
 Partial Public Class VM
-    Private Sub ExecSys()
-        Dim t = Me(PC)
-        PC += 2US
+    Public Sub ExecSys()
+        Dim t = Me(PC - 2US)
         If t < SysNames.Length AndAlso SysNames(t) IsNot Nothing Then
             Dim args = New UShort() {}
             Dim argc = SysArgs(t)
@@ -70,7 +69,7 @@ Partial Public Class VM
     Private Sub _indir(args As UShort()) ' 0
         Dim stc = forks.Count
         Dim bak = PC
-        PC = args(0)
+        PC = args(0) + 2US
         ExecSys()
         If stc <= forks.Count Then PC = bak
     End Sub

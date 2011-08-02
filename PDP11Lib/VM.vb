@@ -128,6 +128,16 @@ Partial Public Class VM
         fs.CloseAll()
     End Sub
 
+    Public Sub RunStep()
+        While callStack.Count > 0 AndAlso Regs(6) > callStack.Peek.Regs(6) - 2
+            callStack.Pop()
+        End While
+        prevState = New VMState(Me)
+        If verbose Then WriteState(prevState, False)
+        Dim op = OpCodes(ReadUInt16(GetInc(7, 2)))
+        If Not op.Run(Me) Then Abort("not implemented")
+    End Sub
+
     Public Function GetCommandLine$()
         Dim sb = New StringBuilder("#")
         For Each arg In args
@@ -194,6 +204,10 @@ Partial Public Class VM
         Me.N = n
         Me.C = c
         Me.V = v
+    End Sub
+
+    Public Sub PushStack()
+        callStack.Push(New VMState(Me))
     End Sub
 
     Public Overrides Function EncAddr(addr As UShort) As String
