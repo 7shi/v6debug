@@ -18,6 +18,12 @@ Public Class Operand
         If type >= 6 OrElse ((type = 2 OrElse type = 3) AndAlso reg = 7) Then Length = 2
     End Sub
 
+    Public ReadOnly Property IsValid As Boolean
+        Get
+            Return Not (reg = 7 AndAlso (type = 4 OrElse type = 5))
+        End Get
+    End Property
+
     Public Shadows Function ToString$(bd As BinData, pc%, size%)
         Dim dist = 0
         If type >= 6 Then dist = bd.ReadInt16(pc) : pc += 2US

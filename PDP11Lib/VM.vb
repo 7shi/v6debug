@@ -163,14 +163,11 @@ Partial Public Class VM
                 swt.WriteLine("in {0}", sym)
             End If
         End If
-        Dim op = Disassemble(PC)
-        swt.WriteLine("{0}: {1}", st, If(op IsNot Nothing, op.Mnemonic, Enc(ReadUInt16(PC))))
+        Dim val = ReadUInt16(PC)
+        Dim op = New OpCode(val)
+        swt.WriteLine("{0}: {1}", st, If(op IsNot Nothing, Disassembler.Disassemble(Me, PC, op), Enc(val)))
         PC = bak
     End Sub
-
-    Public Function Disassemble(pos%) As OpCode
-        Return Disassembler.Disassemble(Me, pos)
-    End Function
 
     Public Function GetInc(r%, size%) As UShort
         Dim ret = Regs(r)

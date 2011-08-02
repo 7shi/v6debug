@@ -94,7 +94,7 @@
   <ItemGroup>
     <Compile Include="AOut.vb" />
     <Compile Include="BinData.vb" />
-    <Compile Include="Disassembler.vb" />
+    <Compile Include="OpCoded.disasm.vb" />
     <Compile Include="FileSystem.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="OpCode.vb" />

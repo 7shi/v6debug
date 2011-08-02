@@ -1,9 +1,15 @@
-﻿Public Class OpCode
-    Public Property Mnemonic$
-    Public Property Length%
+﻿Partial Public Class OpCode
+    Public Property Length As UShort
 
-    Public Sub New(mnemonic$, length%)
-        Me.Mnemonic = mnemonic
-        Me.Length = length
+    Private val%
+    Private disasm As Func(Of BinData, Integer, String)
+
+    Public Sub New(value%)
+        val = value
+        Disassemble()
     End Sub
+
+    Public Function Disassemble$(bd As BinData, pos%)
+        Return If(disasm Is Nothing, Nothing, disasm(bd, pos))
+    End Function
 End Class
