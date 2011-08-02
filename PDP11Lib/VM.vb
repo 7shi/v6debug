@@ -140,32 +140,32 @@ Partial Public Class VM
         Return sb.ToString
     End Function
 
-    Private Function GetSrcSrc(size As UShort) As Tuple(Of Operand, Operand)
+    Private Function GetSrcSrc() As Tuple(Of Operand, Operand)
         Dim v = ReadUInt16(PC)
         PC += 2US
-        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, size)
-        Dim dst = New Operand((v >> 3) And 7, v And 7, size)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7)
+        Dim dst = New Operand((v >> 3) And 7, v And 7)
         Return Tuple.Create(src, dst)
     End Function
 
-    Private Function GetSrcDst(size As UShort) As Tuple(Of Operand, DestOperand)
+    Private Function GetSrcDst() As Tuple(Of Operand, DestOperand)
         Dim v = ReadUInt16(PC)
         PC += 2US
-        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7, size)
-        Dim dst = New DestOperand((v >> 3) And 7, v And 7, size)
+        Dim src = New Operand((v >> 9) And 7, (v >> 6) And 7)
+        Dim dst = New DestOperand((v >> 3) And 7, v And 7)
         Return Tuple.Create(src, dst)
     End Function
 
-    Private Function GetSrc(size As UShort, Optional len As UShort = 2) As Operand
+    Private Function GetSrc() As Operand
         Dim v = ReadUInt16(PC)
         PC += 2US
-        Return New Operand((v >> 3) And 7, v And 7, size)
+        Return New Operand((v >> 3) And 7, v And 7)
     End Function
 
-    Private Function GetDst(size As UShort, Optional len As UShort = 2) As DestOperand
+    Private Function GetDst() As DestOperand
         Dim v = ReadUInt16(PC)
         PC += 2US
-        Return New DestOperand((v >> 3) And 7, v And 7, size)
+        Return New DestOperand((v >> 3) And 7, v And 7)
     End Function
 
     Public Sub Abort(msg$)

@@ -2,23 +2,21 @@
     Public Property Type%
     Public Property Reg%
     Public Property Length As UShort
-    Public Property Size As UShort
 
-    Public Sub New(t%, r%, sz As UShort)
+    Public Sub New(t%, r%)
         Type = t
         Reg = r
-        Size = sz
         If t >= 6 OrElse ((t = 2 OrElse t = 3) AndAlso r = 7) Then Length = 2
     End Sub
 
-    Public Shadows Function ToString$(bd As BinData, pc%)
+    Public Shadows Function ToString$(bd As BinData, pc%, size%)
         Dim dist = 0
         If Type >= 6 Then dist = bd.ReadInt16(pc) : pc += 2US
         Dim r = RegNames(Reg)
         If Reg = 7 Then
             Select Case Type
                 Case 0 : Return r + bd.GetReg(Reg, CUShort(pc))
-                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, Size, 0, 0)
+                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, size, 0, 0)
                 Case 2 : Return "$" + bd.Enc(bd.ReadUInt16(pc))
                 Case 3 : Return "*$" + bd.EncAddr(bd.ReadUInt16(pc))
                 Case 6 : Return bd.EncAddr(CUShort((pc + dist) And &HFFFF))
@@ -27,13 +25,13 @@
         Else
             Select Case Type
                 Case 0 : Return r + bd.GetReg(Reg, CUShort(pc))
-                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, Size, 0, 0)
-                Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, Size, 0, Size)
-                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, Size, 0, 2)
-                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, Size, -Size, -Size)
-                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, Size, -2, -2)
-                Case 6 : Return bd.GetRelative(Reg, dist, pc - 2US) + bd.GetValue(Reg, Size, dist, 0)
-                Case 7 : Return "*" + bd.GetRelative(Reg, dist, pc - 2US) + bd.GetPtr(Reg, Size, dist, 0)
+                Case 1 : Return "(" + r + ")" + bd.GetValue(Reg, size, 0, 0)
+                Case 2 : Return "(" + r + ")+" + bd.GetValue(Reg, size, 0, size)
+                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(Reg, size, 0, 2)
+                Case 4 : Return "-(" + r + ")" + bd.GetValue(Reg, size, -size, -size)
+                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(Reg, size, -2, -2)
+                Case 6 : Return bd.GetRelative(Reg, dist, pc - 2US) + bd.GetValue(Reg, size, dist, 0)
+                Case 7 : Return "*" + bd.GetRelative(Reg, dist, pc - 2US) + bd.GetPtr(Reg, size, dist, 0)
             End Select
         End If
         Throw New Exception("invalid operand")
@@ -88,8 +86,8 @@ End Class
 Public Class DestOperand
     Inherits Operand
 
-    Public Sub New(t%, r%, sz As UShort)
-        MyBase.New(t, r, sz)
+    Public Sub New(t%, r%)
+        MyBase.New(t, r)
     End Sub
 
     Public Overrides Function GetValue(vm As VM) As UShort
