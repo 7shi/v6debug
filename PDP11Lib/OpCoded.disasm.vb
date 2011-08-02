@@ -42,6 +42,14 @@ Public Module Disassembler
     Public Function GetRegString$(bd As BinData, r%, pc%)
         Return RegNames(r) + bd.GetReg(r, CUShort(pc And &HFFFF))
     End Function
+
+    Public ReadOnly OpCodes(65535) As OpCode
+
+    Sub New()
+        For i = 0 To 65535
+            OpCodes(i) = New OpCode(i)
+        Next
+    End Sub
 End Module
 
 Partial Public Class OpCode
@@ -181,7 +189,7 @@ Partial Public Class OpCode
                                 Dim argad = bd.EncAddr(ad)
                                 Dim p = argad.IndexOf("{")
                                 If p > 0 Then argad = argad.Substring(0, p)
-                                Dim op = New OpCode(bd.ReadUInt16(ad))
+                                Dim op = OpCodes(bd.ReadUInt16(ad))
                                 sb.Append("; " + argad + "{" + Disassembler.Disassemble(bd, ad, op) + "}")
                             ElseIf arg = 8 Or arg = 15 Then ' creat/chmod
                                 sb.Append("; " + bd.EncAddr(bd.ReadUInt16(pos + 4)))

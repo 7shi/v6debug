@@ -51,7 +51,7 @@ Public Class AOut
 
     Public Sub Disassemble(tw As TextWriter)
         Dim bd = New BinData(New Byte() {Data(0), Data(1), 0, 0, 0, 0}) With {.UseOct = UseOct}
-        Dim opmagic = New OpCode(bd.ReadUInt16(0))
+        Dim opmagic = OpCodes(bd.ReadUInt16(0))
         Dim dismagic = Disassembler.Disassemble(bd, 0, opmagic)
         tw.WriteLine("[{0:x4}] fmagic = {1}  {2}", 0, Enc0(fmagic), dismagic)
         tw.WriteLine("[{0:x4}] tsize  = {1}", 2, Enc0(tsize))
@@ -117,11 +117,10 @@ Public Class AOut
     Private Function Disassemble%(tw As TextWriter, i%, Optional maxlen% = 0)
         Dim spclen = Enc0(0US).Length
         Dim s = ReadUInt16(i)
-        Dim op = New OpCode(s)
+        Dim op = OpCodes(s)
+        Dim dis = Disassembler.Disassemble(Me, i, op)
         Dim len = 2
-        Dim dis = If(op Is Nothing, Nothing, Disassembler.Disassemble(Me, i, op))
-        If dis Is Nothing Then op = Nothing
-        If op IsNot Nothing Then
+        If dis IsNot Nothing Then
             If maxlen > 0 AndAlso op.Length > maxlen Then
                 op = Nothing
                 len = maxlen
