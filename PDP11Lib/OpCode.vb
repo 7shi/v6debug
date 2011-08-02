@@ -6,7 +6,7 @@
 
     Public Sub New(value%)
         val = value
-        Disassemble()
+        SetInst()
     End Sub
 
     Public Function Disassemble$(bd As BinData, pos%)
