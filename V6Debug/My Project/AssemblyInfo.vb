@@ -7,10 +7,10 @@ Imports System.Runtime.InteropServices
 ' これらの属性値を変更してください。
 
 ' アセンブリ属性の値を確認します。
-<Assembly: AssemblyTitle("V6")> 
+<Assembly: AssemblyTitle("V6Debug")> 
 <Assembly: AssemblyDescription("")> 
 <Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("V6")> 
+<Assembly: AssemblyProduct("V6Debug")> 
 <Assembly: AssemblyCopyright("Public Domain")> 
 <Assembly: AssemblyTrademark("")> 
 
