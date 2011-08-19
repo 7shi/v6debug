@@ -38,7 +38,7 @@ Partial Public Class MainPage
         addTest(False, New String() {"source/c/c2h.c"},
                 "/lib/c2", "/tmp/ctm5a", "/tmp/ctm3a")
         addTest(False, Nothing, "/bin/ar", "r", "lib.a", "args.o", "hello1.o", "hello2.o")
-        btnTest_Click(b, Nothing)
+        'btnTest_Click(b, Nothing)
     End Sub
 
     Public Sub Clear()
