@@ -5,9 +5,9 @@ Imports PDP11Lib
 Partial Public Class MainPage
     Inherits UserControl
 
-    Private aout As AOut
     Private parg As ProcArg
     Private root As Byte()
+    Private boot As BinData
 
     Private Class ProcArg
         Public Cmd$
@@ -28,7 +28,7 @@ Partial Public Class MainPage
             End Using
         End Using
 
-        Dim boot = New BinData(&H200)
+        boot = New BinData(&H200)
         Array.Copy(root, boot.Data, boot.Data.Length)
         txtSrc.Text = boot.GetDump
     End Sub
@@ -64,15 +64,13 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub comboBox1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles comboBox1.SelectionChanged
-        Run()
+        disassemble()
     End Sub
 
-    Private Sub Run()
-        If aout Is Nothing Then Return
-
+    Private Sub disassemble()
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        aout.UseOct = comboBox1.SelectedIndex = 1
+        boot.UseOct = comboBox1.SelectedIndex = 1
         Cursor = cur
     End Sub
 End Class

@@ -92,7 +92,6 @@
     <Import Include="System.Windows.Shapes" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AOut.vb" />
     <Compile Include="BinData.vb" />
     <Compile Include="Disassembler.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
