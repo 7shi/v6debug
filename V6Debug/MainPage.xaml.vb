@@ -7,7 +7,6 @@ Partial Public Class MainPage
 
     Private aout As AOut
     Private parg As ProcArg
-    Private fs As New SLFileSystem("Tests")
     Private root As Byte()
 
     Private Class ProcArg
@@ -54,26 +53,6 @@ Partial Public Class MainPage
         Clear()
     End Sub
 
-    Private srcdic As New Dictionary(Of String, String)
-
-    Private Function checkLib$(obj$)
-        If srcdic.ContainsKey(obj) Then Return srcdic(obj)
-
-        Dim p = obj.LastIndexOf(".")
-        Dim fn = If(p < 0, obj, obj.Substring(0, p))
-        For Each dir In New String() {"s4", "s5", "s1", "s2", "as", "c"}
-            For Each ext In New String() {".s", ".c"}
-                Dim pp = "source/" + dir + "/" + fn + ext
-                If fs.Exists(pp) Then
-                    srcdic.Add(obj, pp)
-                    Return pp
-                End If
-            Next
-        Next
-        srcdic.Add(obj, Nothing)
-        Return Nothing
-    End Function
-
     Private Sub btnTest_Click(sender As Object, e As RoutedEventArgs)
         Dim button = CType(sender, Button)
         If button Is Nothing Then Return
@@ -94,26 +73,6 @@ Partial Public Class MainPage
         Dim cur = Cursor
         Cursor = Cursors.Wait
         aout.UseOct = comboBox1.SelectedIndex = 1
-        Dim vm = New VM(aout, fs, parg.Verbose)
-        vm.Run(parg.Args)
-        txtDis.Text = aout.GetDisassemble
-        txtOut.Text += vm.Output
-        txtOut.SelectionStart = txtOut.Text.Length
-        Dim fsrc = New List(Of FileEntry)
-        fsrc.Add(New FileEntry With {.Path = parg.Cmd, .Length = aout.Data.Length})
-        For Each f In fs.GetFiles
-            fsrc.Add(New FileEntry With {.Path = f, .Length = fs.GetLength(f)})
-        Next
         Cursor = cur
     End Sub
-
-    Public Shared Function GetFileName$(path$)
-        Dim p = path.LastIndexOf(CChar("/"))
-        Return If(p < 0, path, path.Substring(p + 1))
-    End Function
-
-    Public Class FileEntry
-        Public Property Path$
-        Public Property Length%
-    End Class
 End Class

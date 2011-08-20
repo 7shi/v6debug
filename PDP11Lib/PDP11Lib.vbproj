@@ -95,13 +95,11 @@
     <Compile Include="AOut.vb" />
     <Compile Include="BinData.vb" />
     <Compile Include="Disassembler.vb" />
-    <Compile Include="FileSystem.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="OpCode.vb" />
     <Compile Include="Operand.vb" />
     <Compile Include="Symbol.vb" />
     <Compile Include="Utils.vb" />
-    <Compile Include="VM.Sys.vb" />
     <Compile Include="VM.vb" />
     <Compile Include="VMState.vb" />
     <Compile Include="OpCode.Inst.vb" />

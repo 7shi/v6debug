@@ -44,20 +44,18 @@ Partial Public Class VM
     End Property
 
     Private aout As AOut
-    Private fs As FileSystem
     Private verbose As Boolean
     Private prevState As VMState
     Private callStack As New Stack(Of VMState)
     Private args$()
 
-    Public Sub New(aout As AOut, fs As FileSystem, verbose As Boolean)
+    Public Sub New(aout As AOut, verbose As Boolean)
         MyBase.New(&H10000)
         pid = nextPid
         nextPid += 1
         Array.Copy(aout.Data, aout.Offset, Data, 0, aout.tsize + aout.dsize)
         Me.UseOct = aout.UseOct
         Me.aout = aout
-        Me.fs = fs
         Me.verbose = verbose
         breakpt = aout.BreakPoint
         PC = aout.entry
@@ -125,7 +123,6 @@ Partial Public Class VM
             RunStep()
             If (PC And 1) <> 0 Then Abort("invalid pc=" + Enc0(PC))
         End While
-        fs.CloseAll()
     End Sub
 
     Public Sub RunStep()
@@ -235,14 +232,5 @@ Partial Public Class VM
 
     Public Overrides Function GetRelative$(r%, d%, ad%)
         Return aout.GetRelative(r, d, ad)
-    End Function
-
-    Public Shared Function System(fs As FileSystem, cmd$, ParamArray args$()) As VM
-        Dim p = If(fs.Exists(cmd), cmd, "bin/" + cmd)
-        Dim data = fs.GetAllBytes(p)
-        Dim aout = New AOut(data, cmd)
-        Dim vm = New VM(aout, fs, False)
-        vm.Run(args)
-        Return vm
     End Function
 End Class

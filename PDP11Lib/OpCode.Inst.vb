@@ -519,13 +519,11 @@ Partial Public Class OpCode
                     Length = CUShort(2 + SysArgs(arg) * 2)
                 Else
                     disasm = Function(bd, pos) "sys " & arg
-                    exec = Sub(vm)
-                           End Sub
                     Length = 2
                 End If
-                exec = Sub(vm)
-                           vm.ExecSys()
-                       End Sub
+                'exec = Sub(vm)
+                '           vm.ExecSys()
+                '       End Sub
         End Select
         If exec IsNot Nothing Then Return
 
