@@ -24,9 +24,6 @@
         </Grid.RowDefinitions>
         <Grid Grid.ColumnSpan="2">
             <StackPanel Name="menuStack" HorizontalAlignment="Left" Orientation="Horizontal">
-                <Button Content="Open" Name="btnOpen" />
-                <Button Content="Save" Name="btnSave" IsEnabled="False" />
-                <Grid Width="4" />
                 <ComboBox Name="comboBox1" SelectedIndex="0">
                     <ComboBoxItem Content="hex" />
                     <ComboBoxItem Content="oct" />
@@ -43,47 +40,15 @@
                     <TextBox Name="txtDis" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
                 </Grid>
             </sdk:TabItem>
-            <sdk:TabItem Header="Symbols">
-                <Grid>
-                    <TextBox Name="txtSym" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
-                </Grid>
-            </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
         <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
             <sdk:TabItem Header="Source">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="128" />
-                        <ColumnDefinition Width="1*" />
-                    </Grid.ColumnDefinitions>
-                    <sdk:TreeView Name="TreeView1" Margin="0,0,6,0" />
-                    <sdk:GridSplitter Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" />
-                    <TextBox Name="txtSrc" Grid.Column="2" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
-                </Grid>
-            </sdk:TabItem>
-            <sdk:TabItem Header="Files">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="128" />
-                        <RowDefinition Height="1*" />
-                    </Grid.RowDefinitions>
-                    <sdk:DataGrid Name="DataGrid1" Margin="0,0,0,6" IsReadOnly="True" AutoGenerateColumns="False">
-                        <sdk:DataGrid.Columns>
-                            <sdk:DataGridTextColumn Header="Path" Binding="{Binding Path}" CanUserReorder="True" CanUserResize="True" CanUserSort="True" Width="Auto" />
-                            <sdk:DataGridTextColumn Header="Length" Binding="{Binding Length}" CanUserReorder="True" CanUserResize="True" CanUserSort="True" Width="Auto" CellStyle="{StaticResource AlignRight}" />
-                        </sdk:DataGrid.Columns>
-                    </sdk:DataGrid>
-                    <sdk:GridSplitter Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-                    <TextBox Name="txtBin" Grid.Row="2" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
-                </Grid>
+                <TextBox Name="txtSrc" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="2">
-            <sdk:TabItem Header="Trace">
-                <TextBox Name="txtTrace" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
-            </sdk:TabItem>
             <sdk:TabItem Header="Output">
                 <TextBox Name="txtOut" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>

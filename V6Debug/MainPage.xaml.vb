@@ -18,39 +18,11 @@ Partial Public Class MainPage
     Public Sub New()
         InitializeComponent()
         Dim b = addTest(True, New String() {"hello1.c"}, "hello1")
-        addTest(True, New String() {"hello2.c"}, "hello2")
-        addTest(True, New String() {"hello3.c"}, "hello3")
-        addTest(True, New String() {"hello4.c"}, "hello4")
-        addTest(True, New String() {"args.c"}, "args", "test", "arg")
-        addTest(True, New String() {"printo.c"}, "printo")
-        addTest(False, Nothing, "/bin/nm", "args")
-        addTest(False, Nothing, "/bin/as",
-                "source/as/as11.s", "source/as/as12.s", "source/as/as13.s", "source/as/as14.s", "source/as/as15.s",
-                "source/as/as16.s", "source/as/as17.s", "source/as/as18.s", "source/as/as19.s")
-        addTest(False, Nothing, "/lib/as2", "/tmp/atm1a", "/tmp/atm2a", "/tmp/atm3a")
-        addTest(False, Nothing, "/bin/ld", "-s", "-n", "a.out")
-        addTest(False, Nothing, "/bin/cc", "-c", "args.c", "hello1.c", "hello2.c")
-        addTest(False, New String() {"source/c/c0h.c", "source/c/c0t.s"},
-                "/lib/c0", "args.c", "/tmp/ctm1a", "/tmp/ctm2a")
-        addTest(False, Nothing, "source/c/cvopt", "source/c/table.s", "source/c/table.i")
-        addTest(False, New String() {"source/c/c1h.c", "source/c/c1t.s", "source/c/table.i"},
-                "/lib/c1", "/tmp/ctm1a", "/tmp/ctm2a", "/tmp/ctm5a")
-        addTest(False, New String() {"source/c/c2h.c"},
-                "/lib/c2", "/tmp/ctm5a", "/tmp/ctm3a")
-        addTest(False, Nothing, "/bin/ar", "r", "lib.a", "args.o", "hello1.o", "hello2.o")
-        'btnTest_Click(b, Nothing)
     End Sub
 
     Public Sub Clear()
         txtDis.Text = ""
-        txtSym.Text = ""
         txtSrc.Text = ""
-        txtBin.Text = ""
-        txtTrace.Text = ""
-        ignore = True
-        TreeView1.Items.Clear()
-        DataGrid1.ItemsSource = Nothing
-        ignore = False
     End Sub
 
     Private Function addTest(verbose As Boolean, srcs$(), cmd$, ParamArray args$()) As Button
@@ -66,54 +38,6 @@ Partial Public Class MainPage
 
     Private Sub ReadFile(parg As ProcArg)
         Clear()
-
-        Dim data = fs.GetAllBytes(parg.Cmd)
-        aout = New AOut(data, GetFileName(parg.Cmd))
-
-        ignore = True
-        Dim list = New List(Of String)
-        If parg.Srcs IsNot Nothing Then
-            For Each src In parg.Srcs
-                If src.Contains("/") Then
-                    list.Add(src)
-                Else
-                    Dim n = New TreeViewItem With {.Header = GetFileName(src), .Tag = src}
-                    TreeView1.Items.Add(n)
-                End If
-            Next
-        End If
-        Dim objs = From sym In aout.GetSymbols
-                   Where sym.ObjSym IsNot Nothing
-                   Select sym.ObjSym
-        For Each obj In objs
-            Dim src = checkLib(obj.Name)
-            If src IsNot Nothing Then list.Add(src)
-        Next
-        list.Sort()
-        Dim dn As TreeViewItem = Nothing
-        For Each src In list
-            Dim sp = src.Split(CChar("/"))
-            If dn Is Nothing OrElse sp(1) <> dn.Header.ToString Then
-                dn = New TreeViewItem With
-                     {.Header = sp(1), .Tag = "README", .IsExpanded = True}
-                TreeView1.Items.Add(dn)
-            End If
-            Dim n = New TreeViewItem With {.Header = sp(2), .Tag = src}
-            dn.Items.Add(n)
-        Next
-        Dim first = CType(TreeView1.Items(0), TreeViewItem)
-        If first.Items.Count > 0 Then
-            first = CType(first.Items(0), TreeViewItem)
-        End If
-        first.IsSelected = True
-        showSource(first)
-        ignore = False
-
-        Me.parg = parg
-        Run()
-        btnSave.IsEnabled = True
-
-        txtSym.Text = VM.System(fs, "nm", parg.Cmd).Output
     End Sub
 
     Private srcdic As New Dictionary(Of String, String)
@@ -135,42 +59,6 @@ Partial Public Class MainPage
         srcdic.Add(obj, Nothing)
         Return Nothing
     End Function
-
-    Private Sub btnOpen_Click(sender As Object, e As RoutedEventArgs) Handles btnOpen.Click
-        Dim ofd = New OpenFileDialog
-        If ofd.ShowDialog() <> True Then Return
-
-        Clear()
-        Try
-            Dim fi = ofd.File
-            If fi.Length >= 64 * 1024 Then
-                Throw New Exception("ファイルが大き過ぎます。上限は64KBです。")
-            End If
-            Using fs1 = ofd.File.OpenRead
-                Dim h = fs.Create(ofd.File.Name)
-                Dim buf(CInt(fs1.Length - 1)) As Byte
-                fs1.Read(buf, 0, buf.Length)
-                fs.Write(h, buf, 0, buf.Length)
-            End Using
-            ReadFile(New ProcArg With {.Cmd = ofd.File.Name})
-        Catch ex As Exception
-            txtDis.Text = ex.Message + Environment.NewLine +
-                "読み込みに失敗しました。" + Environment.NewLine
-        End Try
-    End Sub
-
-    Private Sub btnSave_Click(sender As Object, e As RoutedEventArgs) Handles btnSave.Click
-        Dim fe = TryCast(DataGrid1.SelectedItem, FileEntry)
-        If fe Is Nothing Then Return
-
-        Dim sfd = New SaveFileDialog
-        If sfd.ShowDialog() <> True Then Return
-
-        Dim buf = fs.GetAllBytes(fe.Path)
-        Using fs = sfd.OpenFile
-            fs.Write(buf, 0, buf.Length)
-        End Using
-    End Sub
 
     Private Sub btnTest_Click(sender As Object, e As RoutedEventArgs)
         Dim button = CType(sender, Button)
@@ -195,8 +83,6 @@ Partial Public Class MainPage
         Dim vm = New VM(aout, fs, parg.Verbose)
         vm.Run(parg.Args)
         txtDis.Text = aout.GetDisassemble
-        txtTrace.Text = vm.Trace
-        txtTrace.SelectionStart = txtTrace.Text.Length
         txtOut.Text += vm.Output
         txtOut.SelectionStart = txtOut.Text.Length
         Dim fsrc = New List(Of FileEntry)
@@ -204,11 +90,6 @@ Partial Public Class MainPage
         For Each f In fs.GetFiles
             fsrc.Add(New FileEntry With {.Path = f, .Length = fs.GetLength(f)})
         Next
-        Dim ign = ignore
-        ignore = True
-        DataGrid1.ItemsSource = fsrc
-        ignore = ign
-        DataGrid1.SelectedIndex = 0
         Cursor = cur
     End Sub
 
@@ -217,42 +98,8 @@ Partial Public Class MainPage
         Return If(p < 0, path, path.Substring(p + 1))
     End Function
 
-    Private ignore As Boolean
-
-    Private Sub TreeView1_SelectedItemChanged(sender As Object, e As RoutedPropertyChangedEventArgs(Of Object)) Handles TreeView1.SelectedItemChanged
-        If ignore Then Return
-        showSource(TryCast(e.NewValue, TreeViewItem))
-    End Sub
-
-    Private Sub showSource(n As TreeViewItem)
-        If n IsNot Nothing AndAlso n.Tag IsNot Nothing Then
-            Dim p = n.Tag.ToString
-            If fs.Exists(p) Then
-                txtSrc.Text = ReadText(New MemoryStream(fs.GetAllBytes(p)))
-                txtSrc.SelectionStart = 0
-                Return
-            End If
-        End If
-        txtSrc.Text = ""
-    End Sub
-
     Public Class FileEntry
         Public Property Path$
         Public Property Length%
     End Class
-
-    Private Sub DataGrid1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles DataGrid1.SelectionChanged
-        showBinary(TryCast(DataGrid1.SelectedItem, FileEntry))
-    End Sub
-
-    Private Sub showBinary(fe As FileEntry)
-        If ignore Then Return
-
-        If fe Is Nothing Then
-            txtBin.Text = ""
-        Else
-            Dim bd = New BinData(fs.GetAllBytes(fe.Path))
-            txtBin.Text = bd.GetDump
-        End If
-    End Sub
 End Class
