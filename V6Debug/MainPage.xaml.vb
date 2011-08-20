@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Windows.Resources
 Imports PDP11Lib
 
 Partial Public Class MainPage
@@ -7,6 +8,7 @@ Partial Public Class MainPage
     Private aout As AOut
     Private parg As ProcArg
     Private fs As New SLFileSystem("Tests")
+    Private root As Byte()
 
     Private Class ProcArg
         Public Cmd$
@@ -18,6 +20,18 @@ Partial Public Class MainPage
     Public Sub New()
         InitializeComponent()
         Dim b = addTest(True, New String() {"hello1.c"}, "hello1")
+
+        Using rs = Application.GetResourceStream(New Uri("v6root.zip", UriKind.Relative)).Stream
+            Dim sri = New StreamResourceInfo(rs, Nothing)
+            Using s = Application.GetResourceStream(sri, New Uri("v6root", UriKind.Relative)).Stream
+                ReDim root(CInt(s.Length) - 1)
+                s.Read(root, 0, root.Length)
+            End Using
+        End Using
+
+        Dim boot = New BinData(&H200)
+        Array.Copy(root, boot.Data, boot.Data.Length)
+        txtSrc.Text = boot.GetDump
     End Sub
 
     Public Sub Clear()
