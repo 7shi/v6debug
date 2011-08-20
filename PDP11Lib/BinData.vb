@@ -36,12 +36,20 @@ Public Class BinData
         Array.Copy(buf, 0, Data, pos, buf.Length)
     End Sub
 
-    Public Sub Dump(sw As TextWriter)
-        For i = 0 To Data.Length - 1 Step 16
+    Public Sub Write(pos%, ParamArray vs As UShort())
+        For Each v In vs
+            Dim buf = BitConverter.GetBytes(v)
+            Array.Copy(buf, 0, Data, pos, buf.Length)
+            pos += 2
+        Next
+    End Sub
+
+    Public Sub Dump(sw As TextWriter, start%, end%)
+        For i = start To [end] Step 16
             sw.Write("[{0:X4}]", i)
             Dim sb = New StringBuilder()
             For j = 0 To 15
-                If i + j < Data.Length Then
+                If i + j <= [end] Then
                     If j = 8 Then sw.Write(" -")
                     Dim b = Data(i + j)
                     sw.Write(" {0:X2}", b)
@@ -55,9 +63,9 @@ Public Class BinData
         Next
     End Sub
 
-    Public Function GetDump$()
+    Public Function GetDump$(start%, end%)
         Using sw = New StringWriter()
-            Dump(sw)
+            Dump(sw, start, [end])
             Return sw.ToString()
         End Using
     End Function

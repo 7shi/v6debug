@@ -28,9 +28,36 @@ Partial Public Class MainPage
             End Using
         End Using
 
-        boot = New BinData(&H200)
-        Array.Copy(root, boot.Data, boot.Data.Length)
-        txtSrc.Text = boot.GetDump
+        boot = New BinData(&H10000)
+        boot.Write(&O2000,
+                   &O42113,
+                   &O12706, &O2000,
+                   &O12700, &O0,
+                   &O10003,
+                   &O303,
+                   &O6303,
+                   &O6303,
+                   &O6303,
+                   &O6303,
+                   &O6303,
+                   &O12701, &O177412,
+                   &O10311,
+                   &O5041,
+                   &O12741, &O177000,
+                   &O12741, &O5,
+                   &O5002,
+                   &O5003,
+                   &O12704, &O2020,
+                   &O5005,
+                   &O105711,
+                   &O100376,
+                   &O105011,
+                   &O5007)
+        boot.Write(&O100000,
+                   &O12700, &O177412, &O5040, &O10040,
+                   &O12740, &O5, &O105710, &O2376, &O5007)
+        txtSrc.Text = boot.GetDump(&O2000, &O2071) + vbCrLf + boot.GetDump(&O100000, &O100021)
+
         disasmBoot()
     End Sub
 
@@ -73,7 +100,11 @@ Partial Public Class MainPage
         Cursor = Cursors.Wait
         boot.UseOct = comboBox1.SelectedIndex = 1
         Dim sw = New StringWriter
-        For i = 0 To &H1FF
+        For i = &O2000 To &O2071
+            i += Disassemble(boot, sw, i, 0) - 1
+        Next
+        sw.WriteLine()
+        For i = &O100000 To &O100021
             i += Disassemble(boot, sw, i, 0) - 1
         Next
         txtDis.Text = sw.ToString
