@@ -88,16 +88,4 @@ Public Module Disassembler
         tw.WriteLine()
         Return len
     End Function
-
-    Public Function ConvShort(v As UShort) As Short
-        Return CShort(If(v < &H8000, v, v - &H10000))
-    End Function
-
-    Public Function ConvSByte(v As Byte) As SByte
-        Return CSByte(If(v < &H80, v, v - &H100))
-    End Function
-
-    Public Function GetRegString$(bd As BinData, r%, pc%)
-        Return RegNames(r) + bd.GetReg(r, CUShort(pc And &HFFFF))
-    End Function
 End Module
