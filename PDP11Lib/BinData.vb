@@ -81,7 +81,7 @@ Public Class BinData
     Public Function GetOffset(pos%) As UShort
         Dim d = CInt(Me(pos - 2))
         If d >= 128 Then d -= 256
-        Return CUShort(pos + d * 2)
+        Return CUShort((pos + d * 2) And &HFFFF)
     End Function
 
     Public Overridable Function EncAddr$(addr As UShort)
