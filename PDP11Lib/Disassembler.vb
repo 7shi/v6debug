@@ -54,7 +54,7 @@ Public Module Disassembler
                 len = op.Length
             End If
         End If
-        tw.Write("[{0:x4}] {1}: {2}", 16 + i, bd.Enc0(CUShort(i)), bd.Enc0(s))
+        tw.Write("{0}: {1}", bd.Enc0(CUShort(i)), bd.Enc0(s))
         For j = 2 To 4 Step 2
             If j < len Then
                 tw.Write(" " + bd.Enc0(bd.ReadUInt16(i + j)))

@@ -31,6 +31,7 @@ Partial Public Class MainPage
         boot = New BinData(&H200)
         Array.Copy(root, boot.Data, boot.Data.Length)
         txtSrc.Text = boot.GetDump
+        disasmBoot()
     End Sub
 
     Public Sub Clear()
@@ -64,13 +65,18 @@ Partial Public Class MainPage
     End Sub
 
     Private Sub comboBox1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles comboBox1.SelectionChanged
-        disassemble()
+        disasmBoot()
     End Sub
 
-    Private Sub disassemble()
+    Private Sub disasmBoot()
         Dim cur = Cursor
         Cursor = Cursors.Wait
         boot.UseOct = comboBox1.SelectedIndex = 1
+        Dim sw = New StringWriter
+        For i = 0 To &H1FF
+            i += Disassemble(boot, sw, i, 0) - 1
+        Next
+        txtDis.Text = sw.ToString
         Cursor = cur
     End Sub
 End Class
