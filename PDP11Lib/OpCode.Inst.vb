@@ -495,8 +495,7 @@ Partial Public Class OpCode
                                 Dim argad = bd.EncAddr(ad)
                                 Dim p = argad.IndexOf("{")
                                 If p > 0 Then argad = argad.Substring(0, p)
-                                Dim op = OpCodes(bd.ReadUInt16(ad))
-                                sb.Append("; " + argad + "{" + Disassembler.Disassemble(bd, ad, op) + "}")
+                                sb.Append("; " + argad + "{" + Disassembler.Disassemble(bd, ad) + "}")
                             ElseIf arg = 8 Or arg = 15 Then ' creat/chmod
                                 sb.Append("; " + bd.EncAddr(bd.ReadUInt16(pos + 4)))
                                 sb.Append("; " + "0" + Convert.ToString(bd.ReadUInt16(pos + 4), 8))

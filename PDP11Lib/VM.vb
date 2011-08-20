@@ -171,8 +171,7 @@ Partial Public Class VM
             End If
         End If
         Dim val = ReadUInt16(PC)
-        Dim op = OpCodes(val)
-        swt.WriteLine("{0}: {1}", st, If(op IsNot Nothing, Disassembler.Disassemble(Me, PC, op), Enc(val)))
+        swt.WriteLine("{0}: {1}", st, Disassembler.Disassemble(Me, PC))
         PC = bak
     End Sub
 

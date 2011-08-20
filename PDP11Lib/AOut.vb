@@ -51,8 +51,7 @@ Public Class AOut
 
     Public Sub Disassemble(tw As TextWriter)
         Dim bd = New BinData(New Byte() {Data(0), Data(1), 0, 0, 0, 0}) With {.UseOct = UseOct}
-        Dim opmagic = OpCodes(bd.ReadUInt16(0))
-        Dim dismagic = Disassembler.Disassemble(bd, 0, opmagic)
+        Dim dismagic = Disassembler.Disassemble(bd, 0)
         tw.WriteLine("[{0:x4}] fmagic = {1}  {2}", 0, Enc0(fmagic), dismagic)
         tw.WriteLine("[{0:x4}] tsize  = {1}", 2, Enc0(tsize))
         tw.WriteLine("[{0:x4}] dsize  = {1}", 4, Enc0(dsize))
@@ -82,7 +81,7 @@ Public Class AOut
                 If Not thunks.ContainsKey(ad) Then thunks.Add(ad, New Symbol(ad))
             End If
             Dim maxlen = If(hasSym, en.Current.Address - i, 0)
-            i += Disassemble(tw, i, maxlen) - 1
+            i += Disassembler.Disassemble(Me, tw, i, maxlen) - 1
         Next
 
         Dim baddr = tsize + dsize
@@ -98,7 +97,7 @@ Public Class AOut
                 If Not sym.IsNull Then
                     tw.WriteLine("[{0:x4}] {1}: {2}", sym.Address + 16, Enc0(CUShort(sym.Address)), sym)
                 Else
-                    Disassemble(tw, sym.Address)
+                    Disassembler.Disassemble(Me, tw, sym.Address)
                 End If
             Next
         End If
@@ -113,55 +112,6 @@ Public Class AOut
             Next
         End If
     End Sub
-
-    Private Function Disassemble%(tw As TextWriter, i%, Optional maxlen% = 0)
-        Dim spclen = Enc0(0US).Length
-        Dim s = ReadUInt16(i)
-        Dim op = OpCodes(s)
-        Dim dis = Disassembler.Disassemble(Me, i, op)
-        Dim len = 2
-        If dis IsNot Nothing Then
-            If maxlen > 0 AndAlso op.Length > maxlen Then
-                op = Nothing
-                len = maxlen
-            Else
-                len = op.Length
-            End If
-        End If
-        tw.Write("[{0:x4}] {1}: {2}", 16 + i, Enc0(CUShort(i)), Enc0(s))
-        For j = 2 To 4 Step 2
-            If j < len Then
-                tw.Write(" " + Enc0(ReadUInt16(i + j)))
-            Else
-                tw.Write(Space(1 + spclen))
-            End If
-        Next
-        tw.Write("  ")
-        If dis IsNot Nothing Then
-            tw.Write(dis)
-        Else
-            For j = 0 To len - 1 Step 2
-                If j > 0 Then tw.Write("; ")
-                tw.Write(Enc(ReadUInt16(i + j)))
-            Next
-        End If
-        If len > 6 Then
-            Dim indent = Space(9 + spclen * 2)
-            For j = 6 To op.Length Step 2
-                If ((j - 2) And 3) = 0 Then
-                    tw.WriteLine()
-                    tw.Write(indent)
-                End If
-                If j < len Then
-                    tw.Write(" " + Enc0(ReadUInt16(i + j)))
-                Else
-                    tw.Write(Space(1 + spclen))
-                End If
-            Next
-        End If
-        tw.WriteLine()
-        Return len
-    End Function
 
     Public Function GetDisassemble$()
         Using sw = New StringWriter()
