@@ -30,6 +30,7 @@
                     <ComboBoxItem Content="oct" />
                 </ComboBox>
                 <Grid Width="4" />
+                <Button Name="btnStep" Content="Step" />
             </StackPanel>
             <TextBlock HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,6,0">
                 PDP-11 Interpreter for UNIX V6

@@ -5,20 +5,24 @@ Imports PDP11Lib
 Partial Public Class MainPage
     Inherits UserControl
 
-    Private parg As ProcArg
+    Public Class DGEntry
+        Public Property Name$
+        Public Property Value$
+
+        Public Sub New(n$, v$)
+            Name = n
+            Value = v
+        End Sub
+    End Class
+
     Private root As Byte()
     Private boot As BinData
 
-    Private Class ProcArg
-        Public Cmd$
-        Public Srcs As String()
-        Public Args As String()
-        Public Verbose As Boolean
-    End Class
+    Private current%
+    Private dlist As List(Of DisEntry)
 
     Public Sub New()
         InitializeComponent()
-        Dim b = addTest(True, New String() {"hello1.c"}, "hello1")
 
         Using rs = Application.GetResourceStream(New Uri("v6root.zip", UriKind.Relative)).Stream
             Dim sri = New StreamResourceInfo(rs, Nothing)
@@ -54,27 +58,6 @@ Partial Public Class MainPage
         disasmBoot()
     End Sub
 
-    Private Function addTest(verbose As Boolean, srcs$(), cmd$, ParamArray args$()) As Button
-        Dim parg = New ProcArg With
-                   {.Cmd = cmd, .Srcs = srcs, .Args = args, .Verbose = verbose}
-        Dim p = cmd.LastIndexOf("/")
-        Dim fn = If(p < 0, cmd, cmd.Substring(p + 1))
-        Dim button = New Button With {.Content = fn, .Tag = parg}
-        AddHandler button.Click, AddressOf btnTest_Click
-        menuStack.Children.Add(button)
-        Return button
-    End Function
-
-    Private Sub btnTest_Click(sender As Object, e As RoutedEventArgs)
-        Dim button = CType(sender, Button)
-        If button Is Nothing Then Return
-
-        Dim cur = Cursor
-        Cursor = Cursors.Wait
-        'ReadFile(CType(button.Tag, ProcArg))
-        Cursor = cur
-    End Sub
-
     Private Sub comboBox1_SelectionChanged(sender As Object, e As SelectionChangedEventArgs) Handles comboBox1.SelectionChanged
         disasmBoot()
     End Sub
@@ -83,23 +66,22 @@ Partial Public Class MainPage
         Dim cur = Cursor
         Cursor = Cursors.Wait
         boot.UseOct = comboBox1.SelectedIndex = 1
-        Dim list = New List(Of DisEntry)
+        dlist = New List(Of DisEntry)
         For i = &H400 To &H413
             Dim de = New DisEntry(boot, i)
-            list.Add(de)
+            dlist.Add(de)
             i += de.Length - 1
         Next
-        dgDis.ItemsSource = list
+        dlist(current).Mark = ">"
+        dgDis.ItemsSource = dlist
         Cursor = cur
     End Sub
 
-    Public Class DGEntry
-        Public Property Name$
-        Public Property Value$
-
-        Public Sub New(n$, v$)
-            Name = n
-            Value = v
-        End Sub
-    End Class
+    Private Sub btnStep_Click(sender As Object, e As RoutedEventArgs) Handles btnStep.Click
+        If current < dlist.Count - 1 Then
+            dlist(current).Mark = ""
+            current += 1
+            dlist(current).Mark = ">"
+        End If
+    End Sub
 End Class
