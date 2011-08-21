@@ -36,44 +36,13 @@ Partial Public Class MainPage
         dgReg.ItemsSource = regsrc
 
         boot = New BinData(&H10000)
-        boot.Write(&O2000,
-                   &O42113,
-                   &O12706, &O2000,
-                   &O12700, &O0,
-                   &O10003,
-                   &O303,
-                   &O6303,
-                   &O6303,
-                   &O6303,
-                   &O6303,
-                   &O6303,
-                   &O12701, &O177412,
-                   &O10311,
-                   &O5041,
-                   &O12741, &O177000,
-                   &O12741, &O5,
-                   &O5002,
-                   &O5003,
-                   &O12704, &O2020,
-                   &O5005,
-                   &O105711,
-                   &O100376,
-                   &O105011,
-                   &O5007)
-        boot.Write(&O100000,
+        boot.Write(&H400,
                    &O12700, &O177414, &O5040, &O5040,
-                   &O10040, &O12740, &O5, &O105610,
+                   &O10040, &O12740, &O5, &O105710,
                    &O2376, &O5007)
-        boot.Write(&O100100,
-                   &O12700, &O177412, &O5040, &O10040,
-                   &O12740, &O5, &O105710, &O2376, &O5007)
 
         Dim mlist = New List(Of DumpEntry)
-        mlist.AddRange(boot.Dump(&O2000, &O2071))
-        mlist.Add(New DumpEntry)
-        mlist.AddRange(boot.Dump(&O100000, &O100023))
-        mlist.Add(New DumpEntry)
-        mlist.AddRange(boot.Dump(&O100100, &O100121))
+        mlist.AddRange(boot.Dump(0, &H41F))
         dgMem.ItemsSource = mlist
 
         disasmBoot()
@@ -109,19 +78,7 @@ Partial Public Class MainPage
         Cursor = Cursors.Wait
         boot.UseOct = comboBox1.SelectedIndex = 1
         Dim list = New List(Of DisEntry)
-        For i = &O2000 To &O2071
-            Dim de = New DisEntry(boot, i)
-            list.Add(de)
-            i += de.Length - 1
-        Next
-        list.Add(New DisEntry)
-        For i = &O100000 To &O100023
-            Dim de = New DisEntry(boot, i)
-            list.Add(de)
-            i += de.Length - 1
-        Next
-        list.Add(New DisEntry)
-        For i = &O100100 To &O100121
+        For i = &H400 To &H413
             Dim de = New DisEntry(boot, i)
             list.Add(de)
             i += de.Length - 1
