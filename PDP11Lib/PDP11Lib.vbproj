@@ -97,7 +97,6 @@
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="OpCode.vb" />
     <Compile Include="Operand.vb" />
-    <Compile Include="Symbol.vb" />
     <Compile Include="Utils.vb" />
     <Compile Include="VM.vb" />
     <Compile Include="VMState.vb" />

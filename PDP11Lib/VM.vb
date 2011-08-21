@@ -62,7 +62,6 @@ Partial Public Class VM
         Dim cmdl = GetCommandLine()
         swt.WriteLine(cmdl)
         swo.WriteLine(cmdl)
-        Dim cur As Symbol = Nothing
         Dim prevStack = callStack.Count
         While Not HasExited
             RunStep()
