@@ -54,9 +54,14 @@ Partial Public Class MainPage
                    &O105011,
                    &O5007)
         boot.Write(&O100000,
+                   &O12700, &O177414, &O5040, &O5040,
+                   &O10040, &O12740, &O5, &O105610,
+                   &O2376, &O5007)
+        boot.Write(&O100100,
                    &O12700, &O177412, &O5040, &O10040,
                    &O12740, &O5, &O105710, &O2376, &O5007)
-        txtSrc.Text = boot.GetDump(&O2000, &O2071) + vbCrLf + boot.GetDump(&O100000, &O100021)
+        txtSrc.Text = boot.GetDump(&O2000, &O2071) + vbCrLf +
+            boot.GetDump(&O100000, &O100023) + vbCrLf + boot.GetDump(&O100100, &O100121)
 
         disasmBoot()
     End Sub
@@ -104,7 +109,11 @@ Partial Public Class MainPage
             i += Disassemble(boot, sw, i, 0) - 1
         Next
         sw.WriteLine()
-        For i = &O100000 To &O100021
+        For i = &O100000 To &O100023
+            i += Disassemble(boot, sw, i, 0) - 1
+        Next
+        sw.WriteLine()
+        For i = &O100100 To &O100121
             i += Disassemble(boot, sw, i, 0) - 1
         Next
         txtDis.Text = sw.ToString
