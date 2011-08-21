@@ -42,16 +42,31 @@ Public Module Disassembler
 End Module
 
 Public Class DisEntry
+    Inherits DependencyObject
+
     Public Property Mark$
+        Get
+            Return CStr(GetValue(MarkProperty))
+        End Get
+        Set(value$)
+            SetValue(Markproperty, value)
+        End Set
+    End Property
+
+    Public Shared ReadOnly MarkProperty As DependencyProperty =
+        DependencyProperty.Register("Mark", GetType(String), GetType(DisEntry), Nothing)
+
     Public Property Addr$
     Public Property Dump$
     Public Property Dis$
     Public Property Length%
 
     Public Sub New()
+        Mark = ""
     End Sub
 
     Public Sub New(bd As BinData, i%, Optional maxlen% = 0)
+        MyClass.New()
         Dim spclen = bd.Enc0(0US).Length
         Dim s = bd.ReadUInt16(i)
         Dim op = OpCodes(s)
