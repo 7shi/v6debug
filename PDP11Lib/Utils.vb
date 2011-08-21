@@ -10,10 +10,6 @@ Public Module Utils
         Return CSByte(If(v < &H80, v, v - &H100))
     End Function
 
-    Public Function GetRegString$(bd As BinData, r%, pc%)
-        Return RegNames(r) + bd.GetReg(r, CUShort(pc And &HFFFF))
-    End Function
-
     Public Function ReadText$(s As Stream)
         Dim list = New List(Of Byte)
         Dim prev = 0

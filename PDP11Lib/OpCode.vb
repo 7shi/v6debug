@@ -54,7 +54,7 @@
         dst = Operands(val And 63)
         If dst.IsValid Then
             disasm = Function(bd, pos)
-                         Return mne + " " + GetRegString(bd, reg, pos + 2) +
+                         Return mne + " " + RegNames(reg) +
                              ", " + dst.ToString(bd, pos + 2, size)
                      End Function
             Length = 2US + dst.Length
@@ -67,7 +67,7 @@
         If src.IsValid Then
             disasm = Function(bd, pos)
                          Return mne + " " + src.ToString(bd, pos + 2, size) +
-                             "," + GetRegString(bd, reg, pos + 2)
+                             "," + RegNames(reg)
                      End Function
             Length = 2US + src.Length
         End If
@@ -75,7 +75,7 @@
 
     Private Sub SetReg(mne$)
         reg = val And 7
-        disasm = Function(bd, pos) mne + " " + GetRegString(bd, reg, pos + 2)
+        disasm = Function(bd, pos) mne + " " + RegNames(reg)
         Length = 2
     End Sub
 
@@ -87,7 +87,7 @@
     Private Sub SetRegOffset(mne$)
         reg = (val >> 6) And 7
         disasm = Function(bd, pos)
-                     Return mne + " " + GetRegString(bd, reg, pos + 2) +
+                     Return mne + " " + RegNames(reg) +
                          ", " + bd.Enc(CUShort(pos + 2 - (val And &O77) * 2))
                  End Function
         Length = 2

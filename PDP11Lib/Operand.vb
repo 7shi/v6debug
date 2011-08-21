@@ -48,8 +48,8 @@ Public Class Operand
         Dim r = RegNames(reg)
         If reg = 7 Then
             Select Case type
-                Case 0 : Return r + bd.GetReg(reg, CUShort(pc + offset + offset))
-                Case 1 : Return "(" + r + ")" + bd.GetValue(reg, size, 0, 0)
+                Case 0 : Return r
+                Case 1 : Return "(" + r + ")"
                 Case 2 : Return "$" + bd.Enc(bd.ReadUInt16(pc))
                 Case 3 : Return "*$" + bd.EncAddr(bd.ReadUInt16(pc))
                 Case 6 : Return bd.EncAddr(CUShort((pc + dist) And &HFFFF))
@@ -57,14 +57,14 @@ Public Class Operand
             End Select
         Else
             Select Case type
-                Case 0 : Return r + bd.GetReg(reg, CUShort(pc + offset + offset))
-                Case 1 : Return "(" + r + ")" + bd.GetValue(reg, size, 0, 0)
-                Case 2 : Return "(" + r + ")+" + bd.GetValue(reg, size, 0, size)
-                Case 3 : Return "*(" + r + ")+" + bd.GetPtr(reg, size, 0, 2)
-                Case 4 : Return "-(" + r + ")" + bd.GetValue(reg, size, -size, -size)
-                Case 5 : Return "*-(" + r + ")" + bd.GetPtr(reg, size, -2, -2)
-                Case 6 : Return bd.GetRelative(reg, dist, pc - 2US) + bd.GetValue(reg, size, dist, 0)
-                Case 7 : Return "*" + bd.GetRelative(reg, dist, pc - 2US) + bd.GetPtr(reg, size, dist, 0)
+                Case 0 : Return r
+                Case 1 : Return "(" + r + ")"
+                Case 2 : Return "(" + r + ")+"
+                Case 3 : Return "*(" + r + ")+"
+                Case 4 : Return "-(" + r + ")"
+                Case 5 : Return "*-(" + r + ")"
+                Case 6 : Return bd.GetRelative(reg, dist, pc - 2US)
+                Case 7 : Return "*" + bd.GetRelative(reg, dist, pc - 2US)
             End Select
         End If
         Throw New Exception("invalid operand")

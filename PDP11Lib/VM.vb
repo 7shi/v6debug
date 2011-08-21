@@ -143,23 +143,4 @@ Partial Public Class VM
     Public Sub PushStack()
         callStack.Push(New VMState(Me))
     End Sub
-
-    Public Overrides Function GetReg$(r%, pc As UShort)
-        Return "{" + Enc0(If(r < 7, Regs(r), pc)) + "}"
-    End Function
-
-    Public Overrides Function GetValue$(r%, size%, d1%, d2%)
-        Dim ad = CUShort((Regs(r) + d1) And &HFFFF)
-        Dim p = If(size = 2, Enc0(ReadUInt16(ad)), Enc0(Me(ad)))
-        Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
-        Return "{" + Enc0(ad) + ":" + p + "}"
-    End Function
-
-    Public Overrides Function GetPtr$(r%, size%, d1%, d2%)
-        Dim ad = CUShort((Regs(r) + d1) And &HFFFF)
-        Dim p = ReadUInt16(ad)
-        Regs(r) = CUShort((Regs(r) + d2) And &HFFFF)
-        Dim pp = If(size = 2, Enc0(ReadUInt16(p)), Enc0(Me(p)))
-        Return "{" + Enc0(ad) + ":" + Enc0(p) + ":" + pp + "}"
-    End Function
 End Class

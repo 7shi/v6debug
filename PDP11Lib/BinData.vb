@@ -96,18 +96,6 @@ Public Class BinData
         Return Enc(addr)
     End Function
 
-    Public Overridable Function GetReg$(r%, pc As UShort)
-        Return ""
-    End Function
-
-    Public Overridable Function GetValue$(r%, size%, d1%, d2%)
-        Return ""
-    End Function
-
-    Public Overridable Function GetPtr$(r%, size%, d1%, d2%)
-        Return ""
-    End Function
-
     Public Overridable Function GetRelative$(r%, d%, ad%)
         Dim sign = If(d < 0, "-", "")
         Dim da = CUShort(Math.Abs(d))
