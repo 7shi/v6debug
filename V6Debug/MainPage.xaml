@@ -43,8 +43,8 @@
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
         <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
-            <sdk:TabItem Header="Source">
-                <TextBox Name="txtSrc" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+            <sdk:TabItem Header="Memory">
+                <TextBox Name="txtMem" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />

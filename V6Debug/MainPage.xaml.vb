@@ -60,7 +60,7 @@ Partial Public Class MainPage
         boot.Write(&O100100,
                    &O12700, &O177412, &O5040, &O10040,
                    &O12740, &O5, &O105710, &O2376, &O5007)
-        txtSrc.Text = boot.GetDump(&O2000, &O2071) + vbCrLf +
+        txtMem.Text = boot.GetDump(&O2000, &O2071) + vbCrLf +
             boot.GetDump(&O100000, &O100023) + vbCrLf + boot.GetDump(&O100100, &O100121)
 
         disasmBoot()
@@ -68,7 +68,7 @@ Partial Public Class MainPage
 
     Public Sub Clear()
         txtDis.Text = ""
-        txtSrc.Text = ""
+        txtMem.Text = ""
     End Sub
 
     Private Function addTest(verbose As Boolean, srcs$(), cmd$, ParamArray args$()) As Button
