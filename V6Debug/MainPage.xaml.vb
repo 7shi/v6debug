@@ -35,6 +35,12 @@ Partial Public Class MainPage
         Next
         dgReg.ItemsSource = regsrc
 
+        Dim stacksrc(7) As DGEntry
+        For i = 0 To 7
+            stacksrc(i) = New DGEntry(String.Format("{0:x4}", i * 2), "0000")
+        Next
+        dgStk.ItemsSource = stacksrc
+
         boot = New BinData(&H10000)
         boot.Write(&H400,
                    &O12700, &O177414, &O5040, &O5040,
