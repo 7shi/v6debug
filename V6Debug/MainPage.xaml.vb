@@ -67,15 +67,16 @@ Partial Public Class MainPage
         boot.Write(&O100100,
                    &O12700, &O177412, &O5040, &O10040,
                    &O12740, &O5, &O105710, &O2376, &O5007)
-        txtMem.Text = boot.GetDump(&O2000, &O2071) + vbCrLf +
-            boot.GetDump(&O100000, &O100023) + vbCrLf + boot.GetDump(&O100100, &O100121)
+
+        Dim mlist = New List(Of DumpEntry)
+        mlist.AddRange(boot.Dump(&O2000, &O2071))
+        mlist.Add(New DumpEntry)
+        mlist.AddRange(boot.Dump(&O100000, &O100023))
+        mlist.Add(New DumpEntry)
+        mlist.AddRange(boot.Dump(&O100100, &O100121))
+        dgMem.ItemsSource = mlist
 
         disasmBoot()
-    End Sub
-
-    Public Sub Clear()
-        dgDis.ItemsSource = Nothing
-        txtMem.Text = ""
     End Sub
 
     Private Function addTest(verbose As Boolean, srcs$(), cmd$, ParamArray args$()) As Button
@@ -89,17 +90,13 @@ Partial Public Class MainPage
         Return button
     End Function
 
-    Private Sub ReadFile(parg As ProcArg)
-        Clear()
-    End Sub
-
     Private Sub btnTest_Click(sender As Object, e As RoutedEventArgs)
         Dim button = CType(sender, Button)
         If button Is Nothing Then Return
 
         Dim cur = Cursor
         Cursor = Cursors.Wait
-        ReadFile(CType(button.Tag, ProcArg))
+        'ReadFile(CType(button.Tag, ProcArg))
         Cursor = cur
     End Sub
 

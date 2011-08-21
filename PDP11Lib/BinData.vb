@@ -44,30 +44,34 @@ Public Class BinData
         Next
     End Sub
 
-    Public Sub Dump(sw As TextWriter, start%, end%)
-        For i = start To [end] Step 16
-            sw.Write("[{0:X4}]", i)
-            Dim sb = New StringBuilder()
-            For j = 0 To 15
-                If i + j <= [end] Then
-                    If j = 8 Then sw.Write(" -")
-                    Dim b = Data(i + j)
-                    sw.Write(" {0:X2}", b)
-                    sb.Append(If(32 < b AndAlso b < 128, ChrW(b), CChar(".")))
-                Else
-                    If j = 8 Then sw.Write("  ")
-                    sw.Write("   ")
-                End If
-            Next
-            sw.WriteLine(" {0}", sb.ToString())
+    Public Function Dump(start%, end%) As DumpEntry()
+        Dim list = New List(Of DumpEntry)
+        For ad = start To [end] Step 16
+            Dim de = New DumpEntry
+            de.Addr = String.Format("{0:X4}", ad)
+            Using sw = New StringWriter
+                Dim sb = New StringBuilder
+                For j = 0 To 15
+                    If ad + j <= [end] Then
+                        If j = 8 Then
+                            sw.Write(" - ")
+                        ElseIf j > 0 Then
+                            sw.Write(" ")
+                        End If
+                        Dim b = Data(ad + j)
+                        sw.Write("{0:X2}", b)
+                        sb.Append(If(32 < b AndAlso b < 128, ChrW(b), CChar(".")))
+                    Else
+                        If j = 8 Then sw.Write("  ")
+                        sw.Write("   ")
+                    End If
+                Next
+                de.Dump = sw.ToString
+                de.Ascii = sb.ToString
+            End Using
+            list.Add(de)
         Next
-    End Sub
-
-    Public Function GetDump$(start%, end%)
-        Using sw = New StringWriter()
-            Dump(sw, start, [end])
-            Return sw.ToString()
-        End Using
+        Return list.ToArray
     End Function
 
     Public Function Enc0$(v As UShort)
@@ -102,4 +106,10 @@ Public Class BinData
         Dim dd = If(da < 10, d.ToString, If(d < 0, "-", "") + Enc(da))
         Return dd + "(" + RegNames(r) + ")"
     End Function
+End Class
+
+Public Class DumpEntry
+    Public Property Addr$
+    Public Property Dump$
+    Public Property Ascii$
 End Class

@@ -15,7 +15,7 @@
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*" />
-            <ColumnDefinition Width="160" />
+            <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -78,10 +78,16 @@
         <sdk:GridSplitter Grid.Row="1" Grid.Column="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
         <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
             <sdk:TabItem Header="Memory">
-                <TextBox Name="txtMem" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
+                <sdk:DataGrid Name="dgMem" IsReadOnly="True" AutoGenerateColumns="False" FontFamily="Courier New" FontSize="12">
+                    <sdk:DataGrid.Columns>
+                        <sdk:DataGridTextColumn Header="Addr" Binding="{Binding Addr}" CanUserResize="True" Width="Auto" />
+                        <sdk:DataGridTextColumn Header="Dump" Binding="{Binding Dump}" CanUserResize="True" Width="Auto" />
+                        <sdk:DataGridTextColumn Header="Ascii" Binding="{Binding Ascii}" CanUserResize="True" Width="Auto" />
+                    </sdk:DataGrid.Columns>
+                </sdk:DataGrid>
             </sdk:TabItem>
         </sdk:TabControl>
-        <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
+        <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="3" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
         <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="3">
             <sdk:TabItem Header="Output">
                 <TextBox Name="txtOut" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
