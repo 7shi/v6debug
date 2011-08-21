@@ -15,6 +15,7 @@
     <Grid x:Name="LayoutRoot" Background="White">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="160" />
             <ColumnDefinition Width="5*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -22,7 +23,7 @@
             <RowDefinition Height="3*" />
             <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
-        <Grid Grid.ColumnSpan="2">
+        <Grid Grid.ColumnSpan="3">
             <StackPanel Name="menuStack" HorizontalAlignment="Left" Orientation="Horizontal">
                 <ComboBox Name="comboBox1" SelectedIndex="0">
                     <ComboBoxItem Content="hex" />
@@ -42,13 +43,41 @@
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,6,6">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="240" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <sdk:TabControl Margin="0,0,0,6">
+                <sdk:TabItem Header="Registers">
+                    <sdk:DataGrid Name="dgReg" IsReadOnly="True" AutoGenerateColumns="False" FontFamily="Courier New" FontSize="12">
+                        <sdk:DataGrid.Columns>
+                            <sdk:DataGridTextColumn Header="Name" Binding="{Binding Name}" CanUserResize="True" Width="Auto" />
+                            <sdk:DataGridTextColumn Header="Value" Binding="{Binding Value}" CanUserResize="True" Width="Auto" />
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
+                </sdk:TabItem>
+            </sdk:TabControl>
+            <sdk:GridSplitter Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,0,0,0" />
+            <sdk:TabControl Grid.Row="1">
+                <sdk:TabItem Header="Stack">
+                    <sdk:DataGrid Name="dgStk" IsReadOnly="True" AutoGenerateColumns="False" FontFamily="Courier New" FontSize="12">
+                        <sdk:DataGrid.Columns>
+                            <sdk:DataGridTextColumn Header="Addr" Binding="{Binding Name}" CanUserResize="True" Width="Auto" />
+                            <sdk:DataGridTextColumn Header="Value" Binding="{Binding Value}"  CanUserResize="True" Width="Auto" />
+                        </sdk:DataGrid.Columns>
+                    </sdk:DataGrid>
+                </sdk:TabItem>
+            </sdk:TabControl>
+        </Grid>
+        <sdk:GridSplitter Grid.Row="1" Grid.Column="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
         <sdk:TabControl Grid.Row="1" Grid.Column="2" Margin="0,0,0,6">
             <sdk:TabItem Header="Memory">
                 <TextBox Name="txtMem" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Grid.ColumnSpan="2" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" />
-        <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="2">
+        <sdk:TabControl Grid.Row="2" Grid.ColumnSpan="3">
             <sdk:TabItem Header="Output">
                 <TextBox Name="txtOut" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
             </sdk:TabItem>

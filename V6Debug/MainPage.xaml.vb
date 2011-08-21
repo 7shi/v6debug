@@ -28,6 +28,13 @@ Partial Public Class MainPage
             End Using
         End Using
 
+        Dim regsrc(7) As DGEntry
+        Dim regs = {"r0", "r1", "r2", "r3", "r4", "r5(fp)", "r6(sp)", "r7(pc)"}
+        For i = 0 To 7
+            regsrc(i) = New DGEntry(regs(i), "0000")
+        Next
+        dgReg.ItemsSource = regsrc
+
         boot = New BinData(&H10000)
         boot.Write(&O2000,
                    &O42113,
@@ -119,4 +126,14 @@ Partial Public Class MainPage
         txtDis.Text = sw.ToString
         Cursor = cur
     End Sub
+
+    Public Class DGEntry
+        Public Property Name$
+        Public Property Value$
+
+        Public Sub New(n$, v$)
+            Name = n
+            Value = v
+        End Sub
+    End Class
 End Class
