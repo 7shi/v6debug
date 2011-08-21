@@ -74,7 +74,7 @@ Partial Public Class MainPage
     End Sub
 
     Public Sub Clear()
-        txtDis.Text = ""
+        dgDis.ItemsSource = Nothing
         txtMem.Text = ""
     End Sub
 
@@ -111,19 +111,25 @@ Partial Public Class MainPage
         Dim cur = Cursor
         Cursor = Cursors.Wait
         boot.UseOct = comboBox1.SelectedIndex = 1
-        Dim sw = New StringWriter
+        Dim list = New List(Of DisEntry)
         For i = &O2000 To &O2071
-            i += Disassemble(boot, sw, i, 0) - 1
+            Dim de = New DisEntry(boot, i)
+            list.Add(de)
+            i += de.Length - 1
         Next
-        sw.WriteLine()
+        list.Add(New DisEntry)
         For i = &O100000 To &O100023
-            i += Disassemble(boot, sw, i, 0) - 1
+            Dim de = New DisEntry(boot, i)
+            list.Add(de)
+            i += de.Length - 1
         Next
-        sw.WriteLine()
+        list.Add(New DisEntry)
         For i = &O100100 To &O100121
-            i += Disassemble(boot, sw, i, 0) - 1
+            Dim de = New DisEntry(boot, i)
+            list.Add(de)
+            i += de.Length - 1
         Next
-        txtDis.Text = sw.ToString
+        dgDis.ItemsSource = list
         Cursor = cur
     End Sub
 

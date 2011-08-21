@@ -39,8 +39,19 @@ Public Module Disassembler
         If st IsNot Nothing Then st.Restore()
         Return ret
     End Function
+End Module
 
-    Public Function Disassemble%(bd As BinData, tw As TextWriter, i%, Optional maxlen% = 0)
+Public Class DisEntry
+    Public Property Mark$
+    Public Property Addr$
+    Public Property Dump$
+    Public Property Dis$
+    Public Property Length%
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(bd As BinData, i%, Optional maxlen% = 0)
         Dim spclen = bd.Enc0(0US).Length
         Dim s = bd.ReadUInt16(i)
         Dim op = OpCodes(s)
@@ -54,38 +65,30 @@ Public Module Disassembler
                 len = op.Length
             End If
         End If
-        tw.Write("{0}: {1}", bd.Enc0(CUShort(i)), bd.Enc0(s))
-        For j = 2 To 4 Step 2
-            If j < len Then
-                tw.Write(" " + bd.Enc0(bd.ReadUInt16(i + j)))
-            Else
-                tw.Write(Space(1 + spclen))
-            End If
-        Next
-        tw.Write("  ")
+        Addr = bd.Enc0(CUShort(i))
+        Using sw = New StringWriter
+            sw.Write(bd.Enc0(s))
+            For j = 2 To len - 1 Step 2
+                If j > 2 Then
+                    sw.WriteLine()
+                    sw.Write(Space(spclen))
+                End If
+                For k = 0 To 2 Step 2
+                    If j + k < len - 1 Then sw.Write(" " + bd.Enc0(bd.ReadUInt16(i + j + k)))
+                Next
+            Next
+            Dump = sw.ToString
+        End Using
         If dis IsNot Nothing Then
-            tw.Write(dis)
+            Me.Dis = dis
         Else
-            For j = 0 To len - 1 Step 2
-                If j > 0 Then tw.Write("; ")
-                tw.Write(bd.Enc(bd.ReadUInt16(i + j)))
-            Next
+            Using sw = New StringWriter
+                For j = 0 To len - 1 Step 2
+                    If j > 0 Then sw.Write("; ")
+                    sw.Write(bd.Enc(bd.ReadUInt16(i + j)))
+                Next
+            End Using
         End If
-        If len > 6 Then
-            Dim indent = Space(9 + spclen * 2)
-            For j = 6 To op.Length Step 2
-                If ((j - 2) And 3) = 0 Then
-                    tw.WriteLine()
-                    tw.Write(indent)
-                End If
-                If j < len Then
-                    tw.Write(" " + bd.Enc0(bd.ReadUInt16(i + j)))
-                Else
-                    tw.Write(Space(1 + spclen))
-                End If
-            Next
-        End If
-        tw.WriteLine()
-        Return len
-    End Function
-End Module
+        Length = len
+    End Sub
+End Class

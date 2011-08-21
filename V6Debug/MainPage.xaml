@@ -37,9 +37,14 @@
         </Grid>
         <sdk:TabControl Grid.Row="1" Margin="0,0,6,6">
             <sdk:TabItem Header="Disassemble">
-                <Grid>
-                    <TextBox Name="txtDis" AcceptsReturn="True" FontFamily="Courier New" FontSize="12" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible" />
-                </Grid>
+                <sdk:DataGrid Name="dgDis" IsReadOnly="True" AutoGenerateColumns="False" FontFamily="Courier New" FontSize="12">
+                    <sdk:DataGrid.Columns>
+                        <sdk:DataGridTextColumn Header="" Binding="{Binding Mark}" CanUserResize="True" Width="20" />
+                        <sdk:DataGridTextColumn Header="Addr" Binding="{Binding Addr}" CanUserResize="True" Width="Auto" />
+                        <sdk:DataGridTextColumn Header="Dump" Binding="{Binding Dump}" CanUserResize="True" Width="Auto" />
+                        <sdk:DataGridTextColumn Header="Disassemble" Binding="{Binding Dis}" CanUserResize="True" Width="Auto" />
+                    </sdk:DataGrid.Columns>
+                </sdk:DataGrid>
             </sdk:TabItem>
         </sdk:TabControl>
         <sdk:GridSplitter Grid.Row="1" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Margin="0,0,0,6" />
